@@ -3,6 +3,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import otpStore from "../utils/otpStore.js";
 import { sendEmail } from "../utils/emailService.js";
+import {ApiError} from "../utils/apiError.js";
 
 
 const getSignupPage = asyncHandler(async (req, res) => {

@@ -1,17 +1,17 @@
 import axios from "axios";
 import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
-    name: "",
+    fullName: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
-
+  const navigate=useNavigate();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError("");
@@ -27,20 +27,21 @@ export default function Signup() {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", {
-        name: formData.name,
+      const res = await axios.post("http://localhost:8000/auth/signup", {
+        fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
       });
 
-      if (res.status === 200) {
+      if (res.status===201) {
         setSuccess("Account created successfully!");
         setFormData({
-          name: "",
+          fullName: "",
           email: "",
           password: "",
           confirmPassword: "",
         });
+        navigate("/login");
       }
     } catch (err) {
       console.error(err);
@@ -61,10 +62,10 @@ export default function Signup() {
 
         <div className="space-y-4">
           <input
-            name="name"
+            name="fullName"
             type="text"
             placeholder="Full Name"
-            value={formData.name}
+            value={formData.fullName}
             onChange={handleChange}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             required

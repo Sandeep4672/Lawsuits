@@ -23,16 +23,16 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await axios.post("http://localhost:8000/auth/login", {
         email: formData.email,
         password: formData.password,
       });
 
-      if (res.status === 200) {
+      if (res.status===201) {
         setSuccess("Login successful");
         // we can save token to localStorage here if returned
         // localStorage.setItem("token", res.data.token);
-        // navigate("/dashboard");
+        // navigate("/");
       }
     } catch (err) {
       console.error(err);

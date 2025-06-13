@@ -1,10 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -12,18 +14,16 @@ export default function ForgotPassword() {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/forgot-password", {
-        email,
-      });
+      const res = await axios.post("http://localhost:8000/auth/send-otp", { email });
 
       if (res.status === 200) {
-        setMessage("Password reset link sent to your email.");
-        setEmail(""); 
-        
+        setMessage("OTP sent to your email.");
+        setTimeout(() => {
+          navigate("/verify-otp", { state: { email } });
+        }, 1500);
       }
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Failed to send reset link.");
+      setError(err.response?.data?.message || "Failed to send OTP.");
     }
   };
 
@@ -40,7 +40,6 @@ export default function ForgotPassword() {
 
         <input
           type="email"
-          name="email"
           placeholder="Enter your registered email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -52,7 +51,7 @@ export default function ForgotPassword() {
           type="submit"
           className="mt-6 w-full bg-green-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-green-700 transition"
         >
-          Send Reset Link
+          Send OTP
         </button>
       </form>
     </div>
