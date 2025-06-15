@@ -1,10 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import {useContext} from "react";
+import {AuthContext} from "../../context/AuthContext";
 export default function Login() {
   const navigate = useNavigate();
-
+  const {login} =useContext(AuthContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -28,11 +29,14 @@ export default function Login() {
         password: formData.password,
       });
 
-      if (res.status===201) {
+      if (res.data.success) {
+
         setSuccess("Login successful");
         // we can save token to localStorage here if returned
         // localStorage.setItem("token", res.data.token);
-        // navigate("/");
+        
+        login(res.data.data.accessToken);
+        navigate("/dashboard");
       }
     } catch (err) {
       console.error(err);

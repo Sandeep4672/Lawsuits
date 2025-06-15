@@ -1,15 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function ChangePassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const { state } = useLocation();
+
   const navigate = useNavigate();
-  const email = state?.email;
+
+  // Get token and user from localStorage
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user")); // assuming user object contains email
+
+  useEffect(() => {
+    if (!token || !user?.email) {
+      navigate("/login"); // redirect if not authenticated
+    }
+  }, [navigate, token, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,10 +31,18 @@ export default function ChangePassword() {
     }
 
     try {
-      const res = await axios.post("http://localhost:8000/auth/change-password", {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        "http://localhost:8000/auth/change-password",
+        {
+          email: user.email,
+          password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // if backend checks JWT
+          },
+        }
+      );
 
       if (res.status === 200) {
         setMessage("Password changed successfully.");
@@ -44,7 +61,9 @@ export default function ChangePassword() {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-200"
       >
-        <h2 className="text-3xl font-bold mb-6 text-center text-indigo-700">Reset Password</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center text-indigo-700">
+          Reset Password
+        </h2>
 
         {error && <p className="text-red-600 text-sm text-center mb-4">{error}</p>}
         {message && <p className="text-green-600 text-sm text-center mb-4">{message}</p>}
@@ -68,7 +87,7 @@ export default function ChangePassword() {
 
         <button
           type="submit"
-          className="w-full bg-indigo-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-indigo-700 transition"
+          className="w-full bg-green-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-green-800 transition"
         >
           Change Password
         </button>
