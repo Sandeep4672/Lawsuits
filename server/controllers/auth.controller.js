@@ -1,5 +1,5 @@
 import { User } from "../models/user.model.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
+import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import otpStore from "../utils/otpStore.js";
 import { sendEmail } from "../utils/emailService.js";
