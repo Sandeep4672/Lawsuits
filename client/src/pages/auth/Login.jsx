@@ -39,6 +39,10 @@ export default function Login() {
         navigate("/dashboard");
       }
     } catch (err) {
+      if(err.response?.statusCode===500)
+      {
+        navigate("/500");
+      }
       console.error(err);
       setError(err.response?.data?.message || "Login failed");
     }

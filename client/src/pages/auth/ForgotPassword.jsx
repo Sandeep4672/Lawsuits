@@ -23,6 +23,10 @@ export default function ForgotPassword() {
         }, 1500);
       }
     } catch (err) {
+      if(err.response?.statusCode===500)
+      {
+        navigate("/500");
+      }
       setError(err.response?.data?.message || "Failed to send OTP.");
     }
   };

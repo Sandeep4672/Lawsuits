@@ -10,21 +10,26 @@ import { AuthProvider } from "./context/AuthContext"; // Adjust path if needed
 import DocumentSummarization from "./pages/AI/DocumentSummary";
 import Footer from "./components/Footer";
 import ProfilePage from "./components/ProfilePage";
+import NotFound from "./pages/error/NotFound";
+import InternalServerError from "./pages/error/InternalServerError";
+import ProtectedRoute from "./components/ProtectedRoute";
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/" element={<Home />}/>
+          <Route path="/signup" element={<Signup />}/>
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
-          <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/get-document-summary" element={<DocumentSummarization/>}/>
+          <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard/get-document-summary" element={<ProtectedRoute><DocumentSummarization/></ProtectedRoute>}/>
           <Route path="/footer" element={<Footer/>}/>
           <Route path="/profile" element={<ProfilePage/>}/>
+          <Route path="/500" element={<InternalServerError/>}/>
+          <Route path="*" element={<NotFound/>}/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>

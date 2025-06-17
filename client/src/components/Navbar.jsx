@@ -15,7 +15,10 @@ export default function Navbar() {
     e.preventDefault();
     alert(`Searching for: ${search}`);
   };
-
+ const userlogout=(e)=>{
+  logout();
+  navigate("/");
+ }
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
   return (
@@ -72,7 +75,7 @@ export default function Navbar() {
 
               <button
                 className="ml-2 px-3 py-1 bg-red-700 text-white rounded hover:bg-red-500 text-sm"
-                onClick={logout}
+                onClick={userlogout}
               >
                 Logout
               </button>
@@ -128,7 +131,7 @@ export default function Navbar() {
                 </span>
               </div>
               <button
-                onClick={logout}
+                onClick={userlogout}
                 className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-500 text-sm"
               >
                 Logout

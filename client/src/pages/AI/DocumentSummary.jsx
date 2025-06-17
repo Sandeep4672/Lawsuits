@@ -3,15 +3,19 @@ import { FaFileUpload } from "react-icons/fa";
 import axios from "axios";
 import { motion } from "framer-motion";
 import Navbar from "../../components/Navbar";
+
 export default function DocumentSummarization() {
   const [file, setFile] = useState(null);
   const [summary, setSummary] = useState("");
+  const [terms, setTerms] = useState([]); // NEW
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setSummary("");
+    setTerms([]);
+    setSaved(false);
   };
 
   const handleUpload = async () => {
@@ -20,29 +24,27 @@ export default function DocumentSummarization() {
     formData.append("pdf", file);
     setLoading(true);
     try {
-      const res = await axios.post(
-        "http://localhost:8000/fn/summarize",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const res = await axios.post("http://localhost:8000/fn/summarize", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       setSummary(res.data.summary);
+      setTerms(res.data.legalTerms || []); // ✅ capture terms
     } catch (err) {
       setSummary("Error processing PDF. Please try again.");
+      setTerms([]);
     } finally {
       setLoading(false);
     }
   };
+
   const handleSave = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:8000/fn/save-summary",
-        {
-          filename: file?.name || "Untitled Document",
-          summary,
-        }
-      );
+      const response = await axios.post("http://localhost:8000/fn/save-summary", {
+        filename: file?.name || "Untitled Document",
+        summary,
+        terms, // optional: if you also save legal terms
+      });
       if (response.status === 200) {
         setSaved(true);
       }
@@ -50,10 +52,11 @@ export default function DocumentSummarization() {
       console.error("Error saving summary:", err);
     }
   };
+
   return (
     <>
       <Navbar />
-      <div className="min-h-screen pt-32 pb-12 bg-gradient-to-br from-green-200  to-green-100 px-4 py-20">
+      <div className="min-h-screen pt-32 pb-12 bg-gradient-to-br from-green-200 to-green-100 px-4 py-20">
         <motion.div
           className="max-w-5xl mx-auto bg-white p-10 rounded-3xl shadow-2xl"
           initial={{ opacity: 0, y: 40 }}
@@ -81,8 +84,8 @@ export default function DocumentSummarization() {
                 {file ? file.name : "Click to upload a PDF file"}
               </div>
               <h4 className="text-lg font-bold mb-6 text-center text-gray-400 tracking-wide">
-             LawSuits only provide information, not legal advice.
-          </h4>
+                LawSuits only provide information, not legal advice.
+              </h4>
             </label>
 
             <motion.button
@@ -92,8 +95,7 @@ export default function DocumentSummarization() {
               disabled={loading}
               className="flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white font-medium px-6 py-2 rounded-lg shadow transition"
             >
-              <FaFileUpload />{" "}
-              {loading ? "Processing..." : "Upload and Summarize"}
+              <FaFileUpload /> {loading ? "Processing..." : "Upload and Summarize"}
             </motion.button>
           </motion.div>
 
@@ -118,20 +120,33 @@ export default function DocumentSummarization() {
               <h3 className="text-xl font-semibold text-green-800 mb-3">
                 📝 Summary
               </h3>
-              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed mb-4">
                 {summary}
               </p>
+
+              {terms.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="text-lg font-semibold text-green-700 mb-2">
+                    📚 Legal Terms Identified
+                  </h4>
+                  <ul className="list-disc pl-6 text-gray-600 space-y-1">
+                    {terms.map((term, index) => (
+                      <li key={index}>{term}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleSave}
-            className="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow"
-          >
-            {saved ? "✅ Saved" : "💾 Save Summary"}
-          </motion.button>
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSave}
+                className="mt-6 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow"
+              >
+                {saved ? "✅ Saved" : "💾 Save Summary"}
+              </motion.button>
             </motion.div>
           )}
-          
         </motion.div>
       </div>
     </>
