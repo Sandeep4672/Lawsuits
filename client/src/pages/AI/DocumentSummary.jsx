@@ -80,6 +80,9 @@ export default function DocumentSummarization() {
               <div className="w-full border-2 border-dashed border-green-400 rounded-xl py-4 px-6 text-center text-gray-500 hover:bg-green-50 transition-all">
                 {file ? file.name : "Click to upload a PDF file"}
               </div>
+              <h4 className="text-lg font-bold mb-6 text-center text-gray-400 tracking-wide">
+             LawSuits only provide information, not legal advice.
+          </h4>
             </label>
 
             <motion.button

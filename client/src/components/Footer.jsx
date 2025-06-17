@@ -3,10 +3,10 @@ import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-green-900 text-white py-8 mt-12">
+    <footer className="bg-green-700 text-white py-8 mt-12">
       <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="text-center sm:text-left">
-          <h4 className="text-lg font-semibold">Legal AI Suite</h4>
+          <h4 className="text-lg font-semibold">LawSuits</h4>
           <p className="text-sm text-green-200">
             © {new Date().getFullYear()} All rights reserved.
           </p>

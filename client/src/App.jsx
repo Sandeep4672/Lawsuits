@@ -9,6 +9,7 @@ import Dashboard from "./pages/home/Dashboard";
 import { AuthProvider } from "./context/AuthContext"; // Adjust path if needed
 import DocumentSummarization from "./pages/AI/DocumentSummary";
 import Footer from "./components/Footer";
+import ProfilePage from "./components/ProfilePage";
 export default function App() {
   return (
     <AuthProvider>
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/get-document-summary" element={<DocumentSummarization/>}/>
           <Route path="/footer" element={<Footer/>}/>
+          <Route path="/profile" element={<ProfilePage/>}/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
