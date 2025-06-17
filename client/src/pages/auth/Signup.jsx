@@ -45,6 +45,10 @@ export default function Signup() {
       }
     } catch (err) {
       console.error(err);
+      if(err.response?.statusCode===500)
+      {
+        navigate("/500");
+      }
       setError(err.response?.data?.message || "Registration failed");
     }
   };
