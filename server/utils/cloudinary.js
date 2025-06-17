@@ -14,6 +14,7 @@ export const uploadPdfToCloudinary = async (filePath) => {
     resource_type: "raw",
     folder: "Lawsuits",
   });
+  console.log("Cloudinary upload result:", result);
   fs.unlinkSync(filePath);
   return result;
 };

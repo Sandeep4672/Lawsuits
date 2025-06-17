@@ -2,7 +2,7 @@ export const extractLegalTerms = (text) => {
   const legalTermsSet = new Set();
 
   const patterns = [
-    /\bSection\s+\d+[A-Za-z]?\s+of\s+(the\s+)?(Indian\s+Penal\s+Code|IPC|CrPC|Code\s+of\s+Criminal\s+Procedure|Protection\s+of\s+Children\s+from\s+Sexual\s+Offences\s+Act|POCSO\s+Act)/gi,
+    /\bSection\s+\d+[A-Za-z]?\s+of\s+(the\s+)?(Indian\s+Penal\s+Code|IPC|CrPC|Murder|Code\s+of\s+Criminal\s+Procedure|Protection\s+of\s+Children\s+from\s+Sexual\s+Offences\s+Act|POCSO\s+Act)/gi,
     /\bArticle\s+\d+[A-Za-z]?/gi,
     /\b(?:Indian\s+Penal\s+Code|Code\s+of\s+Criminal\s+Procedure|Protection\s+of\s+Children\s+from\s+Sexual\s+Offences\s+Act|POCSO\s+Act|Constitution\s+of\s+India)\b/gi,
   ];
