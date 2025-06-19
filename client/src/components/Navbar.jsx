@@ -2,7 +2,9 @@ import React, { useContext, useState } from "react";
 import { FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-
+import Logo from "./Logo"
+import axios from "axios";
+import { Link } from "react-router-dom";
 export default function Navbar() {
   const { isLoggedIn, user, logout } = useContext(AuthContext);
   const [search, setSearch] = useState("");
@@ -12,9 +14,10 @@ export default function Navbar() {
   const handleLogin = () => navigate("/login");
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    alert(`Searching for: ${search}`);
-  };
+  e.preventDefault();
+  navigate(`/search-results?query=${encodeURIComponent(search)}`);
+};
+
  const userlogout=(e)=>{
   logout();
   navigate("/");
@@ -24,7 +27,12 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md py-3 px-4 sm:px-6 flex justify-between items-center">
       {/* Logo */}
-      <div className="text-2xl font-bold text-green-700">LawSuits</div>
+      <Link to="/dashboard">
+      <div className="text-2xl cursor-pointer font-bold text-green-700"
+      > <Logo></Logo> </div>
+      </Link>
+      
+      
 
       {/* Desktop Search */}
       <form
@@ -40,7 +48,7 @@ export default function Navbar() {
         />
         <button
           type="submit"
-          className="ml-2 px-4 py-2 bg-green-700 text-white rounded hover:bg-cyan-800 transition"
+          className="ml-2 px-4 py-2 bg-green-700 cursor-pointer text-white rounded hover:bg-cyan-800 transition"
         >
           Search
         </button>
@@ -58,10 +66,10 @@ export default function Navbar() {
       <div className="hidden md:flex items-center gap-6">
         {isLoggedIn ? (
           <>
-            <button className="text-gray-700 hover:text-cyan-700 font-medium">
+            <button className="text-gray-700 cursor-pointer hover:text-cyan-700 font-medium">
               Saved Items
             </button>
-            <button className="text-gray-700 hover:text-cyan-700 font-medium">
+            <button className="text-gray-700 cursor-pointer hover:text-cyan-700 font-medium">
               History
             </button>
             <div className="flex items-center gap-2">
@@ -74,7 +82,7 @@ export default function Navbar() {
               </span>
 
               <button
-                className="ml-2 px-3 py-1 bg-red-700 text-white rounded hover:bg-red-500 text-sm"
+                className="ml-2 px-3 py-1 bg-red-700 cursor-pointer text-white rounded hover:bg-red-500 text-sm"
                 onClick={userlogout}
               >
                 Logout
@@ -83,7 +91,7 @@ export default function Navbar() {
           </>
         ) : (
           <button
-            className="px-4 py-2 bg-cyan-700 text-white rounded hover:bg-cyan-800 transition"
+            className="px-4 py-2 bg-cyan-700 text-white rounded cursor-pointer hover:bg-cyan-800 transition"
             onClick={handleLogin}
           >
             Login
@@ -104,7 +112,7 @@ export default function Navbar() {
             />
             <button
               type="submit"
-              className="w-full bg-green-600 text-white py-2 rounded hover:bg-cyan-800 transition"
+              className="w-full bg-green-600 cursor-pointer text-white py-2 rounded hover:bg-cyan-800 transition"
             >
               Search
             </button>
@@ -112,10 +120,10 @@ export default function Navbar() {
 
           {isLoggedIn ? (
             <>
-              <button className="w-full text-left text-gray-700 hover:text-cyan-700 font-medium">
+              <button className="w-full text-left cursor-pointer text-gray-700 hover:text-cyan-700 font-medium">
                 Saved Items
               </button>
-              <button className="w-full text-left text-gray-700 hover:text-cyan-700 font-medium">
+              <button className="w-full text-left text-gray-700 cursor-pointer hover:text-cyan-700 font-medium">
                 History
               </button>
               <div className="flex items-center gap-2">
@@ -125,14 +133,14 @@ export default function Navbar() {
                     setMenuOpen(false);
                     navigate("/profile");
                   }}
-                  className="text-gray-600 font-medium hover:underline cursor-pointer"
+                  className="text-gray-600 font-medium  cursor-pointer hover:underline cursor-pointer"
                 >
                   {user.fullName}
                 </span>
               </div>
               <button
                 onClick={userlogout}
-                className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-500 text-sm"
+                className="w-full bg-red-600 cursor-pointer text-white py-2 rounded hover:bg-red-500 text-sm"
               >
                 Logout
               </button>
@@ -140,7 +148,7 @@ export default function Navbar() {
           ) : (
             <button
               onClick={handleLogin}
-              className="w-full bg-cyan-600 text-white py-2 rounded hover:bg-cyan-800 transition"
+              className="w-full bg-cyan-600 cursor-pointer text-white py-2 rounded hover:bg-cyan-800 transition"
             >
               Login
             </button>

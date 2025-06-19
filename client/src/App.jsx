@@ -13,6 +13,8 @@ import ProfilePage from "./components/ProfilePage";
 import NotFound from "./pages/error/NotFound";
 import InternalServerError from "./pages/error/InternalServerError";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SearchResults from "./components/SearchResult";
+import CaseDetails from "./components/CaseDetail";
 export default function App() {
   return (
     <AuthProvider>
@@ -29,6 +31,8 @@ export default function App() {
           <Route path="/footer" element={<Footer/>}/>
           <Route path="/profile" element={<ProfilePage/>}/>
           <Route path="/500" element={<InternalServerError/>}/>
+          <Route path="/search-results" element={<SearchResults/>}/>
+          <Route path="/case/:id" element={<CaseDetails />} />
           <Route path="*" element={<NotFound/>}/>
         </Routes>
       </BrowserRouter>

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {useContext} from "react";
 import {AuthContext} from "../../context/AuthContext";
+import Navbar from "../../components/Navbar";
 export default function Login() {
   const navigate = useNavigate();
   const {login} =useContext(AuthContext);
@@ -53,6 +54,8 @@ export default function Login() {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-white px-4">
       <form
         onSubmit={handleSubmit}
@@ -103,5 +106,6 @@ export default function Login() {
         </button>
       </form>
     </div>
+    </>
   );
 }
