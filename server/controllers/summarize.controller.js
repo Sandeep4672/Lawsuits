@@ -1,7 +1,7 @@
 import fs from "fs";
 import pdf from "pdf-parse";
-import { callOpenRouter } from "../utils/openAIRouter.js";
 
+import { callOpenRouter } from "../utils/openAIRouter.js";
 import { extractLegalTerms } from "../utils/extractLegalTerms.js";
 
 export const summarizePdfFile = async (filePath) => {
@@ -31,3 +31,6 @@ export const summarizePDF = async (req, res) => {
     res.status(500).json({ error: error.message || "Something went wrong" });
   }
 };
+
+
+

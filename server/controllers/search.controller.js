@@ -48,7 +48,7 @@ export const searchCases = asyncHandler(async (req, res) => {
 
     totalResults = await PdfDocument.countDocuments(searchQuery);
   }
-
+  console.log(totalResults);
   res.status(200).json(
     new ApiResponse(
       200,
@@ -62,4 +62,20 @@ export const searchCases = asyncHandler(async (req, res) => {
       "Search completed"
     )
   );
+});
+
+export const getCaseById=asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json(new ApiResponse(400, null, "Case ID is required"));
+  }
+
+  const caseData = await PdfDocument.findById(id);
+  console.log("Case data retrieved:", caseData);
+  if (!caseData) {
+    return res.status(404).json(new ApiResponse(404, null, "Case not found"));
+  }
+
+  res.status(200).json(new ApiResponse(200, caseData, "Case retrieved successfully"));
 });
