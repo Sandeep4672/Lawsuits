@@ -1,7 +1,6 @@
 import fs from "fs";
 import pdf from "pdf-parse";
 import { callOpenRouter } from "../utils/openAIRouter.js";
-
 import { extractLegalTerms } from "../utils/extractLegalTerms.js";
 
 export const summarizePdfFile = async (filePath) => {
