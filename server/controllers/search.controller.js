@@ -71,7 +71,7 @@ export const getCaseById=asyncHandler(async (req, res) => {
     return res.status(400).json(new ApiResponse(400, null, "Case ID is required"));
   }
 
-  const caseData = await PdfDocument.findById(id);
+  const caseData = await PdfDocument.findById({_id:id});
   console.log("Case data retrieved:", caseData);
   if (!caseData) {
     return res.status(404).json(new ApiResponse(404, null, "Case not found"));
