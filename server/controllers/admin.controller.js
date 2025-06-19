@@ -23,13 +23,13 @@ export const uploadPdfToDatabase = asyncHandler(async (req, res) => {
 
   const filePath = file.path;
 
-  // 1. Extract full PDF text
   const dataBuffer = fs.readFileSync(filePath);
   const parsed = await pdf(dataBuffer);
   const text = parsed.text || "";
 
   // 2. Get AI summary (optional but helpful)
-  const summary = await summarizePdfFile(filePath);
+  const summaryData = await summarizePdfFile(filePath);
+  const summary=summaryData.summary;
   const tags = extractLegalTerms(text);
   // 3. Upload to Cloudinary
   const cloudinaryResult = await uploadPdfToCloudinary(filePath);

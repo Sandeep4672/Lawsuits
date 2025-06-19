@@ -7,11 +7,18 @@ const pdfSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
+
     description: {
       type: String,
       trim: true
     },
-    partiesInvolved: [String], // e.g., ["State", "John Doe"]
+
+    summary: {
+      type: String,
+      trim: true
+    }, 
+
+    partiesInvolved: [String], 
 
     caseNumber: {
       type: String,
@@ -57,7 +64,13 @@ const pdfSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// 🔍 Full-text index for smart searching
-pdfSchema.index({ title: "text", description: "text", contentText: "text", tags: "text" });
+// 🔍 Full-text index for smart searching (summary added)
+pdfSchema.index({
+  title: "text",
+  description: "text",
+  summary: "text",       // 🆕 Include summary in full-text index
+  contentText: "text",
+  tags: "text"
+});
 
 export const PdfDocument = mongoose.model("PdfDocument", pdfSchema);
