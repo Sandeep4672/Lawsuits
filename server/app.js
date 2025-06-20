@@ -16,11 +16,12 @@ import summarizeRouter from "./routes/summarize.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import adminRouter from "./routes/admin.routes.js";
 import searchRouter from "./routes/search.routes.js";
-
+import lawyerRouter from "./routes/lawyer.routes.js";
 app.use("/auth", authRouter);
 app.use("/fn",summarizeRouter);
 app.use("/admin", adminRouter);
 app.use("/search", searchRouter);
+app.use("/lawyer", lawyerRouter);
 app.use("*", (req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
 });

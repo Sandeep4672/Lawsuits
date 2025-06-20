@@ -23,6 +23,12 @@ const userSchema = new Schema(
         refreshToken: {
             type: String,
         },
+        isLawyer: {
+            type: String,
+            enum: ["no", "pending", "yes"],
+            default: "no",
+        }
+
     },
     { timestamps: true }
 );
@@ -54,7 +60,6 @@ userSchema.methods.generateAccessToken = function () {
     );
 };
 
-// Generate refresh token
 userSchema.methods.generateRefreshToken = function () {
     return jwt.sign(
         {
