@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 export default function CaseDetails() {
   const { id } = useParams();
   const [caseData, setCaseData] = useState(null);
@@ -19,12 +19,12 @@ export default function CaseDetails() {
   }, [id]);
 
   if (!caseData)
-    return <p className="text-center text-gray-600 mt-20 text-lg">Loading case details...</p>;
+    return <p className="text-center  text-gray-600 mt-20 text-lg">Loading case details...</p>;
 
   return (
     <><Navbar></Navbar>
     <div className="min-h-screen pt-40 mx-auto py-20 px-6 sm:px-10  bg-gradient-to-br from-green-100 to-green-50">
-      <h1 className="text-3xl font-bold text-green-800 mb-4">{caseData.title || "Untitled Case"}</h1>
+      <h1 className="text-3xl font-bold text-center text-green-800 mb-4">{caseData.title || "Untitled Case"}</h1>
 
       <div className="space-y-3 text-base text-gray-700">
         {caseData.caseNumber && (

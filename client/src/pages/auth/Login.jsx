@@ -100,7 +100,7 @@ export default function Login() {
 
         <button
           type="submit"
-          className="mt-6 w-full bg-green-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-green-800 transition"
+          className="mt-6 cursor-pointer w-full bg-green-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-green-800 transition"
         >
           Login
         </button>

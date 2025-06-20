@@ -96,8 +96,9 @@ const loginUser = asyncHandler(async (req, res) => {
     res.cookie("refreshToken", refreshToken, cookieOptions);
 
     const userData = await User.findById(user._id).select("-password -refreshToken");
-
+    console.log("userdata-",userData);
     return res.status(200).json(
+        
         new ApiResponse(200, { user: userData, accessToken }, "Login successful")
     );
 });

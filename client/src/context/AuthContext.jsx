@@ -15,10 +15,11 @@ export function AuthProvider({ children }) {
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
         // Check for fullName or name, fallback to "User"
-        const userName = payload.fullName || payload.name || "User";
-        setUser({ ...payload, fullName: userName });
+        const userName = payload.fullName  || "User";
+       const isLawyer = payload.isLawyer !== undefined ? payload.isLawyer : "no";
+        setUser({ ...payload, fullName: userName ,isLawyer});
       } catch {
-        setUser({ fullName: "User" });
+        setUser({ fullName: "User" ,isLawyer:"no"});
       }
     } else {
       setIsLoggedIn(false);
@@ -40,9 +41,10 @@ export function AuthProvider({ children }) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       const userName = payload.fullName || payload.name || "User";
-      setUser({ ...payload, fullName: userName });
+       const isLawyer = payload.isLawyer || "no";
+      setUser({ ...payload, fullName: userName ,isLawyer});
     } catch {
-      setUser({ fullName: "notuser" });
+      setUser({ fullName: "User" ,isLawyer:"no"});
     }
   };
 

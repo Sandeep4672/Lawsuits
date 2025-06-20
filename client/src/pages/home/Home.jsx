@@ -1,6 +1,15 @@
-import { Link } from "react-router-dom";
+import { useContext,useEffect } from "react";
+import { Link ,useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import { AuthContext } from "../../context/AuthContext";
 export default function Home() {
+   const { isLoggedIn, user, logout } = useContext(AuthContext);
+   const navigate = useNavigate();
+   useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/dashboard");
+    }
+  }, [isLoggedIn, navigate]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 to-white flex flex-col items-center justify-center text-center px-6">
       <Navbar></Navbar>

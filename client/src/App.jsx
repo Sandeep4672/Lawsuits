@@ -9,12 +9,13 @@ import Dashboard from "./pages/home/Dashboard";
 import { AuthProvider } from "./context/AuthContext"; // Adjust path if needed
 import DocumentSummarization from "./pages/AI/DocumentSummary";
 import Footer from "./components/Footer";
-import ProfilePage from "./components/ProfilePage";
+import ProfilePage from "./components/User/ProfilePage";
 import NotFound from "./pages/error/NotFound";
 import InternalServerError from "./pages/error/InternalServerError";
 import ProtectedRoute from "./components/ProtectedRoute";
-import SearchResults from "./components/SearchResult";
-import CaseDetails from "./components/CaseDetail";
+import SearchResults from "./components/User/SearchResult";
+import CaseDetails from "./components/User/CaseDetail";
+import ApplyForLawyer from "./pages/Lawyer/ApplyForLawyer";
 export default function App() {
   return (
     <AuthProvider>
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/500" element={<InternalServerError/>}/>
           <Route path="/search-results" element={<SearchResults/>}/>
           <Route path="/case/:id" element={<CaseDetails />} />
+          <Route path="/apply-for-lawyer" element={<ApplyForLawyer/>}/>
           <Route path="*" element={<NotFound/>}/>
         </Routes>
       </BrowserRouter>

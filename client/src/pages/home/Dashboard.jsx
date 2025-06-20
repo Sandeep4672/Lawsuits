@@ -1,7 +1,7 @@
 import Navbar from "../../components/Navbar";
-import DashboardTools from "../../components/DashboardTools";
+import DashboardTools from "../../components/User/DashboardTools";
 import Footer from "../../components/Footer";
-import CaseSearch from "../../components/AdvanceSearch";
+import CaseSearch from "../../components/User/AdvanceSearch";
 export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-200 to-green-100 text-white">

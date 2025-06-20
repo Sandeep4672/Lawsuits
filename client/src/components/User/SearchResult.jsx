@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation, Link } from "react-router-dom";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 export default function SearchResults() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -39,7 +39,7 @@ export default function SearchResults() {
     <>
     <Navbar></Navbar>
     <div className="min-h-screen px-6 py-24 bg-gradient-to-br from-green-100 to-green-50">
-      <h2 className="text-3xl font-bold mb-8 text-gray-800">
+      <h2 className="text-3xl text-center font-bold mb-8 text-gray-800">
         Results for <span className="text-green-700">"{query}"</span>
       </h2>
 
@@ -79,7 +79,7 @@ export default function SearchResults() {
       )}
 
       {/* Pagination */}
-      {!loading && totalPages > 1 && (
+      {!loading && totalPages >= 1 && (
         <div className="flex justify-center mt-12 gap-2 flex-wrap">
           {Array.from({ length: totalPages }, (_, i) => (
             <button
