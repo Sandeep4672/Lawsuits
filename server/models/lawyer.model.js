@@ -8,25 +8,43 @@ const lawyerProfileSchema = new Schema(
       required: true,
       unique: true,
     },
-    specialization: {
-      type: [String],
+    fullLawyerName: {
+      type: String,
       required: true,
+      trim: true,
     },
-    experienceYears: {
-      type: Number,
+    professionalEmail: {
+      type: String,
       required: true,
+      lowercase: true,
+      trim: true,
     },
-    barCouncilId: {
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    barId: {
       type: String,
       required: true,
       unique: true,
     },
-    certificates: [String], 
-    bio: String,
-    availableForChat: {
-      type: Boolean,
-      default: true,
+    practiceAreas: {
+      type: [String],
+      required: true,
     },
+    experience: {
+      type: Number,
+      required: true,
+    },
+    sop: {
+      type: String,
+    },
+    proofFile: {
+  type: [String], 
+  required: true,
+}
+,
   },
   { timestamps: true }
 );

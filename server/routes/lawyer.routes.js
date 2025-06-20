@@ -5,6 +5,6 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { isVerifiedLawyer } from "../middlewares/isLawyer.middleware.js";
 const router = Router();
 
-router.post("/apply",verifyJWT,    upload.array("certificates", 5), applyAsLawyer);
+router.post("/apply",verifyJWT,    upload.array("proofFile", 5), applyAsLawyer);
 router.get("/profile/:id",verifyJWT,isVerifiedLawyer, getLawyerProfile);
 export default router;
