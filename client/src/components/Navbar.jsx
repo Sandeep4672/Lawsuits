@@ -133,7 +133,7 @@ export default function Navbar() {
                     setMenuOpen(false);
                     navigate("/profile");
                   }}
-                  className="text-gray-600 font-medium  cursor-pointer hover:underline cursor-pointer"
+                  className="text-gray-600 font-medium   hover:underline cursor-pointer"
                 >
                   {user.fullName}
                 </span>
