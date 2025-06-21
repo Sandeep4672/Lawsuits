@@ -27,7 +27,12 @@ const userSchema = new Schema(
             type: String,
             enum: ["no", "pending", "yes"],
             default: "no",
+        },
+        isAdmin: {
+            type: Boolean,
+            default: false,
         }
+
 
     },
     { timestamps: true }
@@ -52,7 +57,7 @@ userSchema.methods.generateAccessToken = function () {
             _id: this._id,
             email: this.email,
             fullName: this.fullName,
-            isLawyer:this.isLawyer,
+            isLawyer: this.isLawyer,
         },
         process.env.ACCESS_TOKEN_SECRET,
         {

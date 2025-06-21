@@ -34,7 +34,8 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 
 
 export const isAdmin = asyncHandler(async (req, res, next) => {
-  if (!req.user?.isAdmin) {
+  
+  if (!(req.user.isAdmin)) {
     return next(new ApiError(403, "Access denied. Admins only."));
   }
   next();

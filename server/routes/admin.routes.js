@@ -3,9 +3,14 @@ import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 import { uploadPdfToDatabase } from "../controllers/admin.controller.js";
 import { verifyJWT,isAdmin } from "../middlewares/auth.middleware.js";
+import { getPendingLawyers } from "../controllers/lawyer.controller.js";
+import { getVerifiedLawyers } from "../controllers/lawyer.controller.js";
+
 const router = Router();
 router.use(verifyJWT, isAdmin);
 
 
 router.route("/upload-pdf").post(upload.single("pdf"),uploadPdfToDatabase);
+router.route("/lawyer-requests").get(getPendingLawyers); 
+router.route("/lawyers").get(getVerifiedLawyers);
 export default router;

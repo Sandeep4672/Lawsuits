@@ -104,3 +104,54 @@ export const getLawyerProfile = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getPendingLawyers = async (req, res, next) => {
+  try {
+    const pendingUsers = await User.find({ isLawyer: "pending" }).select("_id");
+
+    const userIds = pendingUsers.map((u) => u._id);
+
+    const lawyerProfiles = await LawyerProfile.find({ user: { $in: userIds } })
+      .populate("user", "fullName email phone isLawyer") 
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      message: "Pending lawyers fetched successfully",
+      lawyerProfiles,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const getVerifiedLawyers = async (req, res, next) => {
+  try {
+    const verifiedUsers = await User.find({ isLawyer: "yes" })
+      .select("_id fullName email phone isLawyer")
+      .sort({ createdAt: -1 });
+
+    const userIds = verifiedUsers.map((u) => u._id);
+
+    const lawyerProfiles = await LawyerProfile.find({ user: { $in: userIds } });
+
+    const verifiedLawyers = verifiedUsers.map((user) => {
+      const lawyerProfile = lawyerProfiles.find(
+        (lawyer) => lawyer.user.toString() === user._id.toString()
+      );
+      return {
+        ...user.toObject(),
+        lawyerProfile,
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Verified lawyers fetched successfully",
+      verifiedLawyers,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
