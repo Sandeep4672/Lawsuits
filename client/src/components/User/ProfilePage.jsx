@@ -1,18 +1,31 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState ,useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 import Navbar from "../Navbar";
 import { useNavigate } from "react-router-dom";
 import LawyerSection from "../../pages/Lawyer/LawyerSection";
+import { useLocation } from "react-router-dom";
 export default function ProfilePage() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-
+  const location=useLocation();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
+  //const [lawyerStatus, setLawyerStatus] = useState(user?.isLawyer || "no"); // default to "no"
+  const lawyerStatus =
+    location.state?.lawyerStatusUpdated ??
+    user?.isLawyer ??
+    "no";
+  useEffect(() => {
+  if (location.state?.lawyerStatusUpdated) {
+   // setLawyerStatus(location.state.lawyerStatusUpdated);
+    // Optionally clear the state to avoid flashing on refresh
+    window.history.replaceState({}, document.title);
+  }
+}, [location.state]);
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
@@ -49,6 +62,8 @@ export default function ProfilePage() {
       setMessage("Failed to update password.");
     }
   };
+  
+
 
   return (
     <>
@@ -66,9 +81,7 @@ export default function ProfilePage() {
             <div>
               <strong>Email:</strong> {user?.email}
             </div>
-
-            {/* Lawyer-related status rendering */}
-           <LawyerSection lawyerStatus={user?. isLawyer} navigate={navigate}/>
+           <LawyerSection lawyerStatus={lawyerStatus} navigate={navigate} />
           </div>
 
           <div className="mt-8">

@@ -37,7 +37,13 @@ export default function Login() {
         // localStorage.setItem("token", res.data.token);
         
         login(res.data.data.accessToken);
+        if(res.data.data.user?.isAdmin)
+        {
+          navigate("/admin/dashboard");
+        }
+        else{
         navigate("/dashboard");
+        }
       }
     } catch (err) {
       if(err.response?.statusCode===500)

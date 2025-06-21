@@ -16,6 +16,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SearchResults from "./components/User/SearchResult";
 import CaseDetails from "./components/User/CaseDetail";
 import ApplyForLawyer from "./pages/Lawyer/ApplyForLawyer";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import VerifiedLawyer from "./pages/Admin/VerifiedLawyer";
+import LawyerRequests from "./pages/Admin/LawyerRequest";
+import LawyerDetail from "./pages/Admin/LawyerDetails";
 export default function App() {
   return (
     <AuthProvider>
@@ -35,6 +39,10 @@ export default function App() {
           <Route path="/search-results" element={<SearchResults/>}/>
           <Route path="/case/:id" element={<CaseDetails />} />
           <Route path="/apply-for-lawyer" element={<ApplyForLawyer/>}/>
+          <Route path="/admin/dashboard" element={<AdminDashboard/>}/>
+          <Route path="/admin/lawyers" element={<VerifiedLawyer/>}/>
+          <Route path="/admin/lawyer-requests" element={<LawyerRequests/>}/>
+          <Route path="/admin/lawyer/:id" element={<LawyerDetail/>}/>
           <Route path="*" element={<NotFound/>}/>
         </Routes>
       </BrowserRouter>

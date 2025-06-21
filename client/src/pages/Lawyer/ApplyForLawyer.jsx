@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
-
+import { useNavigate } from "react-router-dom";
 export default function ApplyLawyer() {
   const [formData, setFormData] = useState({
     fullLawyerName: "",
@@ -16,7 +16,7 @@ export default function ApplyLawyer() {
 
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-
+   const navigate=useNavigate();
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === "file") {
@@ -44,18 +44,20 @@ export default function ApplyLawyer() {
           Authorization:`Bearer ${token}`,
         },
       });
-
-      setSuccessMsg("Application submitted successfully! We’ll review and contact you soon.");
-      setFormData({
-        fullLawyerName: "",
-        professionalEmail: "",
-        phone: "",
-        barId: "",
-        practiceAreas: "",
-        experience: "",
-        proofFile: null,
-        sop: "",
-      });
+      
+      navigate("/profile",{ state: { lawyerStatusUpdated: "pending" } });
+      
+      // setSuccessMsg("Application submitted successfully! We’ll review and contact you soon.");
+      // setFormData({
+      //   fullLawyerName: "",
+      //   professionalEmail: "",
+      //   phone: "",
+      //   barId: "",
+      //   practiceAreas: "",
+      //   experience: "",
+      //   proofFile: null,
+      //   sop: "",
+      // });
     } catch (err) {
       setErrorMsg("Failed to submit application. Please check details and try again.");
     }
