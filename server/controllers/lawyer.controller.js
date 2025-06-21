@@ -126,6 +126,26 @@ export const getPendingLawyers = async (req, res, next) => {
 };
 
 
+export const getLawyerRequestById = async (req, res, next) => {
+  try {
+    const lawyerProfileId = req.params.id;
+
+    const profile = await LawyerProfile.findById(lawyerProfileId);
+
+    if (!profile) {
+      return res.status(404).json({ message: "Lawyer profile not found" });
+    }
+  
+    return res.status(200).json({
+      profile,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+
 export const getVerifiedLawyers = async (req, res, next) => {
   try {
     const verifiedUsers = await User.find({ isLawyer: "yes" })
