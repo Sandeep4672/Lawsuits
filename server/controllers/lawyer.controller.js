@@ -1,6 +1,8 @@
 import { User } from "../models/user.model.js";
 import { LawyerProfile } from "../models/lawyer.model.js";
 import { uploadPdfToCloudinary } from "../utils/cloudinary.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/apiError.js";
 import fs from "fs";
 
 export const applyAsLawyer = async (req, res, next) => {
@@ -175,3 +177,50 @@ export const getVerifiedLawyers = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const acceptLawyerRequest = asyncHandler(async (req, res) => {
+  const lawyerProfileId = req.params.id;
+
+  const userIdObject = await LawyerProfile.findById(lawyerProfileId).select('user');
+  const userId=userIdObject.user;
+  if (!userId) {
+    throw new ApiError(404, "Lawyer profile not found");
+  }
+  console.log("UserId",userId);
+  const user=await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  user.isLawyer = "yes";
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Lawyer request accepted",
+  });
+});
+
+export const declineLawyerRequest = asyncHandler(async (req, res) => {
+  const lawyerProfileId = req.params.id;
+
+  const userIdObject = await LawyerProfile.findById(lawyerProfileId).select('user');
+  const userId=userIdObject.user;
+  if (!userId) {
+    throw new ApiError(404, "Lawyer profile not found");
+  }
+  await LawyerProfile.deleteOne({user:userId});
+  const user=await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  user.isLawyer = "no";
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Lawyer request rejected",
+  });
+});
