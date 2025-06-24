@@ -2,7 +2,7 @@ import fs from "fs";
 import pdf from "pdf-parse";
 import { uploadPdfToCloudinary } from "../utils/cloudinary.js";
 import { PdfDocument } from "../models/pdf.model.js";
-import { summarizePdfFile } from "./summarize.controller.js";
+import { summarizePdfFile } from "./home.controller.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";

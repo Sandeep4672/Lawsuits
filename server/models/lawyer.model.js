@@ -29,6 +29,11 @@ const lawyerProfileSchema = new Schema(
       required: true,
       unique: true,
     },
+    isLawyer: {
+      type: String,
+      enum: ["no", "pending", "yes"],
+      default: "no",
+    },
     practiceAreas: {
       type: [String],
       required: true,
@@ -41,10 +46,10 @@ const lawyerProfileSchema = new Schema(
       type: String,
     },
     proofFile: {
-  type: [String], 
-  required: true,
-}
-,
+      type: [String],
+      required: true,
+    }
+    ,
   },
   { timestamps: true }
 );

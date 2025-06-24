@@ -66,6 +66,7 @@ export const applyAsLawyer = async (req, res, next) => {
       experience,
       sop,
       proofFile: proofUrls,
+      isLawyer: "pending",
     });
 
     await lawyerProfile.save();
@@ -148,35 +149,24 @@ export const getLawyerRequestById = async (req, res, next) => {
 
 
 
-export const getVerifiedLawyers = async (req, res, next) => {
+export const getAllLawyersList=asyncHandler(async (req, res) => {
   try {
-    const verifiedUsers = await User.find({ isLawyer: "yes" })
-      .select("_id fullName email phone isLawyer")
-      .sort({ createdAt: -1 });
-
-    const userIds = verifiedUsers.map((u) => u._id);
-
-    const lawyerProfiles = await LawyerProfile.find({ user: { $in: userIds } });
-
-    const verifiedLawyers = verifiedUsers.map((user) => {
-      const lawyerProfile = lawyerProfiles.find(
-        (lawyer) => lawyer.user.toString() === user._id.toString()
-      );
-      return {
-        ...user.toObject(),
-        lawyerProfile,
-      };
-    });
-
-    return res.status(200).json({
+    const lawyerProfiles = await LawyerProfile.find({ isLawyer:"yes" });
+    console.log("User Lawyers:", lawyerProfiles);
+  
+    res.status(200).json({
       success: true,
-      message: "Verified lawyers fetched successfully",
-      verifiedLawyers,
+      data: lawyerProfiles
     });
   } catch (error) {
-    next(error);
+    console.error("Error fetching lawyers:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch lawyers"
+    });
   }
-};
+}) ;
+
 
 
 export const acceptLawyerRequest = asyncHandler(async (req, res) => {
@@ -223,4 +213,31 @@ export const declineLawyerRequest = asyncHandler(async (req, res) => {
     success: true,
     message: "Lawyer request rejected",
   });
+});
+
+export const getLawyerProfileById = asyncHandler(async (req, res) => {
+  const lawyerId = req.params.id;
+
+  try {
+    const lawyerProfile = await LawyerProfile.findOne({ _id: lawyerId });
+
+    if (!lawyerProfile) {
+      return res.status(404).json({
+        success: false,
+        message: "Lawyer profile not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: lawyerProfile,
+    });
+  } catch (error) {
+    console.error("Error fetching lawyer profile:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server Error: Unable to fetch lawyer profile",
+      error: error.message,
+    });
+  }
 });
