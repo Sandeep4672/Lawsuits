@@ -21,24 +21,34 @@ export default function LawyerDetail() {
   }, [id, lawyer]);
 
   const handleStatusUpdate = async (newStatus) => {
-    setActionLoading(true);
-    try {
-      const res = await axios.put(
-        `http://localhost:8000/admin/lawyer-status/${id}`,
-        { isLawyer: newStatus },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (res.status === 200) {
-        setLawyer((prev) => ({ ...prev, isLawyer: newStatus }));
+  setActionLoading(true);
+  try {
+    const endpoint =
+      newStatus === "accept"
+        ? `http://localhost:8000/admin/lawyer-request/${id}/accept`
+        : `http://localhost:8000/admin/lawyer-request/${id}/reject`;
+
+    const token = localStorage.getItem("token");
+    const res = await axios.patch(
+      endpoint,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } catch (err) {
-      console.error("Failed to update lawyer status", err);
-    } finally {
-      setActionLoading(false);
-    }
-  };
+    );
+
+    setLawyer((prev) => ({
+      ...prev,
+      isLawyer: newStatus === "accept" ? "yes" : "no",
+    }));
+  } catch (err) {
+    console.error("Failed to update lawyer status", err);
+  } finally {
+    setActionLoading(false);
+  }
+};
 
   if (!lawyer) return <div className="pt-32 text-center text-gray-600">Loading...</div>;
 
@@ -71,7 +81,7 @@ export default function LawyerDetail() {
           </div>
           <div className="flex justify-between">
             <span className="font-semibold">Practice Areas:</span>
-            <span>{lawyer.practiceAreas}</span>
+            <span>{Array.isArray(lawyer.practiceAreas) ? lawyer.practiceAreas.join(", ") : lawyer.practiceAreas}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold">Experience:</span>
@@ -79,7 +89,7 @@ export default function LawyerDetail() {
           </div>
           <div className="flex justify-between">
             <span className="font-semibold">Application Status:</span>
-            <span className={`font-bold animate-pulse ${lawyer.isLawyer === 'approved' ? 'text-green-600' : lawyer.isLawyer === 'rejected' ? 'text-red-600' : 'text-yellow-600'}`}>
+            <span className={`font-bold animate-pulse ${lawyer.isLawyer === 'yes' ? 'text-green-600' : lawyer.isLawyer === 'no' ? 'text-red-600' : 'text-yellow-600'}`}>
               {lawyer.isLawyer || "pending"}
             </span>
           </div>
@@ -89,15 +99,15 @@ export default function LawyerDetail() {
         
           <div className="mt-8 flex gap-4 justify-center">
             <button
-              disabled={actionLoading}
-              onClick={() => handleStatusUpdate("approved")}
+              disabled={actionLoading || lawyer.isLawyer === 'yes'}
+              onClick={() => handleStatusUpdate("accept")}
               className="px-6 py-2 cursor-pointer bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition"
             >
-              Approve
+              Accept
             </button>
             <button
-              disabled={actionLoading}
-              onClick={() => handleStatusUpdate("rejected")}
+              disabled={actionLoading || lawyer.isLawyer === 'no'}
+              onClick={() => handleStatusUpdate("reject")}
               className="px-6 py-2 cursor-pointer bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 transition"
             >
               Reject

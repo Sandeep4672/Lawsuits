@@ -20,6 +20,8 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import VerifiedLawyer from "./pages/Admin/VerifiedLawyer";
 import LawyerRequests from "./pages/Admin/LawyerRequest";
 import LawyerDetail from "./pages/Admin/LawyerDetails";
+import VerifiedLawyerDetails from "./pages/Admin/VerifiedLawerProfile";
+import AddCase from "./pages/Admin/AddCase";
 export default function App() {
   return (
     <AuthProvider>
@@ -43,6 +45,9 @@ export default function App() {
           <Route path="/admin/lawyers" element={<VerifiedLawyer/>}/>
           <Route path="/admin/lawyer-requests" element={<LawyerRequests/>}/>
           <Route path="/admin/lawyer/:id" element={<LawyerDetail/>}/>
+          <Route path="/admin/verified-lawyer/:id" element={<VerifiedLawyerDetails/>}/>
+          <Route path="/admin/add-case" element={<AddCase/>}/>
+          {/* Catch-all route for 404 Not Found */}
           <Route path="*" element={<NotFound/>}/>
         </Routes>
       </BrowserRouter>

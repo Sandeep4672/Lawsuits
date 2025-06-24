@@ -24,7 +24,7 @@ export default function DocumentSummarization() {
     formData.append("pdf", file);
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:8000/fn/summarize", formData, {
+      const res = await axios.post("http://localhost:8000/home/summarize", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
