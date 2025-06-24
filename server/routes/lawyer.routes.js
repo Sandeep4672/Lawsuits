@@ -1,10 +1,26 @@
 import { Router } from "express";
-import { applyAsLawyer, getLawyerProfile } from "../controllers/lawyer.controller.js";
+import {
+    signupLawyer,
+    
+} from "../controllers/lawyer.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { isVerifiedLawyer } from "../middlewares/isLawyer.middleware.js";
 const router = Router();
 
-router.post("/apply",verifyJWT,    upload.array("proofFile", 5), applyAsLawyer);
-router.get("/profile/:id",verifyJWT,isVerifiedLawyer, getLawyerProfile);
+
+router.post("/signup", verifyJWT, upload.array("proofFile", 5), signupLawyer);
+
+// router.route("/send-otp").post(sendOtp);
+
+
+// router.route("/login").get(getLoginPage);
+// router.route("/login").post(loginLawyer);
+
+// router.route("/logout").post(verifyJWT, logoutLawyer);
+
+// router.route("/change-password").post(verifyJWT, changeCurrentPassword);
+
+
+// router.get("/profile/:id", verifyJWT, isVerifiedLawyer, getLawyerProfile);
 export default router;

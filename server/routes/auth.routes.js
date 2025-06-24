@@ -25,4 +25,5 @@ router.route("/logout").post(verifyJWT, logoutUser);
 
 router.route("/change-password").post(verifyJWT, changeCurrentPassword);
 
+
 export default router;

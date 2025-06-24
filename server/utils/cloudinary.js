@@ -9,15 +9,16 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET_KEY,
 });
 
-export const uploadPdfToCloudinary = async (filePath) => {
+export const uploadPdfToCloudinary = async (filePath, folder = "Lawsuits") => {
   const result = await cloudinary.uploader.upload(filePath, {
     resource_type: "raw",
-    folder: "Lawsuits",
+    folder, 
   });
   console.log("Cloudinary upload result:", result);
   fs.unlinkSync(filePath);
   return result;
 };
+
 
 export const deletePdfFromCloudinary = async (publicId) => {
   await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });

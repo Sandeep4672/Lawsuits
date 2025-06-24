@@ -23,11 +23,6 @@ const userSchema = new Schema(
         refreshToken: {
             type: String,
         },
-        isLawyer: {
-            type: String,
-            enum: ["no", "pending", "yes"],
-            default: "no",
-        },
         isAdmin: {
             type: Boolean,
             default: false,
@@ -38,19 +33,16 @@ const userSchema = new Schema(
     { timestamps: true }
 );
 
-// Hash password before saving
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });
 
-// Compare password
 userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 };
 
-// Generate access token
 userSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {

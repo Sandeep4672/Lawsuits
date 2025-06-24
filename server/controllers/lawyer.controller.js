@@ -1,31 +1,31 @@
-import { User } from "../models/user.model.js";
-import { LawyerProfile } from "../models/lawyer.model.js";
+import { LawyerRequest } from "../models/lawyerRequest.model.js";
+import { Lawyer } from "../models/lawyer.model.js";
 import { uploadPdfToCloudinary } from "../utils/cloudinary.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import fs from "fs";
 
-export const applyAsLawyer = async (req, res, next) => {
+export const signupLawyer = async (req, res, next) => {
   try {
-    const userId = req.user._id;
     const {
-      fullLawyerName,
-      professionalEmail,
+      fullName,
+      email,
       phone,
       barId,
       practiceAreas,
       experience,
       sop,
+      password
     } = req.body;
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (user.isLawyer === "yes") {
+    const existingLawyer = await Lawyer.findOne({ email });
+    if (existingLawyer) {
       return res.status(400).json({ message: "Already a verified lawyer" });
     }
 
-    if (user.isLawyer === "pending") {
+    const existingRequest = await LawyerRequest.findOne({ email });
+    if (existingRequest) {
       return res.status(400).json({ message: "Application already pending" });
     }
 
@@ -35,9 +35,8 @@ export const applyAsLawyer = async (req, res, next) => {
       for (const file of req.files) {
         const result = await uploadPdfToCloudinary(file.path, "lawyers/proof");
         proofUrls.push(result.secure_url);
-
         if (fs.existsSync(file.path)) {
-          fs.unlinkSync(file.path); 
+          fs.unlinkSync(file.path);
         }
       }
     } else {
@@ -45,102 +44,111 @@ export const applyAsLawyer = async (req, res, next) => {
     }
 
     let parsedPracticeAreas = [];
-
     try {
       if (typeof practiceAreas === "string") {
         parsedPracticeAreas = JSON.parse(practiceAreas);
       } else if (Array.isArray(practiceAreas)) {
         parsedPracticeAreas = practiceAreas;
       }
-    } catch (err) {
+    } catch {
       parsedPracticeAreas = [practiceAreas];
     }
 
-    const lawyerProfile = new LawyerProfile({
-      user: user._id,
-      fullLawyerName,
-      professionalEmail,
+    const lawyerRequest = new LawyerRequest({
+      fullName,
+      email,
+      password, 
       phone,
       barId,
       practiceAreas: parsedPracticeAreas,
       experience,
       sop,
       proofFile: proofUrls,
-      isLawyer: "pending",
     });
 
-    await lawyerProfile.save();
-
-    user.isLawyer = "pending";
-    await user.save();
+    await lawyerRequest.save();
 
     return res.status(201).json({
-      message: "Lawyer application submitted successfully",
-      lawyerProfile,
+      message: "Lawyer request submitted successfully",
+      lawyerRequest,
     });
   } catch (error) {
     next(error);
   }
 };
 
-export const getLawyerProfile = async (req, res, next) => {
-  try {
-    const userId = req.params.id;
+const loginLawyer = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
 
-    const user = await User.findById(userId).select("fullName email isLawyer");
-
-    if (!user || user.isLawyer !== "yes") {
-      return res.status(404).json({ message: "Verified lawyer not found" });
+    if (!email || !password) {
+        throw new ApiError(400, "Email and password are required");
     }
 
-    const profile = await LawyerProfile.findOne({ user: userId });
-
-    if (!profile) {
-      return res.status(404).json({ message: "Lawyer profile not found" });
+    const lawyer = await Lawyer.findOne({ email });
+    if (!lawyer) {
+        throw new ApiError(404, "User not found");
     }
 
-    return res.status(200).json({
-      user,
-      profile,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+    const isPasswordValid = await lawyer.isPasswordCorrect(password);
+    if (!isPasswordValid) {
+        throw new ApiError(401, "Invalid password");
+    }
 
-export const getPendingLawyers = async (req, res, next) => {
+    const accessToken = await lawyer.generateAccessToken();
+    const refreshToken = await lawyer.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    await lawyer.save({ validateBeforeSave: false });
+
+    const cookieOptions = {
+        httpOnly: true,
+        secure: true, 
+        sameSite: "strict",
+    };
+
+    res.cookie("accessToken", accessToken, cookieOptions);
+    res.cookie("refreshToken", refreshToken, cookieOptions);
+
+    const lawyerData = await Lawyer.findById(lawyer._id).select("-password -refreshToken");
+    console.log("userdata-",lawyerData);
+    return res.status(200).json(
+        
+        new ApiResponse(200, { user: lawyerData, accessToken }, "Login successful")
+    );
+});
+
+export const getAllLawyersRequest = asyncHandler(async (req, res) => {
   try {
-    const pendingUsers = await User.find({ isLawyer: "pending" }).select("_id");
+    const lawyerRequests = await LawyerRequest.find().select("-password");
+    console.log("Lawyers Requests:", lawyerRequests);
 
-    const userIds = pendingUsers.map((u) => u._id);
-
-    const lawyerProfiles = await LawyerProfile.find({ user: { $in: userIds } })
-      .populate("user", "fullName email phone isLawyer") 
-      .sort({ createdAt: -1 });
-
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
-      message: "Pending lawyers fetched successfully",
-      lawyerProfiles,
+      data: lawyerRequests,
     });
   } catch (error) {
-    next(error);
+    console.error("Error fetching lawyer requests:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch lawyer requests",
+    });
   }
-};
+});
 
 
 export const getLawyerRequestById = async (req, res, next) => {
   try {
-    const lawyerProfileId = req.params.id;
+    const requestId = req.params.id;
 
-    const profile = await LawyerProfile.findById(lawyerProfileId);
+    const request = await LawyerRequest.findById(requestId).select("-password"); // exclude password
 
-    if (!profile) {
-      return res.status(404).json({ message: "Lawyer profile not found" });
+    if (!request) {
+      return res.status(404).json({ message: "Lawyer request not found" });
     }
-  
+
     return res.status(200).json({
-      profile,
+      success: true,
+      data: request,
     });
   } catch (error) {
     next(error);
@@ -149,88 +157,90 @@ export const getLawyerRequestById = async (req, res, next) => {
 
 
 
-export const getAllLawyersList=asyncHandler(async (req, res) => {
+export const getAllLawyersList = asyncHandler(async (req, res) => {
   try {
-    const lawyerProfiles = await LawyerProfile.find({ isLawyer:"yes" });
-    console.log("User Lawyers:", lawyerProfiles);
-  
+    const lawyers = await Lawyer.find().select("-password -refreshToken");
+    console.log("Verified Lawyers:", lawyers);
+
     res.status(200).json({
       success: true,
-      data: lawyerProfiles
+      data: lawyers,
     });
   } catch (error) {
     console.error("Error fetching lawyers:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch lawyers"
+      message: "Failed to fetch lawyers",
     });
   }
-}) ;
+});
 
 
 
 export const acceptLawyerRequest = asyncHandler(async (req, res) => {
-  const lawyerProfileId = req.params.id;
+  const requestId = req.params.id;
 
-  const userIdObject = await LawyerProfile.findById(lawyerProfileId).select('user');
-  const userId=userIdObject.user;
-  if (!userId) {
-    throw new ApiError(404, "Lawyer profile not found");
-  }
-  console.log("UserId",userId);
-  const user=await User.findById(userId);
-  if (!user) {
-    throw new ApiError(404, "User not found");
+  const lawyerRequest = await LawyerRequest.findById(requestId).select("-refreshToken"); 
+  if (!lawyerRequest) {
+    throw new ApiError(404, "Lawyer request not found");
   }
 
-  user.isLawyer = "yes";
-  await user.save();
+  const lawyer = new Lawyer({
+    fullName: lawyerRequest.fullName,
+    email: lawyerRequest.email,
+    password: lawyerRequest.password, 
+    phone: lawyerRequest.phone,
+    barId: lawyerRequest.barId,
+    practiceAreas: lawyerRequest.practiceAreas,
+    experience: lawyerRequest.experience,
+    sop: lawyerRequest.sop,
+    proofFile: lawyerRequest.proofFile,
+  });
+
+  await lawyer.save();
+
+  await lawyerRequest.deleteOne();
 
   res.status(200).json({
     success: true,
-    message: "Lawyer request accepted",
+    message: "Lawyer request accepted and verified lawyer created",
+    data: lawyer,
   });
 });
+
 
 export const declineLawyerRequest = asyncHandler(async (req, res) => {
-  const lawyerProfileId = req.params.id;
+  const requestId = req.params.id;
 
-  const userIdObject = await LawyerProfile.findById(lawyerProfileId).select('user');
-  const userId=userIdObject.user;
-  if (!userId) {
-    throw new ApiError(404, "Lawyer profile not found");
-  }
-  await LawyerProfile.deleteOne({user:userId});
-  const user=await User.findById(userId);
-  if (!user) {
-    throw new ApiError(404, "User not found");
+  const request = await LawyerRequest.findById(requestId);
+  if (!request) {
+    throw new ApiError(404, "Lawyer request not found");
   }
 
-  user.isLawyer = "no";
-  await user.save();
+  await LawyerRequest.findByIdAndDelete(requestId);
 
   res.status(200).json({
     success: true,
-    message: "Lawyer request rejected",
+    message: "Lawyer request rejected and removed",
   });
 });
 
-export const getLawyerProfileById = asyncHandler(async (req, res) => {
+export const getLawyerById = asyncHandler(async (req, res) => {
   const lawyerId = req.params.id;
 
   try {
-    const lawyerProfile = await LawyerProfile.findOne({ _id: lawyerId });
+    const lawyer = await Lawyer.findById(lawyerId);
 
-    if (!lawyerProfile) {
+    if (!lawyer) {
       return res.status(404).json({
         success: false,
-        message: "Lawyer profile not found",
+        message: "Lawyer not found",
       });
     }
 
     res.status(200).json({
       success: true,
-      data: lawyerProfile,
+      data: lawyer,
     });
   } catch (error) {
     console.error("Error fetching lawyer profile:", error.message);
