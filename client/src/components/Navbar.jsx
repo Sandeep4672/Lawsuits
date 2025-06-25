@@ -67,7 +67,7 @@ export default function Navbar() {
 
       {/* Hamburger for Mobile */}
       <div
-        className="md:hidden cursor-pointer text-2xl text-green-700 cursor-pointer"
+        className="md:hidden  text-2xl text-green-700 cursor-pointer"
         onClick={toggleMenu}
       >
         {menuOpen ? <FaTimes /> : <FaBars />}
