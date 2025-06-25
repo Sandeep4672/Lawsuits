@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { verifyUserJWT } from "../middlewares/authUser.middleware.js";
 const router = Router();
 
 import {
@@ -21,9 +21,9 @@ router.route("/send-otp").post(sendOtp);
 router.route("/login").get(getLoginPage);
 router.route("/login").post(loginUser);
 
-router.route("/logout").post(verifyJWT, logoutUser);
+router.route("/logout").post(verifyUserJWT, logoutUser);
 
-router.route("/change-password").post(verifyJWT, changeCurrentPassword);
+router.route("/change-password").post(verifyUserJWT, changeCurrentPassword);
 
 
 export default router;

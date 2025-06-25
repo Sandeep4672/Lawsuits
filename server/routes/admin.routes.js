@@ -2,12 +2,12 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 import { uploadPdfToDatabase } from "../controllers/admin.controller.js";
-import { verifyJWT, isAdmin } from "../middlewares/auth.middleware.js";
+import { verifyUserJWT, isAdmin } from "../middlewares/authUser.middleware.js";
 import { getAllLawyersList, getAllLawyersRequest, getLawyerById } from "../controllers/lawyer.controller.js";
 import { getLawyerRequestById } from "../controllers/lawyer.controller.js";
 import { acceptLawyerRequest, declineLawyerRequest } from "../controllers/lawyer.controller.js";
 const router = Router();
-router.use(verifyJWT, isAdmin);
+router.use(verifyUserJWT, isAdmin);
 
 
 router.route("/upload-pdf").post(upload.single("pdf"), uploadPdfToDatabase);
