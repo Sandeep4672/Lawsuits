@@ -6,23 +6,6 @@ import { sendEmail } from "../utils/emailService.js";
 import {ApiError} from "../utils/apiError.js";
 
 
-const getSignupPage = asyncHandler(async (req, res) => {
-    return res.json(
-        new ApiResponse(200, "Signup page loaded successfully", {
-            message: "Welcome to the signup page",
-        })
-    );
-});
-
-
-const getLoginPage = asyncHandler(async (req, res) => {
-    return res.json(
-        new ApiResponse(200, "Login page loaded successfully", {
-            message: "Welcome to the login page",
-        })
-    );
-});
-
 
 const sendOtp = asyncHandler(async (req, res) => {
     const { email } = req.body;
@@ -163,4 +146,4 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 });
 
 
-export { getSignupPage, getLoginPage, sendOtp, signupUser, loginUser, logoutUser, changeCurrentPassword };
+export { sendOtp, signupUser, loginUser, logoutUser, changeCurrentPassword };

@@ -12,7 +12,9 @@ const lawyerRequestSchema = new Schema(
       required: true,
       lowercase: true,
       trim: true,
-      unique: true, 
+      unique: true,
+      match: [/\S+@\S+\.\S+/, "Please provide a valid email"],
+
     },
     password: {
       type: String,
@@ -22,6 +24,8 @@ const lawyerRequestSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+      match: [/^[6-9]\d{9}$/, "Please provide a valid 10-digit phone number"],
+
     },
     barId: {
       type: String,

@@ -6,18 +6,19 @@ import { verifyUserJWT, isAdmin } from "../middlewares/authUser.middleware.js";
 import { getAllLawyersList, getAllLawyersRequest, getLawyerById } from "../controllers/lawyer.controller.js";
 import { getLawyerRequestById } from "../controllers/lawyer.controller.js";
 import { acceptLawyerRequest, declineLawyerRequest } from "../controllers/lawyer.controller.js";
+import { validateObjectId } from "../middlewares/validateObjectId.middleware.js";
 const router = Router();
 router.use(verifyUserJWT, isAdmin);
 
 
 router.route("/upload-pdf").post(upload.single("pdf"), uploadPdfToDatabase);
 router.route("/lawyer-requests").get(getAllLawyersRequest);
-router.route("/lawyer-request/:id").get(getLawyerRequestById);
+router.route("/lawyer-request/:id").get(validateObjectId,getLawyerRequestById);
 router.route("/lawyers").get(getAllLawyersList);
-router.route("/lawyer/:id").get(getLawyerById)
+router.route("/lawyer/:id").get(validateObjectId,getLawyerById)
 
-router.route("/lawyer-request/:id/accept").patch(acceptLawyerRequest);
+router.route("/lawyer-request/:id/accept").patch(validateObjectId,acceptLawyerRequest);
 
-router.route("/lawyer-request/:id/decline").delete(declineLawyerRequest);
+router.route("/lawyer-request/:id/decline").delete(validateObjectId,declineLawyerRequest);
 
 export default router;

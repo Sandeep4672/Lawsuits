@@ -15,6 +15,7 @@ const lawyerSchema = new Schema(
       lowercase: true,
       trim: true,
       unique: true,
+      match: [/\S+@\S+\.\S+/, "Please provide a valid email"],
     },
     password: {
       type: String,
@@ -24,6 +25,7 @@ const lawyerSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+      match: [/^[6-9]\d{9}$/, "Please provide a valid 10-digit phone number"],
     },
     barId: {
       type: String,
@@ -68,7 +70,7 @@ lawyerSchema.methods.generateAccessToken = function () {
       _id: this._id,
       email: this.email,
       fullName: this.fullName,
-      role: "lawyer", // clearer distinction if needed
+      role: "lawyer", 
     },
     process.env.ACCESS_TOKEN_SECRET,
     {

@@ -9,7 +9,8 @@ export const verifyLawyerJWT = asyncHandler(async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    if (decoded?.role !== "lawyer") throw new ApiError(403, "Only lawyers can access this route");
+    if (decoded?.role !== "lawyer")
+      throw new ApiError(403, "Only lawyers can access this route");
 
     const lawyer = await Lawyer.findById(decoded._id).select("-password -refreshToken");
     if (!lawyer) throw new ApiError(401, "Lawyer not found");
@@ -17,6 +18,7 @@ export const verifyLawyerJWT = asyncHandler(async (req, res, next) => {
     req.user = lawyer;
     next();
   } catch (err) {
-    return next(new ApiError(401, err?.message || "Invalid or expired access token"));
+    console.warn("Lawyer JWT verification failed:", err.message);
+    return next(new ApiError(401, "Invalid or expired access token"));
   }
 });

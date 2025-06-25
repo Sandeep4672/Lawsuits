@@ -141,3 +141,38 @@ export const logoutLawyer = asyncHandler(async (req, res) => {
         new ApiResponse(200, null, "User logged out successfully")
     );
 });
+
+export const changeCurrentPassword = asyncHandler(async (req, res) => {
+    
+
+    const { oldPassword, newPassword, confPassword } = req.body;
+    if (!(newPassword === confPassword)) {
+        throw new ApiError(
+            400,
+            "New Password & Confirm Password do not match "
+        );
+    }
+
+    const lawyer = await Lawyer.findById(req.user?._id);
+    if (!lawyer) {
+        throw new ApiError(404, "User not found while changing password");
+    }
+
+    const isPasswordValid = await lawyer.isPasswordCorrect(oldPassword);
+    if (!isPasswordValid) {
+        throw new ApiError(401, "Invalid password while changing password");
+    }
+
+    lawyer.password = newPassword;
+    await lawyer.save({ validateBeforeSave: false });
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            {
+                lawyer,
+            },
+            "Password changed successfully"
+        )
+    );
+});
