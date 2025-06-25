@@ -15,7 +15,12 @@ const tools = [
     icon: <FaFileAlt size={32} />,
     path: "get-document-summary",
   },
-  
+   {
+    title:"Find a Lawyer",
+    description: "Connect with qualified lawyers for your legal needs.",
+    icon: <FaFileSignature size={32} />,
+    path:"/find-lawyers",
+  },
   {
     title: "Ved AI Legal Counsel",
     description: "SOTA Indian AI with multi-stage reasoning.",
@@ -40,6 +45,7 @@ const tools = [
     icon: <FaComments size={32} />,
     path: "/dashboard",
   },
+ 
 ];
 
 export default function DashboardTools() {

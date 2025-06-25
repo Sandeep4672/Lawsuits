@@ -65,11 +65,11 @@ export default function LawyerDetail() {
         <div className="space-y-5 text-lg text-gray-800">
           <div className="flex justify-between">
             <span className="font-semibold">Full Name:</span>
-            <span>{lawyer.fullLawyerName}</span>
+            <span>{lawyer.fullName}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold">Email:</span>
-            <span>{lawyer.professionalEmail}</span>
+            <span>{lawyer.email}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold">Phone:</span>

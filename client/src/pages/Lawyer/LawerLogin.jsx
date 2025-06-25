@@ -20,15 +20,11 @@ export default function LawyerLogin() {
         password,
       });
 
-      const { token, lawyer } = res.data;
+      const { accessToken, user } = res.data;
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("lawyerUser", JSON.stringify(lawyer));
-
-      if (lawyer.status === "pending") {
-        setMessage("⏳ Your verification is pending. We’ll notify you via email.");
-        return;
-      }
+      localStorage.setItem("token", accessToken);
+      localStorage.setItem("lawyerUser", JSON.stringify(user));
+      
 
       navigate("/lawyer-dashboard");
     } catch (err) {

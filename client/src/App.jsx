@@ -25,6 +25,7 @@ import LawyerSignup from "./pages/Lawyer/LawerSignup";
 import LawyerLogin from "./pages/Lawyer/LawerLogin";
 import LawerDashboard from "./pages/Lawyer/LawerDashboard";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import FindLawyer from "./pages/home/FindLawyer";
 export default function App() {
   return (
     <AuthProvider>
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/dashboard/get-document-summary" element={<ProtectedRoute><DocumentSummarization/></ProtectedRoute>}/>
+          <Route path="/find-lawyers" element={<ProtectedRoute><FindLawyer/></ProtectedRoute>}/>
           <Route path="/footer" element={<Footer/>}/>
           <Route path="/profile" element={<ProfilePage/>}/>
           <Route path="/500" element={<InternalServerError/>}/>
@@ -54,7 +56,7 @@ export default function App() {
           {/*Lawyer Routes*/}
           <Route path="/lawyer-signup" element={<LawyerSignup/>}/>
           <Route path="/lawyer-login" element={<LawyerLogin/>}/>
-          <Route path="/lawyer/dashboard" element={<LawerDashboard/>}/>
+          <Route path="/lawyer-dashboard" element={<LawerDashboard/>}/>
           {/* Catch-all route for 404 Not Found */}
           <Route path="*" element={<NotFound/>}/>
         </Routes>

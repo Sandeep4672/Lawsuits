@@ -21,7 +21,7 @@ export default function ProfilePage() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
+      const res = await axios.patch(
         "http://localhost:8000/auth/change-password",
         {
           user,
@@ -36,7 +36,7 @@ export default function ProfilePage() {
         }
       );
 
-      if (res.status === 200) {
+      if (res.status===200) {
         setMessage("Password updated successfully.");
         setCurrentPassword("");
         setConfirmPassword("");
@@ -44,7 +44,7 @@ export default function ProfilePage() {
         setSuccess(true);
       }
     } catch (err) {
-      setMessage("Failed to update password.");
+      setMessage(`Failed to update password. ${err.response?.data?.message || "Unknown error"}`);
     }
   };
   
@@ -97,7 +97,7 @@ export default function ProfilePage() {
               />
               <button
                 type="submit"
-                className="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-md"
+                className=" cursor-pointer w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-md"
               >
                 Update Password
               </button>
