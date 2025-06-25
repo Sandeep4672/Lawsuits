@@ -6,7 +6,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import ChangePassword from "./pages/auth/ChangePassword";
 import VerifyOtp from "./pages/auth/VerifyOtp";
 import Dashboard from "./pages/home/Dashboard";
-import { AuthProvider } from "./context/AuthContext"; // Adjust path if needed
+import { AuthProvider } from "./context/AuthContext"; 
 import DocumentSummarization from "./pages/AI/DocumentSummary";
 import Footer from "./components/Footer";
 import ProfilePage from "./components/User/ProfilePage";
@@ -15,19 +15,22 @@ import InternalServerError from "./pages/error/InternalServerError";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SearchResults from "./components/User/SearchResult";
 import CaseDetails from "./components/User/CaseDetail";
-import ApplyForLawyer from "./pages/Lawyer/ApplyForLawyer";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import VerifiedLawyer from "./pages/Admin/VerifiedLawyer";
 import LawyerRequests from "./pages/Admin/LawyerRequest";
 import LawyerDetail from "./pages/Admin/LawyerDetails";
 import VerifiedLawyerDetails from "./pages/Admin/VerifiedLawerProfile";
 import AddCase from "./pages/Admin/AddCase";
+import LawyerSignup from "./pages/Lawyer/LawerSignup";
+import LawyerLogin from "./pages/Lawyer/LawerLogin";
+import LawerDashboard from "./pages/Lawyer/LawerDashboard";
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />}/>
+          {/* Public Routes */}
           <Route path="/signup" element={<Signup />}/>
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -40,13 +43,17 @@ export default function App() {
           <Route path="/500" element={<InternalServerError/>}/>
           <Route path="/search-results" element={<SearchResults/>}/>
           <Route path="/case/:id" element={<CaseDetails />} />
-          <Route path="/apply-for-lawyer" element={<ApplyForLawyer/>}/>
+          {/* Protected Routes for Admin */}
           <Route path="/admin/dashboard" element={<AdminDashboard/>}/>
           <Route path="/admin/lawyers" element={<VerifiedLawyer/>}/>
           <Route path="/admin/lawyer-requests" element={<LawyerRequests/>}/>
           <Route path="/admin/lawyer/:id" element={<LawyerDetail/>}/>
           <Route path="/admin/verified-lawyer/:id" element={<VerifiedLawyerDetails/>}/>
           <Route path="/admin/add-case" element={<AddCase/>}/>
+          {/*Lawyer Routes*/}
+          <Route path="/lawyer-signup" element={<LawyerSignup/>}/>
+          <Route path="/lawyer-login" element={<LawyerLogin/>}/>
+          <Route path="/lawyer/dashboard" element={<LawerDashboard/>}/>
           {/* Catch-all route for 404 Not Found */}
           <Route path="*" element={<NotFound/>}/>
         </Routes>
