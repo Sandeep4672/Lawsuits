@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import InputField from "../../components/InputFIeld"; 
-
+import Navbar from "../../components/Navbar"
 export default function LawyerSignup() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -65,7 +65,9 @@ export default function LawyerSignup() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-200 to-blue-100 px-4 py-16">
+    <><Navbar>
+   </Navbar>
+    <div className=" pt-30 min-h-screen bg-gradient-to-br from-blue-200 to-blue-100 px-4 py-16">
       <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8">
         <h2 className="text-3xl font-bold text-blue-700 mb-6 text-center">
           🧑‍⚖️ Lawyer Signup
@@ -169,5 +171,6 @@ export default function LawyerSignup() {
         </form>
       </div>
     </div>
+    </>
   );
 }

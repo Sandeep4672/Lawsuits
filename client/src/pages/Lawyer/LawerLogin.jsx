@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import InputField from "../../components/InputFIeld";
-
+import Navbar from "../../components/Navbar";
 export default function LawyerLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,7 +39,10 @@ export default function LawyerLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-200 to-blue-100 flex items-center justify-center px-4">
+    <>
+    <Navbar/>
+   
+    <div className="pt-24 min-h-screen bg-gradient-to-br from-blue-200 to-blue-100 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white p-8 shadow-xl rounded-2xl">
         <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
           🧑‍⚖️ Lawyer Login
@@ -89,5 +92,6 @@ export default function LawyerLogin() {
         </div>
       </div>
     </div>
+     </>
   );
 }

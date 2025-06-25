@@ -30,18 +30,21 @@ export function AuthProvider({ children }) {
   // Logout function
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setIsLoggedIn(false);
     setUser(null);
   };
 
   // Login function (call this after successful login)
-  const login = (token) => {
+  const login = (token,user) => {
     localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
     setIsLoggedIn(true);
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       const userName = payload.fullName || payload.name || "User";
        const isLawyer = payload.isLawyer || "no";
+       
       setUser({ ...payload, fullName: userName ,isLawyer});
     } catch {
       setUser({ fullName: "User" ,isLawyer:"no"});

@@ -24,6 +24,7 @@ import AddCase from "./pages/Admin/AddCase";
 import LawyerSignup from "./pages/Lawyer/LawerSignup";
 import LawyerLogin from "./pages/Lawyer/LawerLogin";
 import LawerDashboard from "./pages/Lawyer/LawerDashboard";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 export default function App() {
   return (
     <AuthProvider>
@@ -44,12 +45,12 @@ export default function App() {
           <Route path="/search-results" element={<SearchResults/>}/>
           <Route path="/case/:id" element={<CaseDetails />} />
           {/* Protected Routes for Admin */}
-          <Route path="/admin/dashboard" element={<AdminDashboard/>}/>
-          <Route path="/admin/lawyers" element={<VerifiedLawyer/>}/>
-          <Route path="/admin/lawyer-requests" element={<LawyerRequests/>}/>
-          <Route path="/admin/lawyer/:id" element={<LawyerDetail/>}/>
-          <Route path="/admin/verified-lawyer/:id" element={<VerifiedLawyerDetails/>}/>
-          <Route path="/admin/add-case" element={<AddCase/>}/>
+          <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminDashboard/></AdminProtectedRoute>}/>
+          <Route path="/admin/lawyers" element={<AdminProtectedRoute><VerifiedLawyer/></AdminProtectedRoute>}/>
+          <Route path="/admin/lawyer-requests" element={<AdminProtectedRoute><LawyerRequests/></AdminProtectedRoute>}/>
+          <Route path="/admin/lawyer/:id" element={<AdminProtectedRoute><LawyerDetail/></AdminProtectedRoute>}/>
+          <Route path="/admin/verified-lawyer/:id" element={<AdminProtectedRoute><VerifiedLawyerDetails/></AdminProtectedRoute>}/>
+          <Route path="/admin/add-case" element={<AdminProtectedRoute><AddCase/></AdminProtectedRoute>}/>
           {/*Lawyer Routes*/}
           <Route path="/lawyer-signup" element={<LawyerSignup/>}/>
           <Route path="/lawyer-login" element={<LawyerLogin/>}/>

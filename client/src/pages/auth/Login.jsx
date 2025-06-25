@@ -36,7 +36,7 @@ export default function Login() {
         // we can save token to localStorage here if returned
         // localStorage.setItem("token", res.data.token);
         
-        login(res.data.data.accessToken);
+        login(res.data.data.accessToken,res.data.data.user);
         if(res.data.data.user?.isAdmin)
         {
           navigate("/admin/dashboard");
