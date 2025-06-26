@@ -47,7 +47,7 @@ import lawyerRouter from "./routes/lawyer.routes.js";
 
 app.use("/admin", adminRouter);
 app.use("/auth", authRouter);
-app.use("/home", homeRouter);
+app.use("/user", homeRouter);
 app.use("/search", searchRouter);
 app.use("/lawyer", lawyerRouter);
 

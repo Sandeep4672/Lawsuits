@@ -3,6 +3,11 @@ import pdf from "pdf-parse";
 import { callOpenRouter } from "../utils/openAIRouter.js";
 import { extractLegalTerms } from "../utils/extractLegalTerms.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { ConnectionRequest } from "../models/connectionRequest.model.js";
+import { Lawyer } from "../models/lawyer.model.js";
+import { ApiError } from "../utils/apiError.js";
+import { ApiResponse } from "../utils/apiResponse.js";
+import { uploadPdfToCloudinary } from "../utils/cloudinary.js";
 
 
 export const summarizePdfFile = async (filePath) => {
@@ -18,21 +23,69 @@ export const summarizePdfFile = async (filePath) => {
   return { summary, legalTerms };
 };
 
-export const summarizePDF = async (req, res) => {
+export const summarizePDF = asyncHandler(async (req, res) => {
   const file = req.file;
   if (!file) return res.status(400).json({ error: "No file uploaded" });
 
   try {
     const { summary, legalTerms } = await summarizePdfFile(file.path);
-    fs.unlinkSync(file.path); 
+    fs.unlinkSync(file.path);
 
     res.json({ summary, legalTerms });
   } catch (error) {
     console.error("Error in summarizePDF:", error);
     res.status(500).json({ error: error.message || "Something went wrong" });
   }
-};
+});
 
+
+export const sendConnectionRequest = asyncHandler(async (req, res) => {
+  const lawyerId = req.params.id;
+  const clientId = req.user._id;
+
+  const { subject, message } = req.body;
+  const files = req.files || [];
+
+  if (!subject || subject.trim().length < 5) {
+    throw new ApiError(400, "Subject is required and must be at least 5 characters");
+  }
+
+  const lawyer = await Lawyer.findById(lawyerId);
+  if (!lawyer) {
+    throw new ApiError(404, "Lawyer not found");
+  }
+
+  const existing = await ConnectionRequest.findOne({
+    client: clientId,
+    lawyer: lawyerId,
+  });
+
+  if (existing) {
+    throw new ApiError(409, "You already have an exisiting connection request");
+  }
+
+  const uploadedDocs = [];
+  for (const file of files) {
+    const uploaded = await uploadPdfToCloudinary(file.path);
+    uploadedDocs.push({
+      public_id: uploaded.public_id,
+      secure_url: uploaded.secure_url,
+      original_filename: uploaded.original_filename,
+    });
+  }
+
+  const newRequest = await ConnectionRequest.create({
+    client: clientId,
+    lawyer: lawyerId,
+    subject,
+    message,
+    documents: uploadedDocs,
+  });
+
+  res.status(201).json(
+    new ApiResponse(201, newRequest, "Connection request sent successfully")
+  );
+});
 
 
 

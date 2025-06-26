@@ -3,7 +3,7 @@ import { Lawyer } from "../models/lawyer.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
-
+import { ConnectionRequest } from "../models/connectionRequest.model.js";
 
 
 export const getAllLawyersRequest = asyncHandler(async (req, res) => {
@@ -115,7 +115,7 @@ export const declineLawyerRequest = asyncHandler(async (req, res) => {
 });
 
 export const getLawyerById = asyncHandler(async (req, res) => {
-  const lawyerId = req.params.id;
+  const lawyerId = req.user._id;
 
   try {
     const lawyer = await Lawyer.findById(lawyerId);
@@ -139,4 +139,85 @@ export const getLawyerById = asyncHandler(async (req, res) => {
       error: error.message,
     });
   }
+});
+
+
+export const getAllConnectionRequests = asyncHandler(async (req, res) => {
+  const lawyerId = req.user._id;
+
+  const requests = await ConnectionRequest.find({ lawyer: lawyerId, status: "pending" })
+    .populate("client", "fullName email")
+    .sort({ createdAt: -1 });
+
+  res.status(200).json(
+    new ApiResponse(200, requests, "Pending connection requests fetched successfully")
+  );
+});
+
+
+export const acceptConnectionRequest = asyncHandler(async (req, res) => {
+  const requestId = req.params.id;
+  const lawyerId = req.user._id;
+
+  const request = await ConnectionRequest.findOne({ _id: requestId, lawyer: lawyerId });
+
+  if (!request) {
+    throw new ApiError(404, "Connection request not found");
+  }
+
+  if (request.status === "accepted") {
+    throw new ApiError(400, "Request already accepted");
+  }
+
+  request.status = "accepted";
+  await request.save();
+
+  // const existingThread = await ChatThread.findOne({
+  //   client: request.client,
+  //   lawyer: request.lawyer,
+  //   caseRequest: request._id,
+  // });
+
+  // if (!existingThread) {
+  //   await ChatThread.create({
+  //     client: request.client,
+  //     lawyer: request.lawyer,
+  //     caseRequest: request._id,
+  //   });
+  // }
+
+  res.status(200).json(new ApiResponse(200, request, "Connection request accepted"));
+});
+
+export const rejectConnectionRequest = asyncHandler(async (req, res) => {
+  const requestId = req.params.id;
+  const lawyerId = req.user._id;
+
+  const request = await ConnectionRequest.findOneAndDelete({
+    _id: requestId,
+    lawyer: lawyerId,
+    status: { $ne: "accepted" },
+  });
+
+  if (!request) {
+    throw new ApiError(404, "Request not found or already accepted");
+  }
+
+  res.status(200).json(new ApiResponse(200, null, "Connection request rejected and deleted"));
+});
+
+
+export const getAllConnections = asyncHandler(async (req, res) => {
+  const lawyerId = req.user._id;
+
+  const acceptedConnections = await ConnectionRequest.find({
+    lawyer: lawyerId,
+    status: "accepted",
+  })
+    .populate("client", "fullName email")
+    .sort({ updatedAt: -1 });
+
+  res.status(200).json(
+    new ApiResponse(200, acceptedConnections, "Accepted connections fetched successfully")
+  );
 });
