@@ -88,4 +88,21 @@ export const sendConnectionRequest = asyncHandler(async (req, res) => {
 });
 
 
+export const getAllConnectedLawyers = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const connections = await ConnectionRequest.find({
+    user: userId,
+    status: "accepted",
+  }).populate({
+    path: "lawyer",
+    select: "fullLawyerName professionalEmail",
+    populate: {
+      path: "user",
+      select: "email",
+    },
+  });
+
+  res.status(200).json(connections);
+});
 

@@ -4,7 +4,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { ConnectionRequest } from "../models/connectionRequest.model.js";
-
+import { ChatThread } from "../models/chatThread.model.js";
 
 export const getAllLawyersRequest = asyncHandler(async (req, res) => {
   try {
@@ -172,21 +172,25 @@ export const acceptConnectionRequest = asyncHandler(async (req, res) => {
   request.status = "accepted";
   await request.save();
 
-  // const existingThread = await ChatThread.findOne({
-  //   client: request.client,
-  //   lawyer: request.lawyer,
-  //   caseRequest: request._id,
-  // });
+  const existingThread = await ChatThread.findOne({
+    client: request.client,
+    lawyer: request.lawyer,
+    caseRequest: request._id,
+  });
 
-  // if (!existingThread) {
-  //   await ChatThread.create({
-  //     client: request.client,
-  //     lawyer: request.lawyer,
-  //     caseRequest: request._id,
-  //   });
-  // }
+  let chatThread = existingThread;
 
-  res.status(200).json(new ApiResponse(200, request, "Connection request accepted"));
+  if (!chatThread) {
+    chatThread = await ChatThread.create({
+      client: request.client,
+      lawyer: request.lawyer,
+      caseRequest: request._id,
+    });
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, { request, chatThread }, "Connection request accepted and chat enabled")
+  );
 });
 
 export const rejectConnectionRequest = asyncHandler(async (req, res) => {

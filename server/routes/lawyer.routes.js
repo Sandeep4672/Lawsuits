@@ -10,7 +10,6 @@ import { canAccessDashboard } from "../middlewares/dashboardAccess.middleware.js
 import { validateObjectId } from "../middlewares/validateObjectId.middleware.js";
 router.post("/signup", upload.array("proofFile", 5), signupLawyer);
 
-// router.route("/send-otp").post(sendOtp);
 router.get("/dashboard", verifyLawyerJWT, (req, res) => {
     res.status(200).
         json({
@@ -18,7 +17,6 @@ router.get("/dashboard", verifyLawyerJWT, (req, res) => {
         })
 })
 
-// router.route("/login").get(getLoginPage);
 router.route("/login").post(loginLawyer);
 
 router.route("/logout").post(verifyLawyerJWT, logoutLawyer);
@@ -35,5 +33,5 @@ router.patch("/connections/requests/:id/accept",verifyLawyerJWT,acceptConnection
 router.delete("/connections/requests/:id/reject",verifyLawyerJWT,rejectConnectionRequest);
 
 
-router.get("/connections",verifyLawyerJWT,getAllConnections);
+//router.get("/connections",verifyLawyerJWT,getAllConnections);
 export default router;

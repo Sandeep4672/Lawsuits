@@ -44,12 +44,14 @@ import authRouter from "./routes/auth.routes.js";
 import adminRouter from "./routes/admin.routes.js";
 import searchRouter from "./routes/search.routes.js";
 import lawyerRouter from "./routes/lawyer.routes.js";
+import chatRouter from "./routes/chat.routes.js";
 
 app.use("/admin", adminRouter);
 app.use("/auth", authRouter);
 app.use("/user", homeRouter);
 app.use("/search", searchRouter);
 app.use("/lawyer", lawyerRouter);
+app.use("",chatRouter);
 
 // 404 route
 app.use("*", (req, res) => {
