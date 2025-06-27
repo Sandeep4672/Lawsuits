@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState ,useContext} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import InputField from "../../components/InputFIeld";
 import Navbar from "../../components/Navbar";
+import { AuthContext } from "../../context/AuthContext";
 export default function LawyerLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-
+  const {login}= useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -19,13 +20,8 @@ export default function LawyerLogin() {
         email,
         password,
       });
-
-      const { accessToken, user } = res.data;
-
-      localStorage.setItem("token", accessToken);
-      localStorage.setItem("lawyerUser", JSON.stringify(user));
-      
-
+      const { accessToken, user } = res.data.data;
+      login(accessToken,user);
       navigate("/lawyer-dashboard");
     } catch (err) {
       setMessage(

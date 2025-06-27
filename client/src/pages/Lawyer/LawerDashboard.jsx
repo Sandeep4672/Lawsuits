@@ -70,7 +70,7 @@ export default function LawyerDashboard() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 max-w-6xl mx-auto">
-        <Link to="/lawyer/requests">
+        <Link to="/lawyer/connection-requests">
           <div className="bg-white shadow-lg hover:shadow-xl transition rounded-2xl p-6 text-center cursor-pointer border-t-4 border-blue-600 hover:scale-[1.05] transform duration-200">
             <h2 className="text-2xl font-bold text-blue-700">12</h2>
             <p className="text-gray-600 mt-1 font-medium">Pending Requests</p>

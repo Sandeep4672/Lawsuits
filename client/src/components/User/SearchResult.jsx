@@ -85,7 +85,7 @@ export default function SearchResults() {
             <button
               key={i}
               onClick={() => setPage(i + 1)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition duration-200 ${
+              className={`cursor-pointer px-4 py-2 rounded-md text-sm font-medium transition duration-200 ${
                 page === i + 1
                   ? "bg-green-700 text-white shadow-md"
                   : "bg-white border border-gray-300 hover:bg-green-100 text-gray-700"

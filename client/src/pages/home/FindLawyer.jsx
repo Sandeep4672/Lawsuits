@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
-
+import { useNavigate } from "react-router-dom";
 export default function FindLawyer() {
   const [lawyers, setLawyers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchLawyers = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/home/find-lawyers", {
+        const res = await axios.get("http://localhost:8000/user/find-lawyers", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -27,7 +27,9 @@ export default function FindLawyer() {
   }, []);
 
   const handleConnect = (lawyer) => {
-    alert(`Connect request sent to ${lawyer.fullName || lawyer.fullLawyerName}`);
+    navigate(`/lawyer-profile/${lawyer._id}`, {
+      state: { lawyer },
+    });
   };
 
   return (
@@ -52,12 +54,9 @@ export default function FindLawyer() {
               <thead className="bg-blue-100 text-blue-800 font-semibold">
                 <tr>
                   <th className="py-4 px-6">Name</th>
-                  <th className="py-4 px-6">Email</th>
-                  <th className="py-4 px-6">Phone</th>
                   <th className="py-4 px-6">Bar ID</th>
                   <th className="py-4 px-6">Practice Areas</th>
                   <th className="py-4 px-6">Experience</th>
-                  <th className="py-4 px-6">See Proof File</th>
                   <th className="py-4 px-6 text-center">Action</th>
                 </tr>
               </thead>
@@ -70,12 +69,7 @@ export default function FindLawyer() {
                     <td className="px-6 py-4 font-medium text-gray-800">
                       {lawyer.fullName }
                     </td>
-                    <td className="px-6 py-4 text-gray-600">
-                      {lawyer.email }
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">
-                      {lawyer.phone }
-                    </td>
+                    
                     <td className="px-6 py-4 text-gray-600">
                       {lawyer.barId }
                     </td>
@@ -89,26 +83,13 @@ export default function FindLawyer() {
                     <td className="px-6 py-4 text-gray-600">
                       {lawyer.experience} yrs
                     </td>
-                    <td className="px-6 py-4">
-                      {lawyer.proofFile ? (
-                        <a
-                          href={lawyer.proofFile}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-red-600 cursor-pointer"
-                        >
-                          View Proof
-                        </a>
-                      ) : (
-                        "N/A"
-                      )}
-                      </td>
+                    
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => handleConnect(lawyer)}
                         className=" cursor-pointer bg-green-600 hover:bg-green-800 text-white px-4 py-2 rounded-md transition font-semibold"
                       >
-                        Connect
+                        See Profile
                       </button>
                     </td>
                   </tr>

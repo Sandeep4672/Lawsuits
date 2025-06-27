@@ -26,6 +26,9 @@ import LawyerLogin from "./pages/Lawyer/LawerLogin";
 import LawerDashboard from "./pages/Lawyer/LawerDashboard";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import FindLawyer from "./pages/home/FindLawyer";
+import LawyerProfile from "./pages/home/LawyerProfile";
+import ConnectionRequestForm from "./pages/Chat/ConnectionRequestForm";
+import ConnectionRequests from "./pages/Lawyer/ConnectionRequests";
 export default function App() {
   return (
     <AuthProvider>
@@ -41,6 +44,9 @@ export default function App() {
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/dashboard/get-document-summary" element={<ProtectedRoute><DocumentSummarization/></ProtectedRoute>}/>
           <Route path="/find-lawyers" element={<ProtectedRoute><FindLawyer/></ProtectedRoute>}/>
+          <Route path="/lawyer-profile/:id" element={<ProtectedRoute><LawyerProfile/></ProtectedRoute>}/>
+          <Route path="/lawyer/request-connection" element={<ConnectionRequestForm/>}/>
+          <Route path="/lawyer/connection-requests" element={<ConnectionRequests/>}/>
           <Route path="/footer" element={<Footer/>}/>
           <Route path="/profile" element={<ProfilePage/>}/>
           <Route path="/500" element={<InternalServerError/>}/>
