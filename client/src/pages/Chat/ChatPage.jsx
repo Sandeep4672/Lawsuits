@@ -2,48 +2,57 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeftCircle } from "lucide-react";
+import { io } from "socket.io-client";
+
+const socket = io("ws://localhost:7000"); // Update if different
 
 export default function ChatPage() {
-  const { id } = useParams(); // thread ID
+  const { id } = useParams(); // Thread ID
   const navigate = useNavigate();
   const location = useLocation();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
-  const [chatWith, setChatWith] = useState(""); // name of other person
+  const [chatWith, setChatWith] = useState("");
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     setUserId(user?._id);
-  }, []);
+    if (user?._id) {
+      socket.emit("joinRoom", id); // Join thread room
+    }
+  }, [id]);
+
+  const fetchMessages = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      let res;
+      try {
+        res = await axios.get(`http://localhost:8000/threads/${id}/messages`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch {
+        res = await axios.get(`http://localhost:8000/lawyer/threads/${id}/messages`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+      setMessages(res.data.data || []);
+      const otherPerson =
+        location.state?.chatWith?.fullName ||
+        location.state?.chatWith?.fullLawyerName ||
+        "Chat Partner";
+      setChatWith(otherPerson);
+    } catch {
+      setMessages([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        let res;
-        try {
-          res = await axios.get(`http://localhost:8000/threads/${id}/messages`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-        } catch {
-          res = await axios.get(`http://localhost:8000/lawyer/threads/${id}/messages`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-        }
-        setMessages(res.data.data || []);
-        const otherPerson =
-          location.state?.chatWith?.fullName || location.state?.chatWith?.fullLawyerName || "Chat Partner";
-        setChatWith(otherPerson);
-      } catch {
-        setMessages([]);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchMessages();
   }, [id, location.state]);
 
@@ -51,47 +60,66 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!text.trim()) return;
-    try {
-      const token = localStorage.getItem("token");
-      try {
-        await axios.post(
-          `http://localhost:8000/threads/${id}/send`,
-          { content: text },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      } catch {
-        await axios.post(
-          `http://localhost:8000/lawyer/threads/${id}/send`,
-          { content: text },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+  useEffect(() => {
+    socket.on("receiveMessage", (msg) => {
+      if (msg.threadId === id) {
+        setMessages((prev) => [...prev, msg]);
       }
-      setText("");
-      const res = await axios.get(
-        `http://localhost:8000/threads/${id}/messages`,
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+      socket.emit("leaveRoom", id);
+    };
+  }, [id]);
+
+const handleSend = async (e) => {
+  e.preventDefault();
+  if (!text.trim()) return;
+
+  const messageData = { content: text };
+
+  try {
+    const token = localStorage.getItem("token");
+    let res;
+    try {
+      res = await axios.post(
+        `http://localhost:8000/threads/${id}/send`,
+        messageData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setMessages(res.data.data || []);
-    } catch {}
-  };
+    } catch {
+      res = await axios.post(
+        `http://localhost:8000/lawyer/threads/${id}/send`,
+        messageData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    }
+
+    const sentMessage = res.data.data;
+    socket.emit("sendMessage", { ...sentMessage, threadId: id });
+
+    setText("");
+  } catch (error) {
+    console.error("Sending failed", error);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-green-100 to-blue-100">
       <div className="max-w-2xl mx-auto w-full p-4 flex flex-col flex-1">
-        {/* Header with back and name */}
+        {/* Header */}
         <div className="flex items-center justify-between bg-white shadow-md p-4 rounded-t-xl mb-2">
           <button
             onClick={() => navigate(-1)}
-            className=" cursor-pointer flex items-center text-green-700 hover:text-green-900"
+            className="cursor-pointer flex items-center text-green-700 hover:text-green-900"
           >
             <ArrowLeftCircle className="w-6 h-6 mr-1" />
             <span className="font-medium">Back</span>
           </button>
           <h2 className="text-xl font-semibold text-green-700 truncate">{chatWith}</h2>
-          <div className="w-10"></div> {/* To balance flex space */}
+          <div className="w-10"></div>
         </div>
 
         {/* Messages */}
@@ -104,9 +132,7 @@ export default function ChatPage() {
             messages.map((msg) => (
               <div
                 key={msg._id}
-                className={`flex mb-3 ${
-                  msg.senderId === userId ? "justify-end" : "justify-start"
-                }`}
+                className={`flex mb-3 ${msg.senderId === userId ? "justify-end" : "justify-start"}`}
               >
                 <div
                   className={`px-4 py-2 max-w-xs rounded-xl shadow-sm break-words text-sm ${
