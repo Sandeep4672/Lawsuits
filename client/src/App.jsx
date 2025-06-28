@@ -29,6 +29,11 @@ import FindLawyer from "./pages/home/FindLawyer";
 import LawyerProfile from "./pages/home/LawyerProfile";
 import ConnectionRequestForm from "./pages/Chat/ConnectionRequestForm";
 import ConnectionRequests from "./pages/Lawyer/ConnectionRequests";
+import AcceptedConnection from "./pages/Lawyer/AcceptedConnection";
+//chat
+import UserThreads from "./pages/Chat/UserThread";
+import ChatPage from "./pages/Chat/ChatPage";
+import LawyerThreads from "./pages/Chat/LawyerThreads";
 export default function App() {
   return (
     <AuthProvider>
@@ -47,6 +52,7 @@ export default function App() {
           <Route path="/lawyer-profile/:id" element={<ProtectedRoute><LawyerProfile/></ProtectedRoute>}/>
           <Route path="/lawyer/request-connection" element={<ConnectionRequestForm/>}/>
           <Route path="/lawyer/connection-requests" element={<ConnectionRequests/>}/>
+          <Route path="/lawyer/accepted-connections" element={<AcceptedConnection/>}/>
           <Route path="/footer" element={<Footer/>}/>
           <Route path="/profile" element={<ProfilePage/>}/>
           <Route path="/500" element={<InternalServerError/>}/>
@@ -63,6 +69,10 @@ export default function App() {
           <Route path="/lawyer-signup" element={<LawyerSignup/>}/>
           <Route path="/lawyer-login" element={<LawyerLogin/>}/>
           <Route path="/lawyer-dashboard" element={<LawerDashboard/>}/>
+          { /* Chat Routes */}
+          <Route path="/chat/threads" element={<UserThreads/>}/>
+          <Route path="/chat/thread/:id" element={<ChatPage/>}/>
+          <Route path="/chat/lawyer/threads" element={<LawyerThreads/>}/>
           {/* Catch-all route for 404 Not Found */}
           <Route path="*" element={<NotFound/>}/>
         </Routes>

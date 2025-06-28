@@ -21,6 +21,7 @@ export default function LawyerLogin() {
         password,
       });
       const { accessToken, user } = res.data.data;
+      localStorage.setItem("lawyerId", user._id);
       login(accessToken,user);
       navigate("/lawyer-dashboard");
     } catch (err) {

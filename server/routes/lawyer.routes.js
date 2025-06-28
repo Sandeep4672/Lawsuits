@@ -34,4 +34,6 @@ router.delete("/connections/requests/:id/reject",verifyLawyerJWT,rejectConnectio
 
 
 //router.get("/connections",verifyLawyerJWT,getAllConnections);
+router.get("/connections/accepted",verifyLawyerJWT,getAllConnections);
+
 export default router;

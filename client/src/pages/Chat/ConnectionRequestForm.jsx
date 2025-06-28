@@ -7,6 +7,7 @@ export default function ConnectionRequestForm() {
   const { state } = useLocation();
   const lawyer = state?.lawyer;
   const navigate = useNavigate();
+  const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState("");
@@ -30,20 +31,24 @@ export default function ConnectionRequestForm() {
     try {
       const token = localStorage.getItem("token");
       const formData = new FormData();
-      formData.append("lawyer", lawyer._id);
+      formData.append("subject", subject);
       formData.append("message", message);
       if (file) formData.append("documents", file);
 
-      await axios.post("http://localhost:8000/user/connection-request", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      setStatus(" Request sent successfully!");
+      await axios.post(
+        `http://localhost:8000/user/connect/${lawyer._id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setStatus("Request sent successfully!");
       setTimeout(() => navigate(-1), 1500);
     } catch (err) {
-      setStatus(" Failed to send request.");
+      setStatus(err.response?.data?.message || "Failed to send request.");
     } finally {
       setLoading(false);
     }
@@ -60,6 +65,18 @@ export default function ConnectionRequestForm() {
           <h2 className="text-2xl font-bold text-green-800 mb-4">
             Request to Chat with {lawyer.fullName}
           </h2>
+          <div>
+            <label className="block font-medium mb-1">Subject</label>
+            <input
+              type="text"
+              className="w-full border border-gray-300 rounded px-3 py-2"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              required
+              minLength={5}
+              placeholder="Enter subject (at least 5 characters)"
+            />
+          </div>
           <div>
             <label className="block font-medium mb-1">Message</label>
             <textarea

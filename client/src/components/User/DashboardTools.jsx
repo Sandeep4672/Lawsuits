@@ -21,12 +21,19 @@ const tools = [
     icon: <FaFileSignature size={32} />,
     path:"/find-lawyers",
   },
-  {
-    title: "Ved AI Legal Counsel",
-    description: "SOTA Indian AI with multi-stage reasoning.",
-    icon: <FaRobot size={32} />,
-    path: "/dashboard",
-  },
+ 
+  // {
+  //   title: "Ved AI Legal Counsel",
+  //   description: "SOTA Indian AI with multi-stage reasoning.",
+  //   icon: <FaRobot size={32} />,
+  //   path: "/dashboard",
+  // },
+    {
+    title:"Messages with Lawer",
+    description: "Check your chat with lawers.",
+    icon: <FaComments size={32} />,
+    path:"/chat/threads",
+  },  
   {
     title: "Document OCR",
     description: "High-volume text extraction with multi-language support.",

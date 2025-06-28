@@ -23,9 +23,14 @@ export default function DocumentSummarization() {
     const formData = new FormData();
     formData.append("pdf", file);
     setLoading(true);
+
     try {
+      const token=localStorage.getItem("item");
       const res = await axios.post("http://localhost:8000/user/summarize", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data"
+          , Authorization: `Bearer ${token}` // include token for authentication
+         },
+
       });
 
       setSummary(res.data.summary);
