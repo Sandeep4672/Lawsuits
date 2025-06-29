@@ -4,10 +4,10 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeftCircle } from "lucide-react";
 import { io } from "socket.io-client";
 
-const socket = io("ws://localhost:7000"); // Update if different
+const socket = io("ws://localhost:7000"); // Change if needed
 
 export default function ChatPage() {
-  const { id } = useParams(); // Thread ID
+  const { id } = useParams(); // thread ID
   const navigate = useNavigate();
   const location = useLocation();
   const [messages, setMessages] = useState([]);
@@ -15,13 +15,14 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
   const [chatWith, setChatWith] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     setUserId(user?._id);
     if (user?._id) {
-      socket.emit("joinRoom", id); // Join thread room
+      socket.emit("joinRoom", id);
     }
   }, [id]);
 
@@ -35,9 +36,12 @@ export default function ChatPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
       } catch {
-        res = await axios.get(`http://localhost:8000/lawyer/threads/${id}/messages`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        res = await axios.get(
+          `http://localhost:8000/lawyer/threads/${id}/messages`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
       }
       setMessages(res.data.data || []);
       const otherPerson =
@@ -73,38 +77,47 @@ export default function ChatPage() {
     };
   }, [id]);
 
-const handleSend = async (e) => {
-  e.preventDefault();
-  if (!text.trim()) return;
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (!text.trim() && !selectedFile) return;
 
-  const messageData = { content: text };
-
-  try {
     const token = localStorage.getItem("token");
-    let res;
+    const headers = { Authorization: `Bearer ${token}` };
+
     try {
-      res = await axios.post(
-        `http://localhost:8000/threads/${id}/send`,
-        messageData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    } catch {
-      res = await axios.post(
-        `http://localhost:8000/lawyer/threads/${id}/send`,
-        messageData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      let res;
+
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        formData.append("message", text || selectedFile.name);
+
+        res = await axios.post(
+          `http://localhost:8000/threads/${id}/upload`,
+          formData,
+          { headers }
+        );
+      } else {
+        res = await axios.post(
+          `http://localhost:8000/threads/${id}/send`,
+          { content: text },
+          { headers }
+        );
+      }
+
+      const sentMessage = res.data.data;
+      socket.emit("sendMessage", { ...sentMessage, threadId: id });
+
+      setText("");
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Sending failed", error);
     }
+  };
 
-    const sentMessage = res.data.data;
-    socket.emit("sendMessage", { ...sentMessage, threadId: id });
-
-    setText("");
-  } catch (error) {
-    console.error("Sending failed", error);
-  }
-};
-
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-green-100 to-blue-100">
@@ -118,7 +131,9 @@ const handleSend = async (e) => {
             <ArrowLeftCircle className="w-6 h-6 mr-1" />
             <span className="font-medium">Back</span>
           </button>
-          <h2 className="text-xl font-semibold text-green-700 truncate">{chatWith}</h2>
+          <h2 className="text-xl font-semibold text-green-700 truncate">
+            {chatWith}
+          </h2>
           <div className="w-10"></div>
         </div>
 
@@ -132,7 +147,9 @@ const handleSend = async (e) => {
             messages.map((msg) => (
               <div
                 key={msg._id}
-                className={`flex mb-3 ${msg.senderId === userId ? "justify-end" : "justify-start"}`}
+                className={`flex mb-3 ${
+                  msg.senderId === userId ? "justify-end" : "justify-start"
+                }`}
               >
                 <div
                   className={`px-4 py-2 max-w-xs rounded-xl shadow-sm break-words text-sm ${
@@ -141,7 +158,29 @@ const handleSend = async (e) => {
                       : "bg-gray-100 text-gray-800 rounded-bl-none"
                   }`}
                 >
-                  <div>{msg.message}</div>
+                  {msg.message && <div>{msg.message}</div>}
+
+                  {msg.attachment?.secure_url && (
+                    <div className="mt-2">
+                      {msg.attachment.secure_url.match(/\.(jpe?g|png|gif|webp)$/i) ? (
+                        <img
+                          src={msg.attachment.secure_url}
+                          alt={msg.attachment.original_filename}
+                          className="max-w-full h-auto rounded-md"
+                        />
+                      ) : (
+                        <a
+                          href={msg.attachment.secure_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline text-blue-500"
+                        >
+                          📎 {msg.attachment.original_filename || "Download File"}
+                        </a>
+                      )}
+                    </div>
+                  )}
+
                   <div className="text-xs text-right mt-1 text-gray-400">
                     {new Date(msg.createdAt).toLocaleTimeString([], {
                       hour: "2-digit",
@@ -156,13 +195,26 @@ const handleSend = async (e) => {
         </div>
 
         {/* Send Box */}
-        <form onSubmit={handleSend} className="flex gap-3 items-center">
+        <form onSubmit={handleSend} className="flex gap-3 items-center mt-2">
           <input
             className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Type your message..."
           />
+          <input
+            type="file"
+            accept="image/*,.pdf,.doc,.docx"
+            onChange={handleFileChange}
+            className="hidden"
+            id="fileInput"
+          />
+          <label
+            htmlFor="fileInput"
+            className="cursor-pointer text-green-600 font-semibold"
+          >
+            📎
+          </label>
           <button
             type="submit"
             className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-semibold transition"
@@ -170,6 +222,12 @@ const handleSend = async (e) => {
             Send
           </button>
         </form>
+
+        {selectedFile && (
+          <div className="text-sm text-gray-600 mt-1 italic">
+            📎 {selectedFile.name}
+          </div>
+        )}
       </div>
     </div>
   );

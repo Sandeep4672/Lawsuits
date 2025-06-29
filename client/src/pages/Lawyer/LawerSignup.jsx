@@ -36,7 +36,7 @@ export default function LawyerSignup() {
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (key === "proofFile" && Array.isArray(value)) {
-        value.forEach((file) => data.append("files", file));
+        value.forEach((file) => data.append("proofFile", file));
       } else {
         data.append(key, value);
       }

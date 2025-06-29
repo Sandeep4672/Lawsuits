@@ -5,6 +5,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import fs from "fs";
+import path from "path";
+
+
 
 export const signupLawyer = async (req, res, next) => {
   try {
@@ -34,12 +37,18 @@ export const signupLawyer = async (req, res, next) => {
 
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const result = await uploadPdfToCloudinary(file.path, "lawyers/proof");
+        const ext = path.extname(file.originalname);
+        const newPath = `${file.path}${ext}`;
+        fs.renameSync(file.path, newPath); // Rename with original extension
+
+        const result = await uploadPdfToCloudinary(newPath, "lawyers/proof");
+
         proofUrls.push(result.secure_url);
-        if (fs.existsSync(file.path)) {
-          fs.unlinkSync(file.path);
-        }
+
+
+        fs.existsSync(newPath) && fs.unlinkSync(newPath); // Cleanup
       }
+
     } else {
       return res.status(400).json({ message: "At least one proof file is required" });
     }
@@ -58,7 +67,7 @@ export const signupLawyer = async (req, res, next) => {
     const lawyerRequest = new LawyerRequest({
       fullName,
       email,
-      password, 
+      password,
       phone,
       barId,
       practiceAreas: parsedPracticeAreas,
@@ -79,100 +88,100 @@ export const signupLawyer = async (req, res, next) => {
 };
 
 export const loginLawyer = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-        throw new ApiError(400, "Email and password are required");
-    }
+  if (!email || !password) {
+    throw new ApiError(400, "Email and password are required");
+  }
 
-    const lawyer = await Lawyer.findOne({ email });
-    if (!lawyer) {
-        throw new ApiError(404, "User not found");
-    }
+  const lawyer = await Lawyer.findOne({ email });
+  if (!lawyer) {
+    throw new ApiError(404, "User not found");
+  }
 
-    const isPasswordValid = await lawyer.isPasswordCorrect(password);
-    if (!isPasswordValid) {
-        throw new ApiError(401, "Invalid password");
-    }
+  const isPasswordValid = await lawyer.isPasswordCorrect(password);
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid password");
+  }
 
-    const accessToken = await lawyer.generateAccessToken();
-    const refreshToken = await lawyer.generateRefreshToken();
+  const accessToken = await lawyer.generateAccessToken();
+  const refreshToken = await lawyer.generateRefreshToken();
 
-    lawyer.refreshToken = refreshToken;
-    await lawyer.save({ validateBeforeSave: false });
+  lawyer.refreshToken = refreshToken;
+  await lawyer.save({ validateBeforeSave: false });
 
-    const cookieOptions = {
-        httpOnly: true,
-        secure: true, 
-        sameSite: "strict",
-    };
+  const cookieOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+  };
 
-    res.cookie("accessToken", accessToken, cookieOptions);
-    res.cookie("refreshToken", refreshToken, cookieOptions);
+  res.cookie("accessToken", accessToken, cookieOptions);
+  res.cookie("refreshToken", refreshToken, cookieOptions);
 
-    const lawyerData = await Lawyer.findById(lawyer._id).select("-password -refreshToken");
-    console.log("userdata-",lawyerData);
-    return res.status(200).json(
-        
-        new ApiResponse(200, { user: lawyerData, accessToken }, "Login successful")
-    );
+  const lawyerData = await Lawyer.findById(lawyer._id).select("-password -refreshToken");
+  console.log("userdata-", lawyerData);
+  return res.status(200).json(
+
+    new ApiResponse(200, { user: lawyerData, accessToken }, "Login successful")
+  );
 });
 
 
 export const logoutLawyer = asyncHandler(async (req, res) => {
-    // Remove the refresh token from DB
-    await Lawyer.findByIdAndUpdate(
-        req.user._id,
-        { $unset: { refreshToken: 1 } },
-        { new: true }
-    );
+  // Remove the refresh token from DB
+  await Lawyer.findByIdAndUpdate(
+    req.user._id,
+    { $unset: { refreshToken: 1 } },
+    { new: true }
+  );
 
-    // Clear cookies
-    const options = {
-        httpOnly: true,
-        secure: true,     
-        sameSite: "strict"
-    };
+  // Clear cookies
+  const options = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict"
+  };
 
-    res.clearCookie("accessToken", options);
-    res.clearCookie("refreshToken", options);
+  res.clearCookie("accessToken", options);
+  res.clearCookie("refreshToken", options);
 
-    return res.status(200).json(
-        new ApiResponse(200, null, "User logged out successfully")
-    );
+  return res.status(200).json(
+    new ApiResponse(200, null, "User logged out successfully")
+  );
 });
 
 export const changeCurrentPassword = asyncHandler(async (req, res) => {
-    
 
-    const { oldPassword, newPassword, confPassword } = req.body;
-    if (!(newPassword === confPassword)) {
-        throw new ApiError(
-            400,
-            "New Password & Confirm Password do not match "
-        );
-    }
 
-    const lawyer = await Lawyer.findById(req.user?._id);
-    if (!lawyer) {
-        throw new ApiError(404, "User not found while changing password");
-    }
-
-    const isPasswordValid = await lawyer.isPasswordCorrect(oldPassword);
-    if (!isPasswordValid) {
-        throw new ApiError(401, "Invalid password while changing password");
-    }
-
-    lawyer.password = newPassword;
-    await lawyer.save({ validateBeforeSave: false });
-
-    return res.status(200).json(
-        new ApiResponse(
-            200,
-            {
-                lawyer,
-            },
-            "Password changed successfully"
-        )
+  const { oldPassword, newPassword, confPassword } = req.body;
+  if (!(newPassword === confPassword)) {
+    throw new ApiError(
+      400,
+      "New Password & Confirm Password do not match "
     );
+  }
+
+  const lawyer = await Lawyer.findById(req.user?._id);
+  if (!lawyer) {
+    throw new ApiError(404, "User not found while changing password");
+  }
+
+  const isPasswordValid = await lawyer.isPasswordCorrect(oldPassword);
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid password while changing password");
+  }
+
+  lawyer.password = newPassword;
+  await lawyer.save({ validateBeforeSave: false });
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        lawyer,
+      },
+      "Password changed successfully"
+    )
+  );
 });
