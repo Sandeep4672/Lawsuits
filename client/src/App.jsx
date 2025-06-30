@@ -15,11 +15,13 @@ import InternalServerError from "./pages/error/InternalServerError";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SearchResults from "./components/User/SearchResult";
 import CaseDetails from "./components/User/CaseDetail";
+import ViewPdf from "./components/User/ViewPdf";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import VerifiedLawyer from "./pages/Admin/VerifiedLawyer";
 import LawyerRequests from "./pages/Admin/LawyerRequest";
 import LawyerDetail from "./pages/Admin/LawyerDetails";
 import VerifiedLawyerDetails from "./pages/Admin/VerifiedLawerProfile";
+import ViewProofFile from "./pages/Admin/ViewProofFile";
 import AddCase from "./pages/Admin/AddCase";
 import LawyerSignup from "./pages/Lawyer/LawerSignup";
 import LawyerLogin from "./pages/Lawyer/LawerLogin";
@@ -57,6 +59,7 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage/>}/>
           <Route path="/500" element={<InternalServerError/>}/>
           <Route path="/search-results" element={<SearchResults/>}/>
+          <Route path="/view-pdf/:id" element={<ViewPdf/>}/>
           <Route path="/case/:id" element={<CaseDetails />} />
           {/* Protected Routes for Admin */}
           <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminDashboard/></AdminProtectedRoute>}/>
@@ -64,6 +67,7 @@ export default function App() {
           <Route path="/admin/lawyer-requests" element={<AdminProtectedRoute><LawyerRequests/></AdminProtectedRoute>}/>
           <Route path="/admin/lawyer/:id" element={<AdminProtectedRoute><LawyerDetail/></AdminProtectedRoute>}/>
           <Route path="/admin/verified-lawyer/:id" element={<AdminProtectedRoute><VerifiedLawyerDetails/></AdminProtectedRoute>}/>
+          <Route path="/admin/view-proof" element={<AdminProtectedRoute><ViewProofFile/></AdminProtectedRoute>}/>
           <Route path="/admin/add-case" element={<AdminProtectedRoute><AddCase/></AdminProtectedRoute>}/>
           {/*Lawyer Routes*/}
           <Route path="/lawyer-signup" element={<LawyerSignup/>}/>

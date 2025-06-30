@@ -3,7 +3,8 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { dashboardCards } from "./dashboardCards";
-import { usePreventBackFromAdminDashboard } from "../../components/usePreventBackFromDashboard";
+import { usePreventBackFromLawyerDashboard } from "../../components/usePreventBackFromDashboard";
+import LawyerNavbar from "./LawyerNavbar";
 export default function LawyerDashboard() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +13,7 @@ export default function LawyerDashboard() {
   const navigate = useNavigate();
   {/* Redirect to dashboard if not already there */}
  
-  usePreventBackFromAdminDashboard();
+  usePreventBackFromLawyerDashboard();
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -52,24 +53,16 @@ export default function LawyerDashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("lawyerId");
-    logout();
-    navigate("/lawyer-login");
-  };
+  
 
   return (
-    <div className="min-h-screen pt-28 px-6 py-10 bg-gradient-to-br from-blue-200 to-blue-100">
+    <div className="min-h-screen pt-28 px-6 py-10 bg-gradient-to-br from-blue-100 to-white-50">
+      <LawyerNavbar/>
       <div className="flex justify-between items-center max-w-6xl mx-auto mb-8">
         <h1 className="text-3xl font-bold text-blue-700">
           🧑‍⚖️ Lawyer Dashboard
         </h1>
-        <button
-          onClick={handleLogout}
-          className="hover:scale-[1.03] cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold shadow"
-        >
-          Logout
-        </button>
+        
       </div>
 
       {/* Summary cards */}

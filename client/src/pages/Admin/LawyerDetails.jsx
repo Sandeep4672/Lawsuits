@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
-
+import Navbar from "./Navbar";
 export default function LawyerDetail() {
   const { id } = useParams();
   const { state } = useLocation();
@@ -54,6 +54,7 @@ export default function LawyerDetail() {
 
   return (
     <div className="min-h-screen pt-28 bg-gradient-to-br from-green-100 to-green-50 px-4 py-12">
+      
       <motion.div
         className="max-w-3xl mx-auto bg-white border border-green-200 rounded-2xl shadow-lg p-8"
         initial={{ opacity: 0, y: 30 }}

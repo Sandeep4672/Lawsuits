@@ -34,39 +34,53 @@ export default function VerifiedLawyerDetails() {
             className="w-24 h-24 rounded-full border-4 border-green-300 shadow-md"
           />
           <div>
-            <h3 className="text-2xl font-semibold text-green-900">{lawyer.fullName}</h3>
+            <h3 className="text-2xl font-semibold text-green-900">
+              {lawyer.fullName}
+            </h3>
             <p className="text-gray-600">{lawyer.email}</p>
-            <p className="text-sm text-gray-500">{lawyer.phone || "Phone not provided"}</p>
+            <p className="text-sm text-gray-500">
+              {lawyer.phone || "Phone not provided"}
+            </p>
           </div>
         </div>
 
         {/* Details Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-800 text-sm">
           <div className="bg-green-50 p-4 rounded-xl shadow-sm">
-            <span className="block font-medium text-green-700 mb-1">Bar Council ID:</span>
+            <span className="block font-medium text-green-700 mb-1">
+              Bar Council ID:
+            </span>
             {lawyer.barId}
           </div>
           <div className="bg-green-50 p-4 rounded-xl shadow-sm">
-            <span className="block font-medium text-green-700 mb-1">Experience:</span>
+            <span className="block font-medium text-green-700 mb-1">
+              Experience:
+            </span>
             {lawyer.experience} years
           </div>
           <div className="bg-green-50 p-4 rounded-xl shadow-sm col-span-1 sm:col-span-2">
-            <span className="block font-medium text-green-700 mb-1">Practice Areas:</span>
+            <span className="block font-medium text-green-700 mb-1">
+              Practice Areas:
+            </span>
             {Array.isArray(lawyer.practiceAreas)
               ? lawyer.practiceAreas.join(", ")
               : lawyer.practiceAreas || "N/A"}
           </div>
-          {lawyer.proofFile && (
-            <div className="bg-green-50 p-4 rounded-xl shadow-sm col-span-1 sm:col-span-2">
-              <span className="block font-medium text-green-700 mb-1">Proof Document:</span>
-              <a
-                href={lawyer.proofFile}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+          {Array.isArray(lawyer.proofFile) && lawyer.proofFile.length > 0 && (
+            <div>
+              {lawyer.proofFile.map((file, idx) => (
+                <a
+                key={idx}
+                onClick={() =>
+                  navigate("/admin/view-proof", {
+                    state: { pdfUrl: file },
+                  })
+                }
+                className="text-blue-600 hover:underline cursor-pointer"
               >
-                View Uploaded Proof 📄
+                View Uploaded Proof {lawyer.proofFile.length > 1 ? `#${idx + 1}` : ""}📄
               </a>
+              ))}
             </div>
           )}
         </div>
@@ -74,13 +88,13 @@ export default function VerifiedLawyerDetails() {
         {/* Back Button Bottom */}
         <div className="mt-10 text-center">
           {/* Back Button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="cursor-pointer  flex items-center text-green-700 hover:text-green-900 transition"
-          title="Back"
-        >
-          <ArrowLeftCircle className="w-6 h-6 mr-1" /> Back
-        </button>
+          <button
+            onClick={() => navigate(-1)}
+            className="cursor-pointer  flex items-center text-green-700 hover:text-green-900 transition"
+            title="Back"
+          >
+            <ArrowLeftCircle className="w-6 h-6 mr-1" /> Back
+          </button>
         </div>
       </div>
     </div>

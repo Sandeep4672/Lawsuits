@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftCircle } from "lucide-react";
+import Navbar from "./Navbar";
 
 export default function AddCase() {
   const [form, setForm] = useState({
@@ -64,6 +65,7 @@ export default function AddCase() {
   };
 
   return (
+    <><Navbar></Navbar>
     <div className="min-h-screen pt-28 bg-gradient-to-br from-pink-100 to-pink-50 px-4 py-12">
       <div className="max-w-xl mx-auto bg-white border border-pink-200 rounded-2xl shadow-lg p-8">
         <button
@@ -133,5 +135,6 @@ export default function AddCase() {
         )}
       </div>
     </div>
+    </>
   );
 }

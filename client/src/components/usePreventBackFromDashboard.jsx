@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-export function usePreventBackFromAdminDashboard() {
+export function usePreventBackFromLawyerDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -33,6 +33,25 @@ export function usePreventBackFromUserDashboard() {
 
     const handlePopState = () => {
       window.history.pushState(null, "", "/dashboard");
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [navigate, location.pathname]);
+};
+
+export function usePreventBackFromAdminDashboard() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname !== "/admin/dashboard") {
+      navigate("/admin/dashboard", { replace: true });
+    }
+    window.history.replaceState(null, "", "/admin/dashboard");
+    window.history.pushState(null, "", "/admin/dashboard");
+
+    const handlePopState = () => {
+      window.history.pushState(null, "", "/admin/dashboard");
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
