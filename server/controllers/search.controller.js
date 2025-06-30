@@ -76,6 +76,7 @@ export const getCaseById=asyncHandler(async (req, res) => {
   if (!caseData) {
     return res.status(404).json(new ApiResponse(404, null, "Case not found"));
   }
-
-  res.status(200).json(new ApiResponse(200, caseData, "Case retrieved successfully"));
+  const caseObj =caseData.toObject();
+  caseObj.pdfUrl =caseData.cloudinary?.secure_url || null;
+  res.status(200).json(new ApiResponse(200, caseObj, "Case retrieved successfully"));
 });
