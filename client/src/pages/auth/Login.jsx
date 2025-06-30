@@ -59,20 +59,27 @@ export default function Login() {
     navigate("/forgot-password");
   };
 
-  return (
-    <>
-    <Navbar/>
+  
+    return (
+  <>
+    <Navbar />
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-white px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200"
-      >
-        <h2 className="text-3xl font-bold mb-6 text-center text-green-700">Welcome Back</h2>
+      <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 flex flex-col items-center">
+        <h2 className="text-3xl font-bold mb-6 text-center text-green-700">
+          Welcome Back
+        </h2>
 
-        {error && <p className="text-red-600 text-sm text-center mb-4">{error}</p>}
-        {success && <p className="text-green-600 text-sm text-center mb-4">{success}</p>}
+        {error && (
+          <p className="text-red-600 text-sm text-center mb-4">{error}</p>
+        )}
+        {success && (
+          <p className="text-green-600 text-sm text-center mb-4">{success}</p>
+        )}
 
-        <div className="space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full space-y-4"
+        >
           <input
             name="email"
             type="email"
@@ -92,26 +99,39 @@ export default function Login() {
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             required
           />
-        </div>
 
-        <div className="text-right mt-2">
+          <div className="text-right">
+            <button
+              type="button"
+              className="text-sm text-blue-600 hover:underline"
+              onClick={handleForgotPassword}
+            >
+              Forgot Password?
+            </button>
+          </div>
+
           <button
-            type="button"
-            className="text-sm text-blue-600 hover:underline"
-            onClick={handleForgotPassword}
+            type="submit"
+            className="w-full bg-green-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-green-800 transition mt-2"
           >
-            Forgot Password?
+            Login
           </button>
-        </div>
+        </form>
 
-        <button
-          type="submit"
-          className="mt-6 cursor-pointer w-full bg-green-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-green-800 transition"
-        >
-          Login
-        </button>
-      </form>
+        <div className="text-center mt-6 w-full">
+          <p className="text-gray-600">
+            Don't have an account?{" "}
+            <a
+              href="/signup"
+              className="text-green-700 font-medium hover:underline"
+            >
+              Signup here
+            </a>
+          </p>
+        </div>
+      </div>
     </div>
-    </>
-  );
+  </>
+);
+  
 }

@@ -69,9 +69,9 @@ export default function DashboardTools() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.15 }}
-              className="group bg-white p-6 rounded-2xl shadow-xl border hover:shadow-2xl hover:border-green-500 transition-all duration-300 cursor-pointer relative h-full "
+              className="group hover:scale-[1.03] bg-white p-6 rounded-2xl shadow-xl border hover:shadow-2xl hover:border-green-500 transition-all duration-300 cursor-pointer relative h-full "
             >
-              <div className="flex items-center justify-between mb-4 ">
+              <div className="flex  items-center justify-between mb-4 ">
                 <div className="text-green-700 group-hover:text-green-900 transition">{tool.icon}</div>
                 {tool.tag && (
                   <span className="text-xs bg-orange-500 text-white px-2 py-1 rounded-full shadow">

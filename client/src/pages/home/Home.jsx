@@ -23,7 +23,7 @@ export default function Home() {
             Welcome to LawSuits
           </h1>
           <p className="text-gray-600 text-lg md:text-xl mb-10">
-            Search legal cases, get instant AI-based legal summaries, and manage your legal queries in one place.
+            Search legal cases, get instant AI-based legal summaries,Chat with Verified lawyers and manage your legal queries in one place.
           </p>
 
           

@@ -78,42 +78,49 @@ export default function ChatPage() {
   }, [id]);
 
   const handleSend = async (e) => {
-    e.preventDefault();
-    if (!text.trim() && !selectedFile) return;
+  e.preventDefault();
+  if (!text.trim() && !selectedFile) return;
+  const token = localStorage.getItem("token");
+  const headers = { Authorization: `Bearer ${token}` };
 
-    const token = localStorage.getItem("token");
-    const headers = { Authorization: `Bearer ${token}` };
+  try {
+    let res;
 
-    try {
-      let res;
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("message", text || selectedFile.name);
 
-      if (selectedFile) {
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-        formData.append("message", text || selectedFile.name);
-
-        res = await axios.post(
-          `http://localhost:8000/threads/${id}/upload`,
-          formData,
-          { headers }
-        );
-      } else {
+      res = await axios.post(
+        `http://localhost:8000/threads/${id}/upload`,
+        formData,
+        { headers }
+      );
+    } else {
+      try {
         res = await axios.post(
           `http://localhost:8000/threads/${id}/send`,
           { content: text },
           { headers }
         );
+      } catch {
+        res = await axios.post(
+          `http://localhost:8000/lawyer/threads/${id}/send`,
+          { content: text },
+          { headers }
+        );
       }
-
-      const sentMessage = res.data.data;
-      socket.emit("sendMessage", { ...sentMessage, threadId: id });
-
-      setText("");
-      setSelectedFile(null);
-    } catch (error) {
-      console.error("Sending failed", error);
     }
-  };
+
+    const sentMessage = res.data.data;
+    socket.emit("sendMessage", { ...sentMessage, threadId: id });
+    setMessages((prev) => [...prev, sentMessage]);
+    setText("");
+    setSelectedFile(null);
+  } catch (error) {
+    console.error("Sending failed", error);
+  }
+};
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -138,7 +145,8 @@ export default function ChatPage() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto bg-white rounded-b-xl shadow-inner p-4 mb-3 scrollbar-thin scrollbar-thumb-green-200 scrollbar-track-gray-100">
+<div className="flex-1 bg-white rounded-b-xl shadow-inner p-4 mb-3 overflow-y-auto scrollbar-thin scrollbar-thumb-green-200 scrollbar-track-gray-100"
+     style={{ maxHeight: "calc(110vh - 260px)" }}>
           {loading ? (
             <div className="text-center text-gray-500">Loading messages...</div>
           ) : messages.length === 0 ? (

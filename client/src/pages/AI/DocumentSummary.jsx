@@ -25,7 +25,7 @@ export default function DocumentSummarization() {
     setLoading(true);
 
     try {
-      const token=localStorage.getItem("item");
+      const token=localStorage.getItem("token");
       const res = await axios.post("http://localhost:8000/user/summarize", formData, {
         headers: { "Content-Type": "multipart/form-data"
           , Authorization: `Bearer ${token}` // include token for authentication
@@ -34,7 +34,7 @@ export default function DocumentSummarization() {
       });
 
       setSummary(res.data.summary);
-      setTerms(res.data.legalTerms || []); // ✅ capture terms
+      setTerms(res.data.legalTerms || []); 
     } catch (err) {
       setSummary("Error processing PDF. Please try again.");
       setTerms([]);

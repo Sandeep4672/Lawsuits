@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-
+import { dashboardCards } from "./dashboardCards";
 export default function LawyerDashboard() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,7 @@ export default function LawyerDashboard() {
     const fetchRequests = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/lawyer/requests", {
+        const res = await axios.get("http://localhost:8000/lawyer/connections/requests", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -62,7 +62,7 @@ export default function LawyerDashboard() {
         </h1>
         <button
           onClick={handleLogout}
-          className=" cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold shadow"
+          className="hover:scale-[1.03] cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold shadow"
         >
           Logout
         </button>
@@ -70,38 +70,18 @@ export default function LawyerDashboard() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 max-w-6xl mx-auto">
-        <Link to="/lawyer/connection-requests">
-          <div className="bg-white shadow-lg hover:shadow-xl transition rounded-2xl p-6 text-center cursor-pointer border-t-4 border-red-600 hover:scale-[1.05] transform duration-200">
-            {/* <h2 className="text-2xl font-bold text-blue-700">12</h2> */}
-            <p className="text-gray-600 mt-1 font-medium">Pending Requests</p>
-          </div>
-        </Link>
-        <Link to="/lawyer/accepted-connections">
-          <div className="bg-white shadow-lg hover:shadow-xl transition rounded-2xl p-6 text-center cursor-pointer border-t-4 border-green-600 hover:scale-[1.05] transform duration-200">
-            {/* <h2 className="text-2xl font-bold text-blue-700">12</h2> */}
-            <p className="text-gray-600 mt-1 font-medium">Accepted Requests</p>
-          </div>
-        </Link>
-        <Link to="/lawyer/appointments">
-          <div className="bg-white shadow-lg hover:shadow-xl transition rounded-2xl p-6 text-center cursor-pointer border-t-4 border-green-600 hover:scale-[1.05] transform duration-200">
-            {/* <h2 className="text-2xl font-bold text-green-700">8</h2> */}
-            <p className="text-gray-600 mt-1 font-medium">Appointments</p>
-          </div>
-        </Link>
-
-        <Link to="/chat/lawyer/threads">
-          <div className="bg-white shadow-lg hover:shadow-xl transition rounded-2xl p-6 text-center cursor-pointer border-t-4 border-yellow-500 hover:scale-[1.05] transform duration-200">
-            {/* <h2 className="text-2xl font-bold text-yellow-600">5</h2> */}
-            <p className="text-gray-600 mt-1 font-medium">Messages</p>
-          </div>
-        </Link>
-
-        <Link to="/lawyer/cases">
-          <div className="bg-white shadow-lg hover:shadow-xl transition rounded-2xl p-6 text-center cursor-pointer border-t-4 border-purple-600 hover:scale-[1.05] transform duration-200">
-            {/* <h2 className="text-2xl font-bold text-purple-700">3</h2> */}
-            <p className="text-gray-600 mt-1 font-medium">Case Uploads</p>
-          </div>
-        </Link>
+        {dashboardCards.map((card, idx) => (
+          <Link to={card.to} key={idx}>
+            <div
+              className={`flex flex-col items-center justify-center bg-white shadow-md hover:shadow-xl border border-gray-200 hover:border-blue-400 rounded-xl p-6 transition-transform duration-300 hover:scale-[1.03] ${card.borderColor}`}
+            >
+              <div className="text-3xl mb-3">{card.icon}</div>
+              <p className="text-blue-800 font-semibold text-center">
+                {card.label}
+              </p>
+            </div>
+          </Link>
+        ))}
       </div>
 
       {/* Requests section */}
@@ -109,9 +89,7 @@ export default function LawyerDashboard() {
         📥 User Contact Requests
       </h2>
 
-      {message && (
-        <p className="text-center text-sm text-red-600">{message}</p>
-      )}
+      {message && <p className="text-center text-sm text-red-600">{message}</p>}
 
       {loading ? (
         <p className="text-center">Loading requests...</p>

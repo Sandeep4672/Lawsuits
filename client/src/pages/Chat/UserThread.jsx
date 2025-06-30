@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { MessageSquare } from "lucide-react";
+import { ArrowLeftCircle } from "lucide-react";
 export default function UserThreads() {
   const [threads, setThreads] = useState([]);
   const [message, setMessage] = useState("");
@@ -13,11 +14,13 @@ export default function UserThreads() {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get("http://localhost:8000/threads", {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         setThreads(res.data.data || []);
       } catch (err) {
-        setMessage(err.response?.data?.message || "Failed to fetch conversations.");
+        setMessage(
+          err.response?.data?.message || "Failed to fetch conversations."
+        );
       }
     };
     fetchThreads();
@@ -25,35 +28,66 @@ export default function UserThreads() {
 
   return (
     <div className="min-h-screen pt-28 px-4 sm:px-8 bg-gradient-to-br from-green-200 to-green-100">
-      <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-green-800 mb-6 text-center">
-          💬 Your Conversations
+      <button
+        onClick={() => navigate(-1)}
+        className=" cursor-pointer  sm:left-8 sm:top-8 text-red-700 px-4 py-2 rounded-lg shadow hover:bg-amber-100 transition"
+      >
+        &larr; <ArrowLeftCircle/> 
+        
+      </button>
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+        <h2 className="text-3xl font-bold text-green-800 mb-6 text-center flex items-center justify-center gap-2">
+          <MessageSquare className="w-6 h-6" />
+          Your Conversations
         </h2>
+
         {message && (
-          <div className="text-center text-red-600">{message}</div>
+          <div className="text-center text-red-600 font-semibold">{message}</div>
         )}
+
         {threads.length === 0 && !message ? (
           <div className="text-center text-gray-600">No conversations found.</div>
         ) : (
-          <ul className="divide-y divide-green-100">
-            {threads.map(thread => (
-              <li
-                key={thread._id}
-                onClick={() => navigate(`/chat/thread/${thread._id}`)}
-                className="cursor-pointer bg-blue-100 px-4 py-4 hover:bg-blue-200 rounded-lg flex items-center justify-between transition"
-              >
-                <span className="font-medium text-green-900">
-                  {thread.client._id === userId
-                    ? thread.lawyer.fullName
-                    : thread.client.fullName}
-                </span>
-                <span className="text-xs text-gray-500">
-                  {thread.lastMessage
-                    ? new Date(thread.lastMessage.createdAt).toLocaleString()
-                    : ""}
-                </span>
-              </li>
-            ))}
+          <ul className="divide-y divide-gray-200">
+            {threads.map((thread) => {
+              const isUser = thread.client._id === userId;
+              const partner = isUser ? thread.lawyer : thread.client;
+
+              return (
+                <li
+                  key={thread._id}
+                  onClick={() =>
+                    navigate(`/chat/thread/${thread._id}`, {
+                      state: { fullName: partner.fullName },
+                    })
+                  }
+                  className="flex items-center justify-between p-4 bg-green-50 hover:bg-green-100 rounded-lg transition mb-3 cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={`https://ui-avatars.com/api/?name=${partner.fullName}&background=random`}
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full border border-green-200"
+                    />
+                    <div>
+                      <p className="font-semibold text-green-800">
+                        {partner.fullName}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {thread.lastMessage
+                          ? thread.lastMessage.message.slice(0, 30) + "..."
+                          : "No messages yet"}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-gray-400">
+                    {thread.lastMessage
+                      ? new Date(thread.lastMessage.createdAt).toLocaleTimeString()
+                      : ""}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

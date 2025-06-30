@@ -88,7 +88,7 @@ export default function Navbar() {
                 {user.fullName}
               </span>
               <button
-                className=" cursor-pointer ml-2 px-3 py-1 bg-red-700 text-white rounded hover:bg-red-500 text-sm"
+                className=" hover:scale-[1.03] cursor-pointer ml-2 px-3 py-1 bg-red-700 text-white rounded hover:bg-red-500 text-sm"
                 onClick={handleLogout}
               >
                 Logout
@@ -107,14 +107,14 @@ export default function Navbar() {
               <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-50">
                 <Link
                   to="/login"
-                  className=" cursor-pointer block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  className="hover:scale-[1.05] cursor-pointer block px-4 py-2 text-gray-700 hover:bg-gray-100"
                   onClick={() => setLoginDropdown(false)}
                 >
                   User Login
                 </Link>
                 <Link
                   to="/lawyer-login"
-                  className=" cursor-pointer block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  className="hover:scale-[1.05] cursor-pointer block px-4 py-2 text-gray-700 hover:bg-gray-100"
                   onClick={() => setLoginDropdown(false)}
                 >
                   Lawyer Login
