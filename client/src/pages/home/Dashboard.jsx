@@ -1,8 +1,14 @@
+import React, { useEffect, useState ,useContext} from "react";
 import Navbar from "../../components/Navbar";
 import DashboardTools from "../../components/User/DashboardTools";
 import Footer from "../../components/Footer";
 import CaseSearch from "../../components/User/AdvanceSearch";
+import { usePreventBackFromUserDashboard } from "../../components/usePreventBackFromDashboard";
 export default function Dashboard() {
+  
+  usePreventBackFromUserDashboard();
+
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-200 to-green-100 text-white">
       {/* Fixed Navbar */}

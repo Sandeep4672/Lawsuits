@@ -3,13 +3,16 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { dashboardCards } from "./dashboardCards";
+import { usePreventBackFromAdminDashboard } from "../../components/usePreventBackFromDashboard";
 export default function LawyerDashboard() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
-
+  {/* Redirect to dashboard if not already there */}
+ 
+  usePreventBackFromAdminDashboard();
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -50,6 +53,7 @@ export default function LawyerDashboard() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("lawyerId");
     logout();
     navigate("/lawyer-login");
   };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare,ArrowLeftCircle } from "lucide-react";
 
 export default function LawyerThreads() {
   const [threads, setThreads] = useState([]);

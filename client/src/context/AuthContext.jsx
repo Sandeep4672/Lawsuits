@@ -22,6 +22,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("lawyerId");
     setIsLoggedIn(false);
     setUser(null);
   };
