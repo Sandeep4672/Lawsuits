@@ -9,8 +9,11 @@ const ProtectedRoute = ({ children }) => {
   const {logout}=useContext(AuthContext);
   // Check if the user is logged in and has the role of 'lawyer'
   const lawyerId=localStorage.getItem("lawyerId");
-  if (!token || !user) {
-    return <Navigate to="/" />;
+  if(lawyerId){
+    return <Navigate to="/lawyer-dashboard" replace />;
+  }
+  if (!token || !user ) {
+    return <Navigate to="/error" />;
   }
   return children;
 };

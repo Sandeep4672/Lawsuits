@@ -32,6 +32,7 @@ import LawyerProfile from "./pages/home/LawyerProfile";
 import ConnectionRequestForm from "./pages/Chat/ConnectionRequestForm";
 import ConnectionRequests from "./pages/Lawyer/ConnectionRequests";
 import AcceptedConnection from "./pages/Lawyer/AcceptedConnection";
+import LawyerProtectedRoute from "./pages/Lawyer/LawyerProtectedRoutes";
 //chat
 import UserThreads from "./pages/Chat/UserThread";
 import ChatPage from "./pages/Chat/ChatPage";
@@ -47,20 +48,24 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
-          <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/dashboard/get-document-summary" element={<ProtectedRoute><DocumentSummarization/></ProtectedRoute>}/>
-          <Route path="/find-lawyers" element={<ProtectedRoute><FindLawyer/></ProtectedRoute>}/>
-          <Route path="/lawyer-profile/:id" element={<ProtectedRoute><LawyerProfile/></ProtectedRoute>}/>
-          <Route path="/lawyer/request-connection" element={<ConnectionRequestForm/>}/>
-          <Route path="/lawyer/connection-requests" element={<ConnectionRequests/>}/>
-          <Route path="/lawyer/accepted-connections" element={<AcceptedConnection/>}/>
           <Route path="/footer" element={<Footer/>}/>
           <Route path="/profile" element={<ProfilePage/>}/>
           <Route path="/500" element={<InternalServerError/>}/>
           <Route path="/search-results" element={<SearchResults/>}/>
           <Route path="/view-pdf/:id" element={<ViewPdf/>}/>
           <Route path="/case/:id" element={<CaseDetails />} />
+          {/* Protected Routes for Users */}
+          <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard/get-document-summary" element={<ProtectedRoute><DocumentSummarization/></ProtectedRoute>}/>
+          <Route path="/find-lawyers" element={<ProtectedRoute><FindLawyer/></ProtectedRoute>}/>
+          <Route path="/lawyer-profile/:id" element={<ProtectedRoute><LawyerProfile/></ProtectedRoute>}/>
+          {/* Protected Routes for Lawyers */}
+          <Route path="/lawyer/request-connection" element={<LawyerProtectedRoute><ConnectionRequestForm/></LawyerProtectedRoute>}/>
+          <Route path="/lawyer/connection-requests" element={<LawyerProtectedRoute><ConnectionRequests/></LawyerProtectedRoute>}/>
+          <Route path="/lawyer/accepted-connections" element={<LawyerProtectedRoute><AcceptedConnection/></LawyerProtectedRoute>}/>
+          <Route path="/lawyer-dashboard" element={<LawyerProtectedRoute><LawerDashboard/></LawyerProtectedRoute>}/>
+          
           {/* Protected Routes for Admin */}
           <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminDashboard/></AdminProtectedRoute>}/>
           <Route path="/admin/lawyers" element={<AdminProtectedRoute><VerifiedLawyer/></AdminProtectedRoute>}/>
@@ -72,7 +77,6 @@ export default function App() {
           {/*Lawyer Routes*/}
           <Route path="/lawyer-signup" element={<LawyerSignup/>}/>
           <Route path="/lawyer-login" element={<LawyerLogin/>}/>
-          <Route path="/lawyer-dashboard" element={<LawerDashboard/>}/>
           { /* Chat Routes */}
           <Route path="/chat/threads" element={<UserThreads/>}/>
           <Route path="/chat/thread/:id" element={<ChatPage/>}/>

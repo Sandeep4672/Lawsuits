@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeftCircle, Trash2 } from "lucide-react";
+import { ArrowLeftCircle, Trash2, Trash2Icon } from "lucide-react";
 import { io } from "socket.io-client";
 
 const socket = io("ws://localhost:7000"); // Change if needed
@@ -131,7 +131,7 @@ export default function ChatPage() {
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
-      const isLawyer = location.pathname.includes("/lawyer");
+      const isLawyer = localStorage.getItem("lawyerId");
       const url = isLawyer
         ? `http://localhost:8000/lawyer/threads/${id}/messages/${messageId}`
         : `http://localhost:8000/threads/${id}/messages/${messageId}`;
@@ -191,10 +191,10 @@ export default function ChatPage() {
                     new Date() - new Date(msg.createdAt) < 5 * 60 * 1000 && (
                       <button
                         onClick={() => handleDelete(msg._id)}
-                        className="absolute top-1 right-1 text-white text-xs opacity-0 group-hover:opacity-100 transition"
+                        className="cursor-pointer absolute top-1 right-1 text-white text-xs opacity-0 group-hover:opacity-100 transition"
                         title="Delete message"
                       >
-                        <Trash2 size={16} />
+                        <Trash2Icon size={16} />
                       </button>
                     )}
 
