@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftCircle } from "lucide-react";
-
+import Navbar from "./Navbar";
 export default function LawyerRequests() {
   const [requests, setRequests] = useState([]);
   const navigate = useNavigate();
@@ -21,6 +21,7 @@ export default function LawyerRequests() {
   }, []);
 
   return (
+    <><Navbar/>
     <div className="pt-24 px-6 bg-gradient-to-br from-amber-100 to-yellow-50 min-h-screen">
       <div className="max-w-6xl mx-auto">
         <button
@@ -66,5 +67,6 @@ export default function LawyerRequests() {
         )}
       </div>
     </div>
+    </>
   );
 }

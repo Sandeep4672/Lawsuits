@@ -26,10 +26,5 @@ export const dashboardCards = [
     borderColor: "border-t-4 border-yellow-400",
     icon: <Mail className="text-yellow-500" size={28} />,
   },
-  {
-    label: "Case Uploads",
-    to: "/lawyer/cases",
-    borderColor: "border-t-4 border-purple-500",
-    icon: <CaseSensitive className="text-purple-500" size={28} />,
-  },
+ 
 ];

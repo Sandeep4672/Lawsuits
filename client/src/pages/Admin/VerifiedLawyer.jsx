@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
-
+import Navbar from "./Navbar";
 export default function AllLawyers() {
   const [lawyers, setLawyers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const limit = 6; // Number of cards per page
+  const limit = 6;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,31 +32,37 @@ export default function AllLawyers() {
   const paginatedLawyers = lawyers.slice(startIndex, startIndex + limit);
 
   return (
-    <div className="pt-28 px-6 pb-10 bg-gradient-to-br from-green-200 to-green-100 min-h-screen">
+    <>
+    <Navbar/>
+    
+    <div className="min-h-screen pt-28 px-4 sm:px-8 pb-16 bg-gradient-to-br from-green-100 to-green-50">
       <div className="max-w-7xl mx-auto">
+        {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 cursor-pointer flex items-center text-red-700 hover:text-red-900 transition"
-          title="Go back"
+          className="cursor-pointer mb-6 flex items-center text-green-700 hover:text-green-900 transition font-medium"
         >
-          <ArrowLeftCircle className="w-7 h-7 mr-1" /> Back
+          <ArrowLeftCircle className="w-6 h-6 mr-2" />
+          Back
         </button>
 
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-10 drop-shadow-md">
-          🧑‍⚖️ All Verified Lawyers
+        {/* Title */}
+        <h2 className="text-4xl font-bold text-center text-green-800 mb-12">
+          🧑‍⚖️ Verified Lawyers
         </h2>
 
+        {/* Content */}
         {loading ? (
-          <div className="text-center text-gray-600 text-lg animate-pulse">
+          <p className="text-center text-gray-600 text-lg animate-pulse">
             Loading lawyers...
-          </div>
+          </p>
         ) : lawyers.length === 0 ? (
-          <div className="text-center text-gray-500 text-lg">
+          <p className="text-center text-gray-500 text-lg">
             No verified lawyers found.
-          </div>
+          </p>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {paginatedLawyers.map((lawyer) => (
                 <div
                   key={lawyer._id}
@@ -65,48 +71,57 @@ export default function AllLawyers() {
                       state: { lawyer },
                     })
                   }
-                  className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition duration-300 cursor-pointer border border-green-100 hover:border-green-300 hover:scale-[1.05] transform"
+                  className="bg-white rounded-2xl shadow-md hover:shadow-xl transition cursor-pointer border-t-4 border-green-500 hover:scale-[1.03] p-6"
                 >
-                  <h3 className="text-xl font-semibold text-green-700 mb-1">
+                  <h3 className="text-xl font-semibold text-green-800 mb-1">
                     {lawyer.fullName}
                   </h3>
-                  <p className="text-gray-600 text-sm">{lawyer.email}</p>
-                  <div className="mt-3 text-sm text-gray-500">
-                    <span className="font-medium">Bar ID:</span> {lawyer.barId}
+                  <p className="text-sm text-gray-600 mb-2">{lawyer.email}</p>
+                  <div className="text-sm text-gray-500">
+                    <strong>Bar ID:</strong> {lawyer.barId}
                   </div>
                   <div className="text-sm text-gray-500 mt-1">
-                    <span className="font-medium">Practice:</span>{" "}
+                    <strong>Practice Areas:</strong>{" "}
                     {Array.isArray(lawyer.practiceAreas)
                       ? lawyer.practiceAreas.join(", ")
                       : lawyer.practiceAreas || "N/A"}
                   </div>
                   <div className="text-sm text-gray-500 mt-1">
-                    <span className="font-medium">Experience:</span>{" "}
-                    {lawyer.experience} years
+                    <strong>Experience:</strong> {lawyer.experience} years
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Pagination Controls */}
-            <div className="flex justify-center items-center gap-4 mt-8">
+            {/* Pagination */}
+            <div className="flex justify-center items-center gap-4 mt-12">
               <button
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                 disabled={page === 1}
-                className="px-4 py-2 rounded  text-red-600 cursor-pointer hover:text-red-800 flex items-center gap-2"
+                className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium transition ${
+                  page === 1
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-green-700 hover:text-green-900"
+                }`}
               >
                 <ArrowLeftCircle className="w-5 h-5" />
                 Previous
               </button>
+
               <span className="text-green-800 font-semibold">
                 Page {page} of {totalPages}
               </span>
+
               <button
                 onClick={() =>
                   setPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={page === totalPages}
-                className="px-4 py-2 rounded  text-red-600 cursor-pointer hover:text-red-800 flex items-center gap-2"
+                className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium transition ${
+                  page === totalPages
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-green-700 hover:text-green-900"
+                }`}
               >
                 Next
                 <ArrowRightCircle className="w-5 h-5" />
@@ -116,5 +131,6 @@ export default function AllLawyers() {
         )}
       </div>
     </div>
+    </>
   );
 }

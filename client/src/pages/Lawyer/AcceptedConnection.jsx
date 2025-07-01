@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import Navbar from "./LawyerNavbar";
 export default function ConnectionRequests() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +27,7 @@ export default function ConnectionRequests() {
 
   return (
     <div className="min-h-screen pt-28 px-4 sm:px-8 bg-gradient-to-br from-blue-200 to-blue-100">
+      <Navbar/>
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-8">
         <h2 className="text-2xl font-bold text-blue-800 mb-6 text-center">
           📥 User Accepted  Connection 

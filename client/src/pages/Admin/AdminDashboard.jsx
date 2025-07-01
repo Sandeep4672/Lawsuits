@@ -2,41 +2,48 @@ import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { adminCards } from "./DashboardCards";
+import { usePreventBackFromAdminDashboard } from "../../components/usePreventBackFromDashboard";
+import Navbar from "./Navbar";
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
   const cards = adminCards;
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
+
+  
+
+  usePreventBackFromAdminDashboard();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-400 to-gray-300 pt-24 px-6">
-      <div className="flex justify-between items-center max-w-4xl mx-auto mb-8">
-        <h1 className="text-3xl font-bold text-white">
-          ⚖️ Admin Panel
-        </h1>
-        <button
-          onClick={handleLogout}
-          className=" cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold shadow"
-        >
-          Logout
-        </button>
+    <>
+    <Navbar></Navbar>
+   
+    <div className=" min-h-screen pt-24 pb-16 px-6 bg-gradient-to-br from-slate-200 via-slate-100 to-white">
+      <div className="max-w-6xl mx-auto flex justify-between items-center mb-10">
+        
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
         {cards.map((card, i) => (
           <div
             key={i}
             onClick={() => navigate(card.path)}
-            className={`hover:scale-[1.05] cursor-pointer p-6 rounded-xl shadow-md hover:shadow-xl transition-all ${card.bg}`}
+            className={`p-6 rounded-2xl shadow-md hover:shadow-xl transition-all cursor-pointer border border-gray-200 bg-white hover:scale-[1.03] group`}
           >
-            <h2 className="text-xl font-semibold text-gray-800">{card.title}</h2>
-            <p className="text-gray-600 mt-2">{card.description}</p>
+            <div className="flex items-center gap-3 mb-4">
+              <div
+                className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold ${card.bg}`}
+              >
+                {card.icon}
+              </div>
+              <h2 className="text-xl font-semibold text-slate-800 group-hover:text-slate-900">
+                {card.title}
+              </h2>
+            </div>
+            <p className="text-slate-600 text-sm">{card.description}</p>
           </div>
         ))}
       </div>
     </div>
+    </>
   );
 }

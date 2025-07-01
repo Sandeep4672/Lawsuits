@@ -78,49 +78,49 @@ export default function ChatPage() {
   }, [id]);
 
   const handleSend = async (e) => {
-  e.preventDefault();
-  if (!text.trim() && !selectedFile) return;
-  const token = localStorage.getItem("token");
-  const headers = { Authorization: `Bearer ${token}` };
+    e.preventDefault();
+    if (!text.trim() && !selectedFile) return;
+    const token = localStorage.getItem("token");
+    const headers = { Authorization: `Bearer ${token}` };
 
-  try {
-    let res;
+    try {
+      let res;
 
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-      formData.append("message", text || selectedFile.name);
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        formData.append("message", text || selectedFile.name);
 
-      res = await axios.post(
-        `http://localhost:8000/threads/${id}/upload`,
-        formData,
-        { headers }
-      );
-    } else {
-      try {
         res = await axios.post(
-          `http://localhost:8000/threads/${id}/send`,
-          { content: text },
+          `http://localhost:8000/threads/${id}/upload`,
+          formData,
           { headers }
         );
-      } catch {
-        res = await axios.post(
-          `http://localhost:8000/lawyer/threads/${id}/send`,
-          { content: text },
-          { headers }
-        );
+      } else {
+        try {
+          res = await axios.post(
+            `http://localhost:8000/threads/${id}/send`,
+            { content: text },
+            { headers }
+          );
+        } catch {
+          res = await axios.post(
+            `http://localhost:8000/lawyer/threads/${id}/send`,
+            { content: text },
+            { headers }
+          );
+        }
       }
-    }
 
-    const sentMessage = res.data.data;
-    socket.emit("sendMessage", { ...sentMessage, threadId: id });
-    setMessages((prev) => [...prev, sentMessage]);
-    setText("");
-    setSelectedFile(null);
-  } catch (error) {
-    console.error("Sending failed", error);
-  }
-};
+      const sentMessage = res.data.data;
+      socket.emit("sendMessage", { ...sentMessage, threadId: id });
+      setMessages((prev) => [...prev, sentMessage]);
+      setText("");
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Sending failed", error);
+    }
+  };
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -145,8 +145,10 @@ export default function ChatPage() {
         </div>
 
         {/* Messages */}
-<div className="flex-1 bg-white rounded-b-xl shadow-inner p-4 mb-3 overflow-y-auto scrollbar-thin scrollbar-thumb-green-200 scrollbar-track-gray-100"
-     style={{ maxHeight: "calc(110vh - 260px)" }}>
+        <div
+          className="flex-1 bg-white rounded-b-xl shadow-inner p-4 mb-3 overflow-y-auto scrollbar-thin scrollbar-thumb-green-200 scrollbar-track-gray-100"
+          style={{ maxHeight: "calc(110vh - 260px)" }}
+        >
           {loading ? (
             <div className="text-center text-gray-500">Loading messages...</div>
           ) : messages.length === 0 ? (
@@ -169,22 +171,42 @@ export default function ChatPage() {
                   {msg.message && <div>{msg.message}</div>}
 
                   {msg.attachment?.secure_url && (
-                    <div className="mt-2">
-                      {msg.attachment.secure_url.match(/\.(jpe?g|png|gif|webp)$/i) ? (
-                        <img
-                          src={msg.attachment.secure_url}
-                          alt={msg.attachment.original_filename}
-                          className="max-w-full h-auto rounded-md"
-                        />
-                      ) : (
+                    <div className="mt-2 space-y-1">
+                      {/* Image Preview */}
+                      {msg.attachment.secure_url.match(
+                        /\.(jpe?g|png|gif|webp)$/i
+                      ) ? (
                         <a
                           href={msg.attachment.secure_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="underline text-blue-500"
                         >
-                          📎 {msg.attachment.original_filename || "Download File"}
+                          <img
+                            src={msg.attachment.secure_url}
+                            alt={msg.attachment.original_filename}
+                            className="max-w-xs h-auto rounded-md hover:opacity-90 transition"
+                          />
                         </a>
+                      ) : (
+                        <>
+                          <a
+                            href={msg.attachment.secure_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline"
+                          >
+                            📄{" "}
+                            {msg.attachment.original_filename ||
+                              "View Document"}
+                          </a>
+                          <a
+                            href={msg.attachment.secure_url}
+                            download={msg.attachment.original_filename || true}
+                            className="block text-sm text-green-600 underline hover:text-green-800"
+                          >
+                            ⬇️ Download
+                          </a>
+                        </>
                       )}
                     </div>
                   )}
