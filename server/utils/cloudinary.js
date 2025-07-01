@@ -10,24 +10,31 @@ cloudinary.config({
 });
 
 
-export const uploadPdfToCloudinary = async (filePath, folder = "Lawsuits/messages") => {
+export const uploadPdfToCloudinary = async (
+  filePath,
+  folder = "Lawsuits"
+) => {
+  console.log(filePath);
   const ext = path.extname(filePath).toLowerCase();
-  const isImage = [".jpg", ".jpeg", ".png", ".gif", ".webp"].includes(ext);
-  const resourceType = isImage ? "image" : "raw";
+  const isPdf = ext === ".pdf";
+  console.log(isPdf);
 
   try {
     const result = await cloudinary.uploader.upload(filePath, {
-      resource_type: resourceType,
       folder,
+      use_filename: true,
+      unique_filename: false,
     });
 
-    fs.unlinkSync(filePath);
+    fs.unlinkSync(filePath); 
+    console.log(result.url);
     return result;
   } catch (error) {
     fs.existsSync(filePath) && fs.unlinkSync(filePath);
     throw error;
   }
 };
+
 
 
 export const deletePdfFromCloudinary = async (publicId) => {

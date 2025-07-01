@@ -12,9 +12,11 @@ const storage = multer.diskStorage({
     cb(null, tempDir);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + uniqueSuffix);
-  },
+  const ext = path.extname(file.originalname); // Extract original extension (.pdf, .jpg, etc.)
+  const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+  cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+}
+
 });
 
 const fileFilter = (req, file, cb) => {
