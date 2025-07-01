@@ -55,7 +55,7 @@ const handleAction = async (id, action) => {
   }
 };
   return (
-    <div className="min-h-screen pt-28 px-4 sm:px-8 bg-gradient-to-br from-blue-200 to-blue-100">
+    <div className="min-h-screen pt-28 px-4 sm:px-8 bg-gradient-to-br from-blue-100 to-white-50">
      <Navbar/>
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-8">
         <h2 className="text-2xl font-bold text-blue-800 mb-6 text-center">

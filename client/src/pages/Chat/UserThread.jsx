@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MessageSquare } from "lucide-react";
 import { ArrowLeftCircle } from "lucide-react";
+import Navbar from "../../components/Navbar";
 export default function UserThreads() {
   const [threads, setThreads] = useState([]);
   const [message, setMessage] = useState("");
@@ -27,6 +28,8 @@ export default function UserThreads() {
   }, []);
 
   return (
+    <>
+    <Navbar></Navbar>
     <div className="min-h-screen pt-28 px-4 sm:px-8 bg-gradient-to-br from-green-200 to-green-100">
       <button
         onClick={() => navigate(-1)}
@@ -92,5 +95,6 @@ export default function UserThreads() {
         )}
       </div>
     </div>
+    </>
   );
 }
