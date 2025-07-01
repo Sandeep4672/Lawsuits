@@ -6,6 +6,8 @@ import { uploadPdfToCloudinary } from "../utils/cloudinary.js";
 import { ApiError } from "../utils/apiError.js";
 import path from "path";
 import fs from "fs";
+
+
 export const getUserThreads = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const role = req.user.isAdmin !== undefined ? "client" : "lawyer"; 
@@ -106,3 +108,26 @@ export const sendImageMessage = async (req, res) => {
     throw new ApiError(500, "File upload failed");
   }
 };
+
+export const deleteMessage = asyncHandler(async (req, res) => {
+  const { threadId, messageId } = req.params;
+  const userId = req.user._id; 
+
+  const message = await Message.findById(messageId);
+
+  if (!message) throw new ApiError(404, "Message not found");
+  if (message.thread.toString() !== threadId) {
+    throw new ApiError(400, "Invalid thread for this message");
+  }
+  if (message.senderId.toString() !== userId.toString()) {
+    throw new ApiError(403, "You can only delete your own messages");
+  }
+
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+  if (new Date(message.createdAt) < fiveMinutesAgo) {
+    throw new ApiError(403, "Cannot delete message after 5 minutes");
+  }
+
+  await message.deleteOne();
+  res.status(200).json({ success: true, message: "Message deleted" });
+});

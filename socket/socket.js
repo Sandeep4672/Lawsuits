@@ -22,6 +22,10 @@ io.on("connection", (socket) => {
     io.to(message.threadId).emit("receiveMessage", message);
   });
 
+  socket.on("deleteMessage", ({ messageId, threadId }) => {
+    io.to(threadId).emit("messageDeleted", { messageId });
+  });
+
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });

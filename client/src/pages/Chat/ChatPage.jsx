@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeftCircle } from "lucide-react";
+import { ArrowLeftCircle, Trash2 } from "lucide-react";
 import { io } from "socket.io-client";
 
 const socket = io("ws://localhost:7000"); // Change if needed
@@ -66,7 +66,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     socket.on("receiveMessage", (msg) => {
-      if (msg.threadId === id) {
+      if (msg.threadId === id && msg.senderId !== userId) {
         setMessages((prev) => [...prev, msg]);
       }
     });
@@ -75,7 +75,7 @@ export default function ChatPage() {
       socket.off("receiveMessage");
       socket.emit("leaveRoom", id);
     };
-  }, [id]);
+  }, [id, userId]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -126,6 +126,24 @@ export default function ChatPage() {
     setSelectedFile(e.target.files[0]);
   };
 
+  const handleDelete = async (messageId) => {
+    const token = localStorage.getItem("token");
+    const headers = { Authorization: `Bearer ${token}` };
+
+    try {
+      const isLawyer = location.pathname.includes("/lawyer");
+      const url = isLawyer
+        ? `http://localhost:8000/lawyer/threads/${id}/messages/${messageId}`
+        : `http://localhost:8000/threads/${id}/messages/${messageId}`;
+
+      await axios.delete(url, { headers });
+
+      setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+    } catch (err) {
+      console.error("Failed to delete message:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-green-100 to-blue-100">
       <div className="max-w-2xl mx-auto w-full p-4 flex flex-col flex-1">
@@ -162,17 +180,28 @@ export default function ChatPage() {
                 }`}
               >
                 <div
-                  className={`px-4 py-2 max-w-xs rounded-xl shadow-sm break-words text-sm ${
+                  className={`relative px-4 py-2 max-w-xs rounded-xl shadow-sm break-words text-sm group ${
                     msg.senderId === userId
                       ? "bg-green-500 text-white rounded-br-none"
                       : "bg-gray-100 text-gray-800 rounded-bl-none"
                   }`}
                 >
+                  {/* 🗑️ Delete Icon */}
+                  {msg.senderId === userId &&
+                    new Date() - new Date(msg.createdAt) < 5 * 60 * 1000 && (
+                      <button
+                        onClick={() => handleDelete(msg._id)}
+                        className="absolute top-1 right-1 text-white text-xs opacity-0 group-hover:opacity-100 transition"
+                        title="Delete message"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+
                   {msg.message && <div>{msg.message}</div>}
 
                   {msg.attachment?.secure_url && (
                     <div className="mt-2 space-y-1">
-                      {/* Image Preview */}
                       {msg.attachment.secure_url.match(
                         /\.(jpe?g|png|gif|webp)$/i
                       ) ? (
@@ -211,7 +240,7 @@ export default function ChatPage() {
                     </div>
                   )}
 
-                  <div className="text-xs text-right mt-1 text-gray-400">
+                  <div className="text-xs text-right mt-1 text-gray-200">
                     {new Date(msg.createdAt).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",

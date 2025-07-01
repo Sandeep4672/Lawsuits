@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { MessageSquare,ArrowLeftCircle } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MessageSquare,ArrowLeftCircle } from "lucide-react";
