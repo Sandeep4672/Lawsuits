@@ -131,7 +131,7 @@ export default function ChatPage() {
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
-      const isLawyer = location.pathname.includes("/lawyer");
+      const isLawyer = localStorage.getItem("lawyerId");
       const url = isLawyer
         ? `http://localhost:8000/lawyer/threads/${id}/messages/${messageId}`
         : `http://localhost:8000/threads/${id}/messages/${messageId}`;
