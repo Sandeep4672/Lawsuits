@@ -6,7 +6,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import ChangePassword from "./pages/auth/ChangePassword";
 import VerifyOtp from "./pages/auth/VerifyOtp";
 import Dashboard from "./pages/home/Dashboard";
-import { AuthProvider } from "./context/AuthContext"; 
+import { AuthProvider } from "./context/AuthContext";
 import DocumentSummarization from "./pages/AI/DocumentSummary";
 import Footer from "./components/Footer";
 import ProfilePage from "./components/User/ProfilePage";
@@ -42,47 +42,158 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />}/>
+          <Route path="/" element={<Home />} />
           {/* Public Routes */}
-          <Route path="/signup" element={<Signup />}/>
+          <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
-          <Route path="/footer" element={<Footer/>}/>
-          <Route path="/profile" element={<ProfilePage/>}/>
-          <Route path="/500" element={<InternalServerError/>}/>
-          <Route path="/search-results" element={<SearchResults/>}/>
-          <Route path="/view-pdf/:id" element={<ViewPdf/>}/>
+          <Route path="/footer" element={<Footer />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/500" element={<InternalServerError />} />
+          <Route path="/search-results" element={<SearchResults />} />
+          <Route path="/view-pdf/:id" element={<ViewPdf />} />
           <Route path="/case/:id" element={<CaseDetails />} />
           {/* Protected Routes for Users */}
-          <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/dashboard/get-document-summary" element={<ProtectedRoute><DocumentSummarization/></ProtectedRoute>}/>
-          <Route path="/find-lawyers" element={<ProtectedRoute><FindLawyer/></ProtectedRoute>}/>
-          <Route path="/lawyer-profile/:id" element={<ProtectedRoute><LawyerProfile/></ProtectedRoute>}/>
+          <Route
+            path="/change-password"
+            element={
+              <ProtectedRoute>
+                <ChangePassword />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/get-document-summary"
+            element={
+              <ProtectedRoute>
+                <DocumentSummarization />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/find-lawyers"
+            element={
+              <ProtectedRoute>
+                <FindLawyer />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lawyer-profile/:id"
+            element={
+              <ProtectedRoute>
+                <LawyerProfile />
+              </ProtectedRoute>
+            }
+          />
           {/* Protected Routes for Lawyers */}
-          <Route path="/lawyer/request-connection" element={<LawyerProtectedRoute><ConnectionRequestForm/></LawyerProtectedRoute>}/>
-          <Route path="/lawyer/connection-requests" element={<LawyerProtectedRoute><ConnectionRequests/></LawyerProtectedRoute>}/>
-          <Route path="/lawyer/accepted-connections" element={<LawyerProtectedRoute><AcceptedConnection/></LawyerProtectedRoute>}/>
-          <Route path="/lawyer-dashboard" element={<LawyerProtectedRoute><LawerDashboard/></LawyerProtectedRoute>}/>
-          
+          <Route
+            path="/lawyer/request-connection"
+            element={
+              <ProtectedRoute>
+                <ConnectionRequestForm />
+              </ProtectedRoute>
+            }
+          />{" "}
+          <Route
+            path="/lawyer/connection-requests"
+            element={
+              <LawyerProtectedRoute>
+                <ConnectionRequests />
+              </LawyerProtectedRoute>
+            }
+          />
+          <Route
+            path="/lawyer/accepted-connections"
+            element={
+              <LawyerProtectedRoute>
+                <AcceptedConnection />
+              </LawyerProtectedRoute>
+            }
+          />
+          <Route
+            path="/lawyer-dashboard"
+            element={
+              <LawyerProtectedRoute>
+                <LawerDashboard />
+              </LawyerProtectedRoute>
+            }
+          />
           {/* Protected Routes for Admin */}
-          <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminDashboard/></AdminProtectedRoute>}/>
-          <Route path="/admin/lawyers" element={<AdminProtectedRoute><VerifiedLawyer/></AdminProtectedRoute>}/>
-          <Route path="/admin/lawyer-requests" element={<AdminProtectedRoute><LawyerRequests/></AdminProtectedRoute>}/>
-          <Route path="/admin/lawyer/:id" element={<AdminProtectedRoute><LawyerDetail/></AdminProtectedRoute>}/>
-          <Route path="/admin/verified-lawyer/:id" element={<AdminProtectedRoute><VerifiedLawyerDetails/></AdminProtectedRoute>}/>
-          <Route path="/admin/view-proof" element={<AdminProtectedRoute><ViewProofFile/></AdminProtectedRoute>}/>
-          <Route path="/admin/add-case" element={<AdminProtectedRoute><AddCase/></AdminProtectedRoute>}/>
+          <Route
+            path="/admin/dashboard"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboard />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/lawyers"
+            element={
+              <AdminProtectedRoute>
+                <VerifiedLawyer />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/lawyer-requests"
+            element={
+              <AdminProtectedRoute>
+                <LawyerRequests />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/lawyer/:id"
+            element={
+              <AdminProtectedRoute>
+                <LawyerDetail />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/verified-lawyer/:id"
+            element={
+              <AdminProtectedRoute>
+                <VerifiedLawyerDetails />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/view-proof"
+            element={
+              <AdminProtectedRoute>
+                <ViewProofFile />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/add-case"
+            element={
+              <AdminProtectedRoute>
+                <AddCase />
+              </AdminProtectedRoute>
+            }
+          />
           {/*Lawyer Routes*/}
-          <Route path="/lawyer-signup" element={<LawyerSignup/>}/>
-          <Route path="/lawyer-login" element={<LawyerLogin/>}/>
-          { /* Chat Routes */}
-          <Route path="/chat/threads" element={<UserThreads/>}/>
-          <Route path="/chat/thread/:id" element={<ChatPage/>}/>
-          <Route path="/chat/lawyer/threads" element={<LawyerThreads/>}/>
+          <Route path="/lawyer-signup" element={<LawyerSignup />} />
+          <Route path="/lawyer-login" element={<LawyerLogin />} />
+          {/* Chat Routes */}
+          <Route path="/chat/threads" element={<UserThreads />} />
+          <Route path="/chat/thread/:id" element={<ChatPage />} />
+          <Route path="/chat/lawyer/threads" element={<LawyerThreads />} />
           {/* Catch-all route for 404 Not Found */}
-          <Route path="*" element={<NotFound/>}/>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
