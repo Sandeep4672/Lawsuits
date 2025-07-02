@@ -1,11 +1,10 @@
 import { LawyerRequest } from "../models/lawyerRequest.model.js";
 import { Lawyer } from "../models/lawyer.model.js";
-import { uploadPdfToCloudinary } from "../utils/cloudinary.js";
+import { deleteFileFromCloudinary, uploadFileToCloudinary } from "../utils/cloudinary.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import fs from "fs";
-import path from "path";
 
 
 
@@ -19,9 +18,8 @@ export const signupLawyer = async (req, res, next) => {
       practiceAreas,
       experience,
       sop,
-      password
+      password,
     } = req.body;
-
 
     const existingLawyer = await Lawyer.findOne({ email });
     if (existingLawyer) {
@@ -34,21 +32,20 @@ export const signupLawyer = async (req, res, next) => {
     }
 
     const proofUrls = [];
+    const uploadedPublicIds = [];
 
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const ext = path.extname(file.originalname);
-        const newPath = `${file.path}${ext}`;
-        fs.renameSync(file.path, newPath); // Rename with original extension
+        const path = file.path;
 
-        const result = await uploadPdfToCloudinary(newPath, "lawyers/proof");
-
-        proofUrls.push(result.secure_url);
-
-
-        fs.existsSync(newPath) && fs.unlinkSync(newPath); // Cleanup
+        try {
+          const result = await uploadFileToCloudinary(path, "Lawsuits/LawyerProofs");
+          proofUrls.push(result.secure_url);
+          uploadedPublicIds.push(result.public_id); 
+        } finally {
+          fs.existsSync(path) && fs.unlinkSync(path); 
+        }
       }
-
     } else {
       return res.status(400).json({ message: "At least one proof file is required" });
     }
@@ -82,7 +79,18 @@ export const signupLawyer = async (req, res, next) => {
       message: "Lawyer request submitted successfully",
       lawyerRequest,
     });
+
   } catch (error) {
+    if (Array.isArray(uploadedPublicIds) && uploadedPublicIds.length > 0) {
+      for (const publicId of uploadedPublicIds) {
+        try {
+          await deleteFileFromCloudinary(publicId);
+        } catch (cleanupError) {
+          console.error("Cloudinary cleanup failed:", cleanupError.message);
+        }
+      }
+    }
+
     next(error);
   }
 };

@@ -2,7 +2,6 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
-import path from "path";
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -10,36 +9,35 @@ cloudinary.config({
 });
 
 
-export const uploadPdfToCloudinary = async (
-  filePath,
-  folder = "Lawsuits"
-) => {
-  console.log(filePath);
-  const ext = path.extname(filePath).toLowerCase();
-  const isPdf = ext === ".pdf";
-  console.log(isPdf);
-
+export const uploadFileToCloudinary = async (filePath, folder) => {
   try {
+    if (!folder) {
+      throw new Error("Cloudinary folder name is required.");
+    }
+    console.log(filePath,folder);
     const result = await cloudinary.uploader.upload(filePath, {
       folder,
       use_filename: true,
       unique_filename: false,
+      resource_type:"auto"
     });
 
-    fs.unlinkSync(filePath); 
-    console.log(result.url);
+    fs.unlinkSync(filePath);
     return result;
   } catch (error) {
-    fs.existsSync(filePath) && fs.unlinkSync(filePath);
+    console.log("In catch cloudinary");
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
     throw error;
   }
 };
 
 
 
-export const deletePdfFromCloudinary = async (publicId) => {
+export const deleteFileFromCloudinary = async (publicId) => {
   try {
-    await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
+    await cloudinary.uploader.destroy(publicId, { resource_type: "auto" });
   } catch (error) {
     console.error(" Cloudinary Delete Error:", error);
     throw error;

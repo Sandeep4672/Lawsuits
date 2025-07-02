@@ -7,7 +7,7 @@ import { ConnectionRequest } from "../models/connectionRequest.model.js";
 import { Lawyer } from "../models/lawyer.model.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
-import { uploadPdfToCloudinary } from "../utils/cloudinary.js";
+import { uploadFileToCloudinary } from "../utils/cloudinary.js";
 
 
 export const summarizePdfFile = async (filePath) => {
@@ -66,7 +66,7 @@ export const sendConnectionRequest = asyncHandler(async (req, res) => {
 
   const uploadedDocs = [];
   for (const file of files) {
-    const uploaded = await uploadPdfToCloudinary(file.path);
+    const uploaded = await uploadFileToCloudinary(file.path);
     uploadedDocs.push({
       public_id: uploaded.public_id,
       secure_url: uploaded.secure_url,

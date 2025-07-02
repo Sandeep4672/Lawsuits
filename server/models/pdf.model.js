@@ -17,7 +17,7 @@ const pdfSchema = new mongoose.Schema(
     summary: {
       type: String,
       trim: true,
-      maxlength: 2000,
+      maxlength: 12000,
     },
     partiesInvolved: [{
       type: String,

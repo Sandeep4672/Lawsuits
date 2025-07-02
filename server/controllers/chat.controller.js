@@ -2,7 +2,7 @@ import { ChatThread } from "../models/chatThread.model.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {Message} from "../models/message.model.js";
-import { uploadPdfToCloudinary } from "../utils/cloudinary.js";
+import { uploadFileToCloudinary } from "../utils/cloudinary.js";
 import { ApiError } from "../utils/apiError.js";
 import path from "path";
 import fs from "fs";
@@ -59,7 +59,7 @@ export const sendMessage = asyncHandler(async (req, res) => {
 });
 
 
-export const sendImageMessage = async (req, res) => {
+export const sendFileMessage = async (req, res) => {
   const { threadId } = req.params;
 
   if (!req.file) {
@@ -84,41 +84,59 @@ export const sendImageMessage = async (req, res) => {
   const originalExt = path.extname(req.file.originalname) || getExtFromMime(req.file.mimetype);
   const newPath = tempPath + originalExt;
 
+  let cloudinaryResult = null;
+
   try {
     await fs.promises.rename(tempPath, newPath);
 
-
-    const result = await uploadPdfToCloudinary(newPath);
+    cloudinaryResult = await uploadFileToCloudinary(newPath, "Lawsuits/Messages");
 
     const message = await Message.create({
       thread: threadId,
       senderId: userId,
       senderType,
-      message: req.body.message || req.file.originalname, 
+      message: req.body.message || req.file.originalname,
       attachment: {
-        public_id: result.public_id,
-        secure_url: result.secure_url,
-        original_filename: result.original_filename + originalExt,
+        public_id: cloudinaryResult.public_id,
+        secure_url: cloudinaryResult.secure_url,
+        original_filename: cloudinaryResult.original_filename + originalExt,
       },
     });
 
     res.status(201).json(new ApiResponse(201, message, "Attachment message sent"));
   } catch (err) {
     console.error("Upload Error:", err);
+
+    if (cloudinaryResult?.public_id) {
+      try {
+        await deleteFileFromCloudinary(cloudinaryResult.public_id);
+      } catch (cleanupErr) {
+        console.error("Cloudinary cleanup failed:", cleanupErr.message);
+      }
+    }
+
     throw new ApiError(500, "File upload failed");
+  } finally {
+    if (fs.existsSync(newPath)) {
+      fs.unlinkSync(newPath);
+    } else if (fs.existsSync(tempPath)) {
+      fs.unlinkSync(tempPath);
+    }
   }
 };
 
 export const deleteMessage = asyncHandler(async (req, res) => {
   const { threadId, messageId } = req.params;
-  const userId = req.user._id; 
+  const userId = req.user._id;
 
   const message = await Message.findById(messageId);
 
   if (!message) throw new ApiError(404, "Message not found");
+
   if (message.thread.toString() !== threadId) {
     throw new ApiError(400, "Invalid thread for this message");
   }
+
   if (message.senderId.toString() !== userId.toString()) {
     throw new ApiError(403, "You can only delete your own messages");
   }
@@ -128,6 +146,16 @@ export const deleteMessage = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Cannot delete message after 5 minutes");
   }
 
+  const publicId = message.attachment?.public_id;
+  if (publicId) {
+    try {
+      await deleteFileFromCloudinary(publicId);
+    } catch (err) {
+      console.error("Cloudinary cleanup failed:", err.message);
+    }
+  }
+
   await message.deleteOne();
+
   res.status(200).json({ success: true, message: "Message deleted" });
 });
