@@ -61,30 +61,51 @@ export const sendConnectionRequest = asyncHandler(async (req, res) => {
   });
 
   if (existing) {
-    throw new ApiError(409, "You already have an exisiting connection request");
+    throw new ApiError(409, "You already have an existing connection request");
   }
 
   const uploadedDocs = [];
-  for (const file of files) {
-    const uploaded = await uploadFileToCloudinary(file.path);
-    uploadedDocs.push({
-      public_id: uploaded.public_id,
-      secure_url: uploaded.secure_url,
-      original_filename: uploaded.original_filename,
+  const uploadedPublicIds = [];
+
+  try {
+    for (const file of files) {
+      const uploaded = await uploadFileToCloudinary(file.path, "LawSuits/ThreadFiles");
+      uploadedDocs.push({
+        public_id: uploaded.public_id,
+        secure_url: uploaded.secure_url,
+        original_filename: uploaded.original_filename,
+      });
+      uploadedPublicIds.push(uploaded.public_id);
+    }
+
+    const newRequest = await ConnectionRequest.create({
+      client: clientId,
+      lawyer: lawyerId,
+      subject,
+      message,
+      documents: uploadedDocs,
     });
+
+    res
+      .status(201)
+      .json(new ApiResponse(201, newRequest, "Connection request sent successfully"));
+  } catch (error) {
+    for (const publicId of uploadedPublicIds) {
+      try {
+        await deleteFileFromCloudinary(publicId);
+      } catch (cleanupErr) {
+        console.error("Cloudinary cleanup failed:", cleanupErr.message);
+      }
+    }
+
+    throw error; 
+  } finally {
+    for (const file of files) {
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
+    }
   }
-
-  const newRequest = await ConnectionRequest.create({
-    client: clientId,
-    lawyer: lawyerId,
-    subject,
-    message,
-    documents: uploadedDocs,
-  });
-
-  res.status(201).json(
-    new ApiResponse(201, newRequest, "Connection request sent successfully")
-  );
 });
 
 

@@ -2,7 +2,7 @@ import { ChatThread } from "../models/chatThread.model.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {Message} from "../models/message.model.js";
-import { uploadFileToCloudinary } from "../utils/cloudinary.js";
+import { uploadFileToCloudinary,deleteFileFromCloudinary } from "../utils/cloudinary.js";
 import { ApiError } from "../utils/apiError.js";
 import path from "path";
 import fs from "fs";
