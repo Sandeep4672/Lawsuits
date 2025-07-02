@@ -7,7 +7,7 @@ import Navbar from "../../components/Navbar";
 export default function DocumentSummarization() {
   const [file, setFile] = useState(null);
   const [summary, setSummary] = useState("");
-  const [terms, setTerms] = useState([]); // NEW
+  const [terms, setTerms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -25,18 +25,18 @@ export default function DocumentSummarization() {
     setLoading(true);
 
     try {
-      const token=localStorage.getItem("token");
+      const token = localStorage.getItem("token");
       const res = await axios.post("http://localhost:8000/user/summarize", formData, {
-        headers: { "Content-Type": "multipart/form-data"
-          , Authorization: `Bearer ${token}` // include token for authentication
-         },
-
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       setSummary(res.data.summary);
-      setTerms(res.data.legalTerms || []); 
+      setTerms(res.data.legalTerms || []);
     } catch (err) {
-      setSummary("Error processing PDF. Please try again.");
+      setSummary("❌ Error processing PDF. Please try again.");
       setTerms([]);
     } finally {
       setLoading(false);
@@ -48,11 +48,9 @@ export default function DocumentSummarization() {
       const response = await axios.post("http://localhost:8000/fn/save-summary", {
         filename: file?.name || "Untitled Document",
         summary,
-        terms, // optional: if you also save legal terms
+        terms,
       });
-      if (response.status === 200) {
-        setSaved(true);
-      }
+      if (response.status === 200) setSaved(true);
     } catch (err) {
       console.error("Error saving summary:", err);
     }
@@ -61,14 +59,14 @@ export default function DocumentSummarization() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen pt-32 pb-12 bg-gradient-to-br from-green-200 to-green-100 px-4 py-20">
+      <div className="min-h-screen pt-32 pb-12 bg-[#1e1e2f] text-white px-4">
         <motion.div
-          className="max-w-5xl mx-auto bg-white p-10 rounded-3xl shadow-2xl"
+          className="max-w-5xl mx-auto bg-[#2a2a3d] p-10 rounded-3xl shadow-2xl"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl font-bold mb-6 text-center text-green-800 tracking-wide">
+          <h2 className="text-3xl font-bold mb-6 text-center text-green-400 tracking-wide">
             📄 AI-Powered Document Summarizer
           </h2>
 
@@ -85,11 +83,11 @@ export default function DocumentSummarization() {
                 onChange={handleFileChange}
                 className="hidden"
               />
-              <div className="w-full border-2 border-dashed border-green-400 rounded-xl py-4 px-6 text-center text-gray-500 hover:bg-green-50 transition-all">
+              <div className="w-full border-2 border-dashed border-green-500 rounded-xl py-4 px-6 text-center text-gray-300 hover:bg-[#1f1f2f] transition-all">
                 {file ? file.name : "Click to upload a PDF file"}
               </div>
-              <h4 className="text-lg font-bold mb-6 text-center text-gray-400 tracking-wide">
-                LawSuits only provide information, not legal advice.
+              <h4 className="text-sm mt-2 text-center text-gray-500">
+                ⚖️ LawSuits only provides information, not legal advice.
               </h4>
             </label>
 
@@ -98,15 +96,15 @@ export default function DocumentSummarization() {
               whileTap={{ scale: 0.95 }}
               onClick={handleUpload}
               disabled={loading}
-              className="flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white font-medium px-6 py-2 rounded-lg shadow transition"
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 rounded-lg shadow transition"
             >
-              <FaFileUpload /> {loading ? "Processing..." : "Upload and Summarize"}
+              <FaFileUpload /> {loading ? "Processing..." : "Upload & Summarize"}
             </motion.button>
           </motion.div>
 
           {loading && (
             <motion.p
-              className="mt-6 text-center text-gray-500 italic"
+              className="mt-6 text-center text-gray-400 italic"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -117,24 +115,24 @@ export default function DocumentSummarization() {
 
           {summary && (
             <motion.div
-              className="mt-8 bg-gray-50 border border-green-200 p-6 rounded-xl"
+              className="mt-10 bg-[#1f1f2f] border border-green-500 p-6 rounded-xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <h3 className="text-xl font-semibold text-green-800 mb-3">
+              <h3 className="text-xl font-semibold text-green-400 mb-3">
                 📝 Summary
               </h3>
-              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed mb-4">
+              <p className="text-gray-200 whitespace-pre-wrap leading-relaxed mb-4">
                 {summary}
               </p>
 
               {terms.length > 0 && (
                 <div className="mt-4">
-                  <h4 className="text-lg font-semibold text-green-700 mb-2">
+                  <h4 className="text-lg font-semibold text-green-300 mb-2">
                     📚 Legal Terms Identified
                   </h4>
-                  <ul className="list-disc pl-6 text-gray-600 space-y-1">
+                  <ul className="list-disc pl-6 text-gray-300 space-y-1">
                     {terms.map((term, index) => (
                       <li key={index}>{term}</li>
                     ))}

@@ -11,11 +11,14 @@ export default function ConnectionRequests() {
     const fetchRequests = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/lawyer/connections/requests", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await axios.get(
+          "http://localhost:8000/lawyer/connections/requests",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setRequests(res.data.data || []);
       } catch (err) {
         setMessage("Failed to fetch connection requests.");
@@ -25,52 +28,49 @@ export default function ConnectionRequests() {
     };
     fetchRequests();
   }, []);
-const handleAction = async (id, action) => {
-  try {
-    const token = localStorage.getItem("token");
-    if (action === "accept") {
-      await axios.patch(
-        `http://localhost:8000/lawyer/connections/requests/${id}/accept`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    } else if (action === "reject") {
-      await axios.delete(
-        `http://localhost:8000/lawyer/connections/requests/${id}/reject`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+
+  const handleAction = async (id, action) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (action === "accept") {
+        await axios.patch(
+          `http://localhost:8000/lawyer/connections/requests/${id}/accept`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        await axios.delete(
+          `http://localhost:8000/lawyer/connections/requests/${id}/reject`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
+      setRequests((prev) => prev.filter((req) => req._id !== id));
+      setMessage(`Request ${action}ed successfully.`);
+    } catch (err) {
+      setMessage(`Failed to ${action} request.`);
     }
-    setRequests((prev) => prev.filter((req) => req._id !== id));
-    setMessage(`Request ${action}ed successfully.`);
-  } catch (err) {
-    setMessage(`Failed to ${action} request.`);
-  }
-};
+  };
+
   return (
-    <div className="min-h-screen pt-28 px-4 sm:px-8 bg-gradient-to-br from-blue-100 to-white-50">
-     <Navbar/>
-      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-blue-800 mb-6 text-center">
+    <div className="min-h-screen pt-28 px-4 sm:px-8 bg-gray-900 text-white">
+      <Navbar />
+      <div className="max-w-5xl mx-auto bg-gray-800 rounded-xl shadow-2xl p-8 border border-gray-700 transition-all">
+        <h2 className="text-2xl font-bold text-blue-400 mb-6 text-center">
           📥 User Connection Requests
         </h2>
+
         {loading ? (
-          <div className="text-center text-gray-500">Loading...</div>
+          <div className="text-center text-gray-400">Loading...</div>
         ) : message ? (
-          <div className="text-center text-red-600">{message}</div>
+          <div className="text-center text-red-400">{message}</div>
         ) : requests.length === 0 ? (
-          <div className="text-center text-gray-600">No connection requests found.</div>
+          <div className="text-center text-gray-500">
+            No connection requests found.
+          </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-              <thead className="bg-blue-100 text-blue-800 font-semibold">
+            <table className="min-w-full divide-y divide-gray-700 text-sm text-left">
+              <thead className="bg-gray-700 text-blue-200">
                 <tr>
                   <th className="py-3 px-6">Client Name</th>
                   <th className="py-3 px-6">Subject</th>
@@ -81,10 +81,15 @@ const handleAction = async (id, action) => {
                   <th className="py-3 px-6 text-center">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-700">
                 {requests.map((req) => (
-                  <tr key={req._id} className="hover:bg-blue-50 transition-all duration-200">
-                    <td className="px-6 py-3">{req.client?.fullName || "N/A"}</td>
+                  <tr
+                    key={req._id}
+                    className="hover:bg-gray-700/50 transition-all duration-200"
+                  >
+                    <td className="px-6 py-3">
+                      {req.client?.fullName || "N/A"}
+                    </td>
                     <td className="px-6 py-3">{req.subject}</td>
                     <td className="px-6 py-3">{req.message}</td>
                     <td className="px-6 py-3">
@@ -93,7 +98,7 @@ const handleAction = async (id, action) => {
                           href={req.documents[0].secure_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 underline"
+                          className="text-blue-400 hover:underline"
                         >
                           View
                         </a>
@@ -107,19 +112,19 @@ const handleAction = async (id, action) => {
                     </td>
                     <td className="px-6 py-3 flex gap-2">
                       <button
-                         onClick={() => handleAction(req._id, "accept")}
-                        className=" cursor-pointer bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+                        onClick={() => handleAction(req._id, "accept")}
+                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition-all"
                       >
                         Accept
                       </button>
                       <button
                         onClick={() => handleAction(req._id, "reject")}
-                        className=" cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md transition-all"
                       >
                         Reject
                       </button>
                     </td>
-                    </tr>
+                  </tr>
                 ))}
               </tbody>
             </table>

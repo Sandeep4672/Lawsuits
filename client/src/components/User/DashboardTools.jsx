@@ -15,25 +15,18 @@ const tools = [
     icon: <FaFileAlt size={32} />,
     path: "get-document-summary",
   },
-   {
-    title:"Find a Lawyer",
+  {
+    title: "Find a Lawyer",
     description: "Connect with qualified lawyers for your legal needs.",
     icon: <FaFileSignature size={32} />,
-    path:"/find-lawyers",
+    path: "/find-lawyers",
   },
- 
-  // {
-  //   title: "Ved AI Legal Counsel",
-  //   description: "SOTA Indian AI with multi-stage reasoning.",
-  //   icon: <FaRobot size={32} />,
-  //   path: "/dashboard",
-  // },
-    {
-    title:"Messages with Lawer",
-    description: "Check your chat with lawers.",
+  {
+    title: "Messages with Lawyer",
+    description: "Check your chat with lawyers.",
     icon: <FaComments size={32} />,
-    path:"/chat/threads",
-  },  
+    path: "/chat/threads",
+  },
   {
     title: "Document OCR",
     description: "High-volume text extraction with multi-language support.",
@@ -49,40 +42,34 @@ const tools = [
   {
     title: "Default Mode",
     description: "General-purpose AI chat interface.",
-    icon: <FaComments size={32} />,
+    icon: <FaRobot size={32} />,
     path: "/dashboard",
   },
- 
 ];
 
 export default function DashboardTools() {
   return (
-    <div className="pt-16 pb-12 px-6 bg-gradient-to-br from-green-100 to-white min-h-screen">
-      <h2 className="text-3xl font-bold text-center text-green-900 mb-10 tracking-tight">
-        Choose a Legal Tool
+    <div className="pt-12 pb-12 px-6 min-h-screen bg-transparent">
+      <h2 className="text-3xl font-bold text-center text-white mb-10 tracking-tight drop-shadow-lg">
+        ⚙️ Choose a Legal Tool
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {tools.map((tool, index) => (
           <Link to={tool.path} key={index}>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.15 }}
-              className="group hover:scale-[1.03] bg-white p-6 rounded-2xl shadow-xl border hover:shadow-2xl hover:border-green-500 transition-all duration-300 cursor-pointer relative h-full "
+              className="group hover:scale-[1.03] bg-[#1e1e1e] p-6 rounded-2xl shadow-xl border border-gray-700 hover:border-green-500 hover:shadow-green-800 transition-all duration-300 cursor-pointer h-full"
             >
-              <div className="flex  items-center justify-between mb-4 ">
-                <div className="text-green-700 group-hover:text-green-900 transition">{tool.icon}</div>
-                {tool.tag && (
-                  <span className="text-xs bg-orange-500 text-white px-2 py-1 rounded-full shadow">
-                    {tool.tag}
-                  </span>
-                )}
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-green-400 group-hover:text-green-500 transition">{tool.icon}</div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 group-hover:text-green-800">
+              <h3 className="text-lg font-semibold text-white group-hover:text-green-400">
                 {tool.title}
               </h3>
-              <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+              <p className="text-sm text-gray-400 mt-2 leading-relaxed">
                 {tool.description}
               </p>
             </motion.div>

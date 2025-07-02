@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { AuthContext } from "../../context/AuthContext";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const { isLoggedIn } = useContext(AuthContext);
@@ -15,60 +16,88 @@ export default function Home() {
   }, [isLoggedIn, navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-purple-100 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] to-[#1e293b] text-white flex flex-col">
       <Navbar />
 
       <div className="flex-1 flex items-center justify-center px-6 pt-20 pb-16">
-        <div className="text-center max-w-4xl">
-          <h1 className="pt-24 text-5xl font-extrabold text-green-700 mb-4 animate-fade-in-down">
-<img src="/LawSuitsLogo1.png" alt="LawSuits Logo" className="inline-block align-middle w-12 h-12 mr-2" /> Welcome to <span className="text-blue-700">LawSuits</span>          </h1>
-          <p className="text-gray-700 text-lg md:text-xl mb-10">
-            Empowering you with easy access to legal insights, verified lawyers,
-            and instant AI summaries for your legal queries.
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-4xl"
+        >
+          <h1 className="pt-24 text-4xl sm:text-5xl font-extrabold text-green-400 mb-4 animate-fade-in-down">
+            <img
+              src="/LawSuitsLogo1.png"
+              alt="LawSuits Logo"
+              className="inline-block align-middle w-12 h-12 mr-2"
+            />
+            Welcome to <span className="text-blue-400">LawSuits</span>
+          </h1>
+          <p className="text-gray-300 text-lg md:text-xl mb-10">
+            Empowering you with easy access to legal insights, verified lawyers, and instant AI summaries for your legal queries.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-6">
-            {/* User Box */}
-            <div className="rounded-2xl bg-white/60 backdrop-blur-md border border-gray-300 shadow-lg p-8 hover:shadow-2xl transition-all duration-300">
-              <h2 className="text-2xl font-semibold text-green-700 mb-5">👥 For Users</h2>
-              <p className="text-gray-600 mb-4">Access your dashboard, track legal queries, and connect with lawyers easily.</p>
+            {/* User Section */}
+            <motion.div
+              whileHover={{
+                scale: 1.03,
+                boxShadow: "0 0 15px #22c55e",
+                borderColor: "#22c55e",
+              }}
+              className="rounded-2xl bg-white/10 backdrop-blur-md border border-gray-600 shadow-md p-8 transition-all duration-300"
+            >
+              <h2 className="text-2xl font-semibold text-green-400 mb-5">👥 For Users</h2>
+              <p className="text-gray-300 mb-4">
+                Access your dashboard, track legal queries, and connect with lawyers easily.
+              </p>
               <div className="flex flex-col gap-3">
                 <Link
                   to="/login"
-                  className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                  className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition"
                 >
                   Login
                 </Link>
                 <Link
                   to="/signup"
-                  className="px-6 py-2 bg-white border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition"
+                  className="px-6 py-2 border border-green-400 text-green-400 hover:bg-green-500 hover:text-white rounded-lg transition"
                 >
                   Sign Up
                 </Link>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Lawyer Box */}
-            <div className="rounded-2xl bg-white/60 backdrop-blur-md border border-gray-300 shadow-lg p-8 hover:shadow-2xl transition-all duration-300">
-              <h2 className="text-2xl font-semibold text-blue-700 mb-5">⚖️ For Lawyers</h2>
-              <p className="text-gray-600 mb-4">Manage client requests, update availability, and offer legal guidance.</p>
+            {/* Lawyer Section */}
+            <motion.div
+              whileHover={{
+                scale: 1.03,
+                boxShadow: "0 0 15px #3b82f6",
+                borderColor: "#3b82f6",
+              }}
+              className="rounded-2xl bg-white/10 backdrop-blur-md border border-gray-600 shadow-md p-8 transition-all duration-300"
+            >
+              <h2 className="text-2xl font-semibold text-blue-400 mb-5">⚖️ For Lawyers</h2>
+              <p className="text-gray-300 mb-4">
+                Manage client requests, update availability, and offer legal guidance.
+              </p>
               <div className="flex flex-col gap-3">
                 <Link
                   to="/lawyer-login"
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition"
                 >
                   Lawyer Login
                 </Link>
                 <Link
                   to="/lawyer-signup"
-                  className="px-6 py-2 bg-white border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition"
+                  className="px-6 py-2 border border-blue-400 text-blue-400 hover:bg-blue-500 hover:text-white rounded-lg transition"
                 >
                   Lawyer Sign Up
                 </Link>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       <Footer />

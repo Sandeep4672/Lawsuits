@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "./LawyerNavbar";
-export default function ConnectionRequests() {
+
+export default function AcceptedConnections() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
@@ -10,14 +11,17 @@ export default function ConnectionRequests() {
     const fetchRequests = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/lawyer/connections/accepted", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await axios.get(
+          "http://localhost:8000/lawyer/connections/accepted",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setRequests(res.data.data || []);
       } catch (err) {
-        setMessage("Failed to fetch connection requests.");
+        setMessage("Failed to fetch accepted connections.");
       } finally {
         setLoading(false);
       }
@@ -26,22 +30,25 @@ export default function ConnectionRequests() {
   }, []);
 
   return (
-    <div className="min-h-screen pt-28 px-4 sm:px-8 bg-gradient-to-br from-blue-100 to-white-50">
-      <Navbar/>
-      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-blue-800 mb-6 text-center">
-          📥 User Accepted  Connection 
+    <div className="min-h-screen pt-28 px-4 sm:px-8 bg-gray-900 text-white">
+      <Navbar />
+      <div className="max-w-5xl mx-auto bg-gray-800 rounded-xl shadow-2xl p-8 border border-gray-700 transition-all">
+        <h2 className="text-2xl font-bold text-blue-400 mb-6 text-center">
+          ✅ User Accepted Connections
         </h2>
+
         {loading ? (
-          <div className="text-center text-gray-500">Loading...</div>
+          <div className="text-center text-gray-400">Loading...</div>
         ) : message ? (
-          <div className="text-center text-red-600">{message}</div>
+          <div className="text-center text-red-400">{message}</div>
         ) : requests.length === 0 ? (
-          <div className="text-center text-gray-600">No Accepted connection found.</div>
+          <div className="text-center text-gray-500">
+            No accepted connections found.
+          </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-              <thead className="bg-blue-100 text-blue-800 font-semibold">
+            <table className="min-w-full divide-y divide-gray-700 text-sm text-left">
+              <thead className="bg-gray-700 text-blue-200">
                 <tr>
                   <th className="py-3 px-6">Client Name</th>
                   <th className="py-3 px-6">Subject</th>
@@ -51,10 +58,15 @@ export default function ConnectionRequests() {
                   <th className="py-3 px-6">Requested At</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-700">
                 {requests.map((req) => (
-                  <tr key={req._id} className="hover:bg-blue-50 transition-all duration-200">
-                    <td className="px-6 py-3">{req.client?.fullName || "N/A"}</td>
+                  <tr
+                    key={req._id}
+                    className="hover:bg-gray-700/50 transition-all duration-200"
+                  >
+                    <td className="px-6 py-3">
+                      {req.client?.fullName || "N/A"}
+                    </td>
                     <td className="px-6 py-3">{req.subject}</td>
                     <td className="px-6 py-3">{req.message}</td>
                     <td className="px-6 py-3">
@@ -63,7 +75,7 @@ export default function ConnectionRequests() {
                           href={req.documents[0].secure_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 underline"
+                          className="text-blue-400 hover:underline"
                         >
                           View
                         </a>
@@ -75,7 +87,7 @@ export default function ConnectionRequests() {
                     <td className="px-6 py-3">
                       {new Date(req.createdAt).toLocaleString()}
                     </td>
-                    </tr>
+                  </tr>
                 ))}
               </tbody>
             </table>

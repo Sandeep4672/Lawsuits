@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import InputField from "../../components/InputFIeld";
 import Navbar from "../../components/Navbar";
+
 export default function LawyerSignup() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -50,7 +51,7 @@ export default function LawyerSignup() {
       });
 
       setSuccessMsg(
-        "✅ Signup successful! Your status is pending. We'll email you once verified. You'll be able to login then."
+        "✅ Signup successful! Your status is pending. You'll be notified after verification."
       );
       setFormData({
         fullName: "",
@@ -72,9 +73,9 @@ export default function LawyerSignup() {
     <>
       <Navbar />
 
-      <div className=" pt-30 min-h-screen bg-gradient-to-br from-blue-200 to-blue-100 px-4 py-16">
-        <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8">
-          <h2 className="text-3xl font-bold text-blue-700 mb-6 text-center">
+      <div className="pt-24 min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 px-4 py-16 text-white">
+        <div className="max-w-3xl mx-auto bg-gray-900 border border-blue-700 shadow-xl rounded-2xl p-8">
+          <h2 className="text-3xl font-bold text-blue-400 mb-6 text-center">
             🧑‍⚖️ Lawyer Signup
           </h2>
 
@@ -85,6 +86,8 @@ export default function LawyerSignup() {
               value={formData.fullName}
               onChange={handleChange}
               required
+              className="bg-gray-800 text-white border-gray-600"
+              labelClass="text-white"
             />
             <InputField
               label="Email"
@@ -93,6 +96,8 @@ export default function LawyerSignup() {
               value={formData.email}
               onChange={handleChange}
               required
+              className="bg-gray-800 text-white border-gray-600"
+              labelClass="text-white"
             />
             <InputField
               label="Phone Number"
@@ -101,6 +106,8 @@ export default function LawyerSignup() {
               value={formData.phone}
               onChange={handleChange}
               required
+              className="bg-gray-800 text-white border-gray-600"
+              labelClass="text-white"
             />
             <InputField
               label="Bar Council Registration Number"
@@ -108,6 +115,8 @@ export default function LawyerSignup() {
               value={formData.barId}
               onChange={handleChange}
               required
+              className="bg-gray-800 text-white border-gray-600"
+              labelClass="text-white"
             />
             <InputField
               label="Practice Areas (e.g., Criminal, Civil)"
@@ -115,6 +124,8 @@ export default function LawyerSignup() {
               value={formData.practiceAreas}
               onChange={handleChange}
               required
+              className="bg-gray-800 text-white border-gray-600"
+              labelClass="text-white"
             />
             <InputField
               label="Years of Experience"
@@ -123,6 +134,8 @@ export default function LawyerSignup() {
               value={formData.experience}
               onChange={handleChange}
               required
+              className="bg-gray-800 text-white border-gray-600"
+              labelClass="text-white"
             />
             <InputField
               label="Password"
@@ -131,10 +144,12 @@ export default function LawyerSignup() {
               value={formData.password}
               onChange={handleChange}
               required
+              className="bg-gray-800 text-white border-gray-600"
+              labelClass="text-white"
             />
 
             <div>
-              <label className="block mb-1 font-medium text-gray-700">
+              <label className="block mb-1 font-medium text-white">
                 Upload Lawyer Certificate / Valid ID
               </label>
               <input
@@ -144,12 +159,12 @@ export default function LawyerSignup() {
                 multiple
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-300 rounded px-3 py-2 bg-white"
+                className="w-full bg-gray-800 text-white border border-gray-600 rounded px-3 py-2"
               />
             </div>
 
             <div>
-              <label className="block mb-1 font-medium text-gray-700">
+              <label className="block mb-1 font-medium text-white">
                 Statement of Purpose (Optional)
               </label>
               <textarea
@@ -157,22 +172,24 @@ export default function LawyerSignup() {
                 rows="4"
                 value={formData.sop}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full bg-gray-800 text-white border border-gray-600 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             {successMsg && (
-              <p className="text-green-600 text-center font-medium">
+              <p className="text-green-400 text-center font-medium">
                 {successMsg}
               </p>
             )}
             {errorMsg && (
-              <p className="text-red-600 text-center font-medium">{errorMsg}</p>
+              <p className="text-red-400 text-center font-medium">
+                {errorMsg}
+              </p>
             )}
 
             <button
               type="submit"
-              className="w-full cursor-pointer bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-lg text-lg font-medium"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-lg font-medium transition"
             >
               Signup as Lawyer
             </button>
