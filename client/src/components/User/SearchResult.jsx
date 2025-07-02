@@ -14,6 +14,12 @@ export default function SearchResults() {
 
   const fetchResults = async () => {
     setLoading(true);
+    if(!query){
+      setLoading(false);
+      setResults([]);
+      setTotalPages(1);
+      return;
+    }
     try {
       const res = await axios.get(`http://localhost:8000/search`, {
         params: { query, page },
@@ -68,8 +74,8 @@ export default function SearchResults() {
                     : "No Date"}
                 </p>
                 <p className="text-sm text-gray-600 mt-3 line-clamp-3">
-                  {item.description
-                    ? item.description.slice(0, 150) + "..."
+                  {item.summary
+                    ? item.summary.slice(0, 50) + "..."
                     : "No summary available."}
                 </p>
               </div>

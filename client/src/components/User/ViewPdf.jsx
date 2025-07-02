@@ -34,12 +34,21 @@ export default function ViewPdf() {
             frameBorder="0"
           />
         </div>
-        <button
-          onClick={() => navigate(-1)}
-          className="cursor-pointer mt-6 px-4 py-2 bg-cyan-700 text-white rounded hover:bg-cyan-900"
-        >
-          Back to Case Details
-        </button>
+        <div className="flex gap-4 mt-6">
+          <a
+            href={pdfUrl}
+            download
+            className="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-900 font-semibold shadow transition"
+          >
+            Download PDF
+          </a>
+          <button
+            onClick={() => navigate(-1)}
+            className="px-4 py-2 bg-cyan-700 text-white rounded hover:bg-cyan-900 font-semibold shadow transition"
+          >
+            Back to Case Details
+          </button>
+        </div>
       </div>
     </>
   );

@@ -17,10 +17,11 @@ export default function Navbar() {
     navigate(`/search-results?query=${encodeURIComponent(search)}`);
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
+ const handleLogout =async () => {
+ await logout();
+  navigate("/login");
+};
+
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
   const toggleLoginDropdown = () => setLoginDropdown((prev) => !prev);
@@ -39,9 +40,14 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md py-3 px-4 sm:px-6 flex justify-between items-center">
       {/* Logo */}
-      <Link to="/dashboard">
+      <Link to="/">
         <div className="text-2xl cursor-pointer font-bold text-green-700">
-          <Logo />
+          <img
+            src="/LawSuitsLogo1.png"
+            alt="LawSuits Logo"
+            style={{ height: "2em", width: "auto", display: "inline-block" }}
+          />
+          LawSuits
         </div>
       </Link>
 
@@ -75,17 +81,21 @@ export default function Navbar() {
 
       {/* Desktop Right Section */}
       <div className="hidden md:flex items-center gap-6 relative">
-        {isLoggedIn ? (
+        {isLoggedIn && user ? (
           <>
-            <button className="text-gray-700 hover:text-cyan-700 font-medium">Saved</button>
-            <button className="text-gray-700 hover:text-cyan-700 font-medium">History</button>
+            <button className="text-gray-700 hover:text-cyan-700 font-medium">
+              Saved
+            </button>
+            <button className="text-gray-700 hover:text-cyan-700 font-medium">
+              History
+            </button>
             <div className="flex items-center gap-2">
               <FaUserCircle className="text-3xl text-cyan-700" />
               <span
                 onClick={() => navigate("/profile")}
                 className=" cursor-pointer text-gray-700 font-medium hover:underline"
               >
-                {user.fullName}
+                {user?.fullName}
               </span>
               <button
                 className=" hover:scale-[1.03] cursor-pointer ml-2 px-3 py-1 bg-red-700 text-white rounded hover:bg-red-500 text-sm"
@@ -144,7 +154,7 @@ export default function Navbar() {
             </button>
           </form>
 
-          {isLoggedIn ? (
+          {isLoggedIn && user ? (
             <>
               <button className=" cursor-pointer w-full text-left text-gray-700 hover:text-cyan-700 font-medium">
                 Saved Items
@@ -161,7 +171,7 @@ export default function Navbar() {
                   }}
                   className="cursor-pointer text-gray-600 font-medium hover:underline"
                 >
-                  {user.fullName}
+                  {user?.fullName}
                 </span>
               </div>
               <button
@@ -173,10 +183,16 @@ export default function Navbar() {
             </>
           ) : (
             <div className="flex flex-col gap-2">
-              <Link to="/login" className=" cursor-pointer bg-green-400 text-shadow-gray-400 py-2 rounded hover:bg-cyan-700 transition">
+              <Link
+                to="/login"
+                className=" cursor-pointer bg-green-400 text-shadow-gray-400 py-2 rounded hover:bg-cyan-700 transition"
+              >
                 User Login
               </Link>
-              <Link to="/lawyer-login" className=" cursor-pointer bg-green-400 text-shadow-gray-400 py-2 rounded hover:bg-cyan-700 transition">
+              <Link
+                to="/lawyer-login"
+                className=" cursor-pointer bg-green-400 text-shadow-gray-400 py-2 rounded hover:bg-cyan-700 transition"
+              >
                 Lawyer Login
               </Link>
             </div>

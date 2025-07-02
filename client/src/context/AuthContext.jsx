@@ -20,11 +20,17 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("lawyerId");
-    setIsLoggedIn(false);
-    setUser(null);
+    return new Promise((resolve) => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      if (localStorage.getItem("lawyerId")) {
+        localStorage.removeItem("lawyerId");
+      }
+
+      setIsLoggedIn(false);
+      setUser(null);
+      resolve();
+    });
   };
 
   // Call this after successful login
@@ -36,7 +42,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, logout,loading }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
