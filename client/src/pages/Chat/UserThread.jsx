@@ -53,8 +53,8 @@ export default function UserThreads() {
         ) : (
           <ul className="divide-y divide-gray-200">
             {threads.map((thread) => {
-              const isUser = thread.client._id === userId;
-              const partner = isUser ? thread.lawyer : thread.client;
+              // const isUser = thread.client._id === userId;
+              const partner =  thread.lawyer ;
 
               return (
                 <li

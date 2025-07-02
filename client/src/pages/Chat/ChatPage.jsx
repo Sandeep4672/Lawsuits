@@ -56,7 +56,7 @@ export default function ChatPage() {
       }
       setMessages(res.data.data || []);
       const otherPerson =
-        location.state?.chatWith?.fullName ||
+        location.state?.fullName ||
         location.state?.chatWith?.fullLawyerName ||
         "Chat Partner";
       setChatWith(otherPerson);

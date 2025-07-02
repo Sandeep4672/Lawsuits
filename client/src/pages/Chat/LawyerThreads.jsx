@@ -47,8 +47,8 @@ export default function LawyerThreads() {
         ) : (
           <ul className="divide-y divide-gray-200">
             {threads.map((thread) => {
-              const isLawyer = thread.lawyer._id === lawyerId;
-              const user = isLawyer ? thread.client : thread.lawyer;
+              //const isLawyer = thread.lawyer._id === lawyerId;
+              const user =  thread.client;
               return (
                 <li
                   key={thread._id}

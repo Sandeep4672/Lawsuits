@@ -23,7 +23,7 @@ export default function LawyerDashboard() {
             Authorization: `Bearer ${token}`,
           },
         });
-        setRequests(res.data.requests || []);
+        setRequests(res.data.data || []);
       } catch (err) {
         setMessage("Failed to fetch user requests.");
       } finally {
@@ -33,28 +33,7 @@ export default function LawyerDashboard() {
 
     fetchRequests();
   }, []);
-
-  const handleAction = async (id, action) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `http://localhost:8000/lawyer/requests/${id}/${action}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setRequests((prev) => prev.filter((request) => request._id !== id));
-      setMessage(`Request ${action}ed successfully.`);
-    } catch {
-      setMessage(`Failed to ${action} request.`);
-    }
-  };
-
   
-
   return (
     <div className="min-h-screen pt-28 px-6 py-10 bg-gradient-to-br from-blue-100 to-white-50">
       <LawyerNavbar/>
@@ -103,7 +82,7 @@ export default function LawyerDashboard() {
                 {req.userName}
               </h3>
               <p className="text-gray-700 text-sm mb-1">
-                <strong>Email:</strong> {req.userEmail}
+                <strong>Email:</strong> {req.client?.email}
               </p>
               <p className="text-gray-700 text-sm mb-1">
                 <strong>Message:</strong> {req.message}
@@ -111,20 +90,7 @@ export default function LawyerDashboard() {
               <p className="text-gray-500 text-xs mt-1">
                 Sent on: {new Date(req.createdAt).toLocaleString()}
               </p>
-              <div className="flex gap-3 mt-4">
-                <button
-                  onClick={() => handleAction(req._id, "accept")}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-1 rounded"
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={() => handleAction(req._id, "reject")}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-1 rounded"
-                >
-                  Reject
-                </button>
-              </div>
+              
             </div>
           ))}
         </div>

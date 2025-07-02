@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {useContext} from "react";
 import {AuthContext} from "../../context/AuthContext";
 import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 export default function Login() {
   const navigate = useNavigate();
   const {login} =useContext(AuthContext);
@@ -33,8 +34,7 @@ export default function Login() {
       if (res.data.success) {
 
         setSuccess("Login successful");
-        // we can save token to localStorage here if returned
-        // localStorage.setItem("token", res.data.token);
+        
         
         login(res.data.data.accessToken,res.data.data.user);
         if(res.data.data.user.isAdmin)
@@ -131,6 +131,7 @@ export default function Login() {
         </div>
       </div>
     </div>
+    
   </>
 );
   

@@ -33,6 +33,7 @@ import ConnectionRequestForm from "./pages/Chat/ConnectionRequestForm";
 import ConnectionRequests from "./pages/Lawyer/ConnectionRequests";
 import AcceptedConnection from "./pages/Lawyer/AcceptedConnection";
 import LawyerProtectedRoute from "./pages/Lawyer/LawyerProtectedRoutes";
+import MyProfile from "./pages/Lawyer/MyProfile";
 //chat
 import UserThreads from "./pages/Chat/UserThread";
 import ChatPage from "./pages/Chat/ChatPage";
@@ -96,6 +97,14 @@ export default function App() {
             }
           />
           {/* Protected Routes for Lawyers */}
+          <Route
+            path="/lawyer/profile"
+            element={
+              <LawyerProtectedRoute>
+                <MyProfile />
+              </LawyerProtectedRoute>
+            }
+            />
           <Route
             path="/lawyer/request-connection"
             element={

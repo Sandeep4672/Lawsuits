@@ -2,7 +2,7 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { LogOut, MessageCircle, CalendarDays, Home, Menu, X } from "lucide-react";
+import { LogOut, MessageCircle, CalendarDays, Home, Menu, X,User } from "lucide-react";
 import Logo from "../../components/Logo";
 
 export default function Navbar() {
@@ -24,9 +24,13 @@ export default function Navbar() {
           <Logo size={35} />
          
         </Link>
-
+        
         {/* Desktop Links */}
         <div className="hidden md:flex gap-6 items-center">
+          <Link to="/lawyer/profile" className="text-white hover:text-gray-200 flex item-center gap-1">
+           <User size={18}/> My Profile
+          </Link>
+
           <Link to="/lawyer-dashboard" className="text-white hover:text-gray-200 flex items-center gap-1">
             <Home size={18} /> Dashboard
           </Link>
@@ -56,6 +60,9 @@ export default function Navbar() {
       {/* Mobile Drawer */}
       {menuOpen && (
         <div className="md:hidden bg-blue-400 px-6 pb-4 flex flex-col gap-4">
+          <Link to="/lawyer/profile" onClick={() => setMenuOpen(false)} className="text-white flex items-center gap-2">
+            <User size={18} /> My Profile
+            </Link>
           <Link to="/lawyer-dashboard" onClick={() => setMenuOpen(false)} className="text-white flex items-center gap-2">
             <Home size={18} /> Dashboard
           </Link>
