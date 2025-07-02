@@ -58,8 +58,17 @@ export default function LawyerRequests() {
                 <p className="text-gray-700 mb-1">
                   <strong>Email:</strong> {req.email}
                 </p>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 text-sm mb-1">
+                  Barid : {req.barId || "N/A"}
+                </p>
+                <p className="text-gray-600 text-sm mb-1">
                   <strong>Experience:</strong> {req.experience} yrs
+                </p>
+                <p className="text-gray-600 text-sm mb-1">
+                  <strong>Practice Areas:</strong>{" "}
+                  {Array.isArray(req.practiceAreas)
+                    ? req.practiceAreas.join(", ")
+                    : req.practiceAreas || "N/A"}
                 </p>
               </div>
             ))}

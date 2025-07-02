@@ -61,7 +61,7 @@ export default function App() {
           <Route path="/find-lawyers" element={<ProtectedRoute><FindLawyer/></ProtectedRoute>}/>
           <Route path="/lawyer-profile/:id" element={<ProtectedRoute><LawyerProfile/></ProtectedRoute>}/>
           {/* Protected Routes for Lawyers */}
-          <Route path="/lawyer/request-connection" element={<LawyerProtectedRoute><ConnectionRequestForm/></LawyerProtectedRoute>}/>
+          <Route path="/lawyer/request-connection" element={<ProtectedRoute><ConnectionRequestForm/></ProtectedRoute>}/>
           <Route path="/lawyer/connection-requests" element={<LawyerProtectedRoute><ConnectionRequests/></LawyerProtectedRoute>}/>
           <Route path="/lawyer/accepted-connections" element={<LawyerProtectedRoute><AcceptedConnection/></LawyerProtectedRoute>}/>
           <Route path="/lawyer-dashboard" element={<LawyerProtectedRoute><LawerDashboard/></LawyerProtectedRoute>}/>

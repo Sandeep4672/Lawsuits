@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeftCircle } from "lucide-react";
-
+import Navbar from "./Navbar";
 export default function VerifiedLawyerDetails() {
   const { state } = useLocation();
   const lawyer = state?.lawyer;
@@ -19,6 +19,7 @@ export default function VerifiedLawyerDetails() {
   }
 
   return (
+    <><Navbar></Navbar>
     <div className="min-h-screen pt-28 pb-10 px-6 bg-gradient-to-br from-green-200 to-green-100">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-2xl p-8 relative transition-transform duration-300 hover:scale-[1.01]">
         {/* Title */}
@@ -98,5 +99,6 @@ export default function VerifiedLawyerDetails() {
         </div>
       </div>
     </div>
+    </>
   );
 }

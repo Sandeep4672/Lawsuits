@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams,useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import Navbar from "./Navbar";
@@ -9,7 +9,9 @@ export default function LawyerDetail() {
   const [lawyer, setLawyer] = useState(state?.lawyer || null);
   const [actionLoading, setActionLoading] = useState(false);
   const token = localStorage.getItem("token");
-
+  const [accept,setAccept] =useState("");
+  const [reject,setReject] =useState("");
+ const navigate =useNavigate();
   useEffect(() => {
     if (!lawyer) {
       axios.get(`http://localhost:8000/lawyer/profile/${id}`, {
@@ -43,6 +45,8 @@ export default function LawyerDetail() {
       ...prev,
       isLawyer: newStatus === "accept" ? "yes" : "no",
     }));
+    setAccept(newStatus==="accept"?"Your Lawyer request is accepted":"");
+    setReject(newStatus==="reject"?"Your Lawyer request is rejected":"");
   } catch (err) {
     console.error("Failed to update lawyer status", err);
   } finally {
@@ -53,6 +57,7 @@ export default function LawyerDetail() {
   if (!lawyer) return <div className="pt-32 text-center text-gray-600">Loading...</div>;
 
   return (
+    <><Navbar></Navbar>
     <div className="min-h-screen pt-28 bg-gradient-to-br from-green-100 to-green-50 px-4 py-12">
       
       <motion.div
@@ -94,6 +99,27 @@ export default function LawyerDetail() {
               {lawyer.isLawyer || "pending"}
             </span>
           </div>
+          <div className="flex justify-between">
+            <span className="font-semibold">Proof Files:</span>
+          {Array.isArray(lawyer.proofFile) && lawyer.proofFile.length > 0 && (
+            <div>
+              
+              {lawyer.proofFile.map((file, idx) => (
+                <a
+                key={idx}
+                onClick={() =>
+                  navigate("/admin/view-proof", {
+                    state: { pdfUrl: file },
+                  })
+                }
+                className="text-blue-600 hover:underline cursor-pointer"
+              >
+                View Uploaded Proof {lawyer.proofFile.length > 1 ? `#${idx + 1}` : ""}📄
+              </a>
+              ))}
+            </div>
+          )}
+          </div>
         </div>
 
         {/* Action Buttons */}
@@ -114,8 +140,13 @@ export default function LawyerDetail() {
               Reject
             </button>
           </div>
+          <div className="mt-8 flex justify-center" >
+            {accept && <p className="text-green-600 font-semibold">{accept}</p>}
+            {reject && <p className="text-red-600 font-semibold">{reject}</p>}
+          </div>
         
       </motion.div>
     </div>
+    </>
   );
 }
