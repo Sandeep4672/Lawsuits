@@ -19,12 +19,23 @@ export default function ChatPage() {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    setUserId(user?._id);
+  const user = JSON.parse(localStorage.getItem("user"));
+  setUserId(user?._id);
+
+  const handleConnect = () => {
     if (user?._id) {
       socket.emit("joinRoom", id);
     }
-  }, [id]);
+  };
+
+  socket.on("connect", handleConnect);
+
+  return () => {
+    socket.off("connect", handleConnect);
+    socket.emit("leaveRoom", id);
+  };
+}, [id]);
+
 
   const fetchMessages = async () => {
     setLoading(true);
@@ -64,18 +75,24 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  useEffect(() => {
-    socket.on("receiveMessage", (msg) => {
-      if (msg.threadId === id && msg.senderId !== userId) {
-        setMessages((prev) => [...prev, msg]);
-      }
-    });
+useEffect(() => {
+  if (!userId) return;
 
-    return () => {
-      socket.off("receiveMessage");
-      socket.emit("leaveRoom", id);
-    };
-  }, [id, userId]);
+  const handleReceive = (msg) => {
+
+    if (msg.threadId === id && msg.senderId !== userId) {
+      setMessages((prev) => [...prev, msg]);
+    }
+  };
+
+  socket.on("receiveMessage", handleReceive);
+
+  return () => {
+    socket.off("receiveMessage", handleReceive);
+    socket.emit("leaveRoom", id);
+  };
+}, [id, userId]);
+
 
   const handleSend = async (e) => {
     e.preventDefault();
