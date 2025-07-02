@@ -96,13 +96,38 @@ export default function App() {
             }
           />
           {/* Protected Routes for Lawyers */}
-<<<<<<< HEAD
-          <Route path="/lawyer/request-connection" element={<ProtectedRoute><ConnectionRequestForm/></ProtectedRoute>}/>
-          <Route path="/lawyer/connection-requests" element={<LawyerProtectedRoute><ConnectionRequests/></LawyerProtectedRoute>}/>
-          <Route path="/lawyer/accepted-connections" element={<LawyerProtectedRoute><AcceptedConnection/></LawyerProtectedRoute>}/>
-          <Route path="/lawyer-dashboard" element={<LawyerProtectedRoute><LawerDashboard/></LawyerProtectedRoute>}/>
-          
-=======
+          <Route
+            path="/lawyer/request-connection"
+            element={
+              <ProtectedRoute>
+                <ConnectionRequestForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lawyer/connection-requests"
+            element={
+              <LawyerProtectedRoute>
+                <ConnectionRequests />
+              </LawyerProtectedRoute>
+            }
+          />
+          <Route
+            path="/lawyer/accepted-connections"
+            element={
+              <LawyerProtectedRoute>
+                <AcceptedConnection />
+              </LawyerProtectedRoute>
+            }
+          />
+          <Route
+            path="/lawyer-dashboard"
+            element={
+              <LawyerProtectedRoute>
+                <LawerDashboard />
+              </LawyerProtectedRoute>
+            }
+          />
           <Route
             path="/lawyer/request-connection"
             element={
@@ -135,7 +160,7 @@ export default function App() {
               </LawyerProtectedRoute>
             }
           />
->>>>>>> 47712250e6a91fd6bae08a05e0685aa226b86c18
+         
           {/* Protected Routes for Admin */}
           <Route
             path="/admin/dashboard"

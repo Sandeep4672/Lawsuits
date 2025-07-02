@@ -90,12 +90,20 @@ export default function ChatPage() {
         const formData = new FormData();
         formData.append("file", selectedFile);
         formData.append("message", text || selectedFile.name);
-
+        try{
         res = await axios.post(
           `http://localhost:8000/threads/${id}/upload`,
           formData,
           { headers }
         );
+      }
+      catch{
+        res = await axios.post(
+          `http://localhost:8000/lawyer/threads/${id}/upload`,
+          formData,
+          { headers }
+        );
+      }
       } else {
         try {
           res = await axios.post(
