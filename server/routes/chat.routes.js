@@ -11,7 +11,6 @@ import { verifyLawyerJWT } from "../middlewares/authLawyer.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 const router=Router();
 
-// 🔹 Client Routes
 router.get("/threads", verifyUserJWT, getUserThreads);
 router.get("/threads/:id/messages", verifyUserJWT, getThreadMessages);
 router.post("/threads/:id/send", verifyUserJWT, sendMessage);

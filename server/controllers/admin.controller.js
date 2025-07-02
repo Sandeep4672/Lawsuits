@@ -64,7 +64,6 @@ export const uploadPdfToDatabase = asyncHandler(async (req, res) => {
 
     res.status(201).json(new ApiResponse(201, doc, "PDF uploaded successfully"));
   } catch (error) {
-    // ✅ Delete uploaded file from Cloudinary if something fails after upload
     if (cloudinaryResult?.public_id) {
       try {
         await deleteFileFromCloudinary(cloudinaryResult.public_id);
@@ -73,9 +72,8 @@ export const uploadPdfToDatabase = asyncHandler(async (req, res) => {
       }
     }
 
-    throw error; // let asyncHandler handle error response
+    throw error; 
   } finally {
-    // Always delete temp file from local disk
     fs.existsSync(filePath) && fs.unlinkSync(filePath);
   }
 });
