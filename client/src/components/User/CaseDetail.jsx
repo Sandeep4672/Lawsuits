@@ -9,9 +9,14 @@ export default function CaseDetails() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     const fetchCase = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/search/case/${id}`);
+        const res = await axios.get(`http://localhost:8000/search/case/${id}`,{
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setCaseData(res.data.data);
       } catch (err) {
         console.error("Error fetching case:", err);

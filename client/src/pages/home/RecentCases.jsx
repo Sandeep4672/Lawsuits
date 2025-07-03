@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { AuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const RecentCases = () => {
@@ -25,7 +25,7 @@ const RecentCases = () => {
               },
             }
           );
-          setCases(response.data.data|| []);
+          setCases(response.data.data || []);
         } catch (error) {
           console.error("Error fetching recent cases:", error);
         }
@@ -34,6 +34,33 @@ const RecentCases = () => {
     }
   }, [isLoggedIn, navigate, token]);
 
+  const handleDelete = async (caseId, e) => {
+    e.preventDefault();
+    e.stopPropagation(); // Prevent navigation
+    try {
+      await axios.delete(`http://localhost:8000/user/history/${caseId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCases((prev) => prev.filter((caseItem) => caseItem._id !== caseId));
+    } catch (error) {
+      console.error("Error deleting case history:", error);
+    }
+  };
+  const handleClearHistory = async () => {
+  try {
+    await axios.delete("http://localhost:8000/user/clear-history", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setCases([]);
+  } catch (error) {
+    console.error("Error clearing case history:", error);
+  }
+};
+
   return (
     <>
       <Navbar />
@@ -41,21 +68,42 @@ const RecentCases = () => {
         <h1 className="text-3xl font-bold text-center text-green-400 mb-6">
           Recent Cases
         </h1>
+        {cases.length > 0 && (
+        <div className="flex justify-end max-w-3xl mx-auto mb-4">
+          <button
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+            onClick={handleClearHistory}
+          >
+            Clear History
+          </button>
+        </div>
+      )}
         {cases.length > 0 ? (
           <div className="space-y-4 max-w-3xl mx-auto">
-            {cases.map((caseItem) => (
-              <div
-                key={caseItem._id}
-                className="p-4 bg-white/10 backdrop-blur-md border border-gray-600 rounded-lg shadow-md"
-              >
-                <h2 className="text-xl font-semibold text-green-400">
-                  {caseItem.caseId?.title || "Untitled Case"}
-                </h2>
-                <p className="text-gray-300 mt-2">
-                  {caseItem.description || "No description available."}
-                </p>
-              </div>
-            ))}
+            {cases
+              .filter((caseItem) => caseItem.caseId) // Filter out invalid
+              .map((caseItem) => (
+                <div
+                  key={caseItem._id}
+                  className="p-4 bg-white/10 backdrop-blur-md border border-gray-600 rounded-lg shadow-md flex justify-between items-center"
+                >
+                  <Link
+                    to={`/case/${caseItem.caseId._id}`}
+                    state={{ caseId: caseItem.caseId._id }}
+                    className="flex-1"
+                  >
+                    <h2 className="text-xl font-semibold text-green-400">
+                      {caseItem.caseId.title || "Untitled Case"}
+                    </h2>
+                  </Link>
+                  <button
+                    className="ml-4 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    onClick={(e) => handleDelete(caseItem._id, e)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
           </div>
         ) : (
           <p className="text-center text-gray-400 mt-20 text-lg animate-pulse">
