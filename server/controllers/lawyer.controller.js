@@ -48,12 +48,24 @@ export const getLawyerRequestById = async (req, res, next) => {
 
 export const getAllLawyersList = asyncHandler(async (req, res) => {
   try {
-    const lawyers = await Lawyer.find().select("-password -refreshToken");
-    console.log("Verified Lawyers:", lawyers);
+    const userId = req.user._id;
+
+    const lawyers = await Lawyer.find()
+      .select("-password -refreshToken")
+      .lean();                      
+
+    const connectedLawyerIds = await ChatThread
+      .find({ client: userId })
+      .distinct("lawyer");         
+
+    const data = lawyers.map(lawyer => ({
+      ...lawyer,
+      isConnected: connectedLawyerIds.some(id => id.equals(lawyer._id))
+    }));
 
     res.status(200).json({
       success: true,
-      data: lawyers,
+      data: data,
     });
   } catch (error) {
     console.error("Error fetching lawyers:", error);
@@ -63,6 +75,7 @@ export const getAllLawyersList = asyncHandler(async (req, res) => {
     });
   }
 });
+
 
 
 

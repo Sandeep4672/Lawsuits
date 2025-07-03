@@ -93,6 +93,17 @@ useEffect(() => {
   };
 }, [id, userId]);
 
+useEffect(() => {
+  const handleDeleted = ({ messageId }) => {
+    setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+  };
+
+  socket.on("messageDeleted", handleDeleted);
+
+  return () => {
+    socket.off("messageDeleted", handleDeleted);
+  };
+}, []);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -163,6 +174,7 @@ useEffect(() => {
 
       await axios.delete(url, { headers });
 
+      socket.emit("deleteMessage", { messageId, threadId: id });
       setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
     } catch (err) {
       console.error("Failed to delete message:", err);
