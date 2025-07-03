@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { ArrowLeftCircle, MessageCircle } from "lucide-react";
-
+import Footer from "../../components/Footer";
 export default function LawyerProfile() {
   const { state } = useLocation();
   const lawyer = state?.lawyer;
@@ -85,6 +85,7 @@ export default function LawyerProfile() {
           )}
         </div>
       </div>
+      <Footer/>
     </>
   );
 }

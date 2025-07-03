@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../Navbar";
-
+import Footer from "../Footer";
 export default function CaseDetails() {
   const { id } = useParams();
   const [caseData, setCaseData] = useState(null);
@@ -116,6 +116,7 @@ export default function CaseDetails() {
           </p>
         )}
       </div>
+      <Footer/>
     </>
   );
 }

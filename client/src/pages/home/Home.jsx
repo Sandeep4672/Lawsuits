@@ -16,8 +16,10 @@ export default function Home() {
   }, [isLoggedIn, navigate]);
 
   return (
+    <>
+     <Navbar />
     <div className="min-h-screen bg-gradient-to-br from-[#0f172a] to-[#1e293b] text-white flex flex-col">
-      <Navbar />
+     
 
       <div className="flex-1 flex items-center justify-center px-6 pt-20 pb-16">
         <motion.div
@@ -28,7 +30,7 @@ export default function Home() {
         >
           <h1 className="pt-24 text-4xl sm:text-5xl font-extrabold text-green-400 mb-4 animate-fade-in-down">
             <img
-              src="/LawSuitsLogo1.png"
+              src="/Logo2.png"
               alt="LawSuits Logo"
               className="inline-block align-middle w-12 h-12 mr-2"
             />
@@ -100,7 +102,9 @@ export default function Home() {
         </motion.div>
       </div>
 
-      <Footer />
+     
     </div>
+     <Footer />
+    </>
   );
 }

@@ -41,7 +41,7 @@ export default function Navbar() {
       <Link to="/">
         <div className="text-2xl cursor-pointer font-bold text-green-400 flex items-center gap-2">
           <img
-            src="/LawSuitsLogo1.png"
+            src="/Logo2.png"
             alt="LawSuits Logo"
             style={{ height: "2em", width: "auto", display: "inline-block" }}
           />

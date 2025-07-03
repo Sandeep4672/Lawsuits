@@ -3,7 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import InputField from "../../components/InputFIeld";
 import Navbar from "../../components/Navbar";
-
+import Footer from "../../components/Footer";
+import {motion} from "framer-motion";
 export default function LawyerSignup() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -74,7 +75,11 @@ export default function LawyerSignup() {
       <Navbar />
 
       <div className="pt-24 min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 px-4 py-16 text-white">
-        <div className="max-w-3xl mx-auto bg-gray-900 border border-blue-700 shadow-xl rounded-2xl p-8">
+        <motion.div
+        initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        className="max-w-3xl mx-auto shadow-2xl shadow-blue-400 bg-gray-900 border border-blue-700 rounded-2xl p-8">
           <h2 className="text-3xl font-bold text-blue-400 mb-6 text-center">
             🧑‍⚖️ Lawyer Signup
           </h2>
@@ -194,8 +199,9 @@ export default function LawyerSignup() {
               Signup as Lawyer
             </button>
           </form>
-        </div>
+        </motion.div>
       </div>
+      <Footer/>
     </>
   );
 }

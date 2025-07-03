@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 import axios from "axios";
 
 export default function ConnectionRequestForm() {
@@ -138,6 +139,7 @@ export default function ConnectionRequestForm() {
           </div>
         </form>
       </div>
+      <Footer/>
     </>
   );
 }

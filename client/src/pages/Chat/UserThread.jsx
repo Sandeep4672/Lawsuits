@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MessageSquare, ArrowLeftCircle } from "lucide-react";
 import Navbar from "../../components/Navbar";
-
+import Footer from "../../components/Footer";
 export default function UserThreads() {
   const [threads, setThreads] = useState([]);
   const [message, setMessage] = useState("");
@@ -99,6 +99,7 @@ export default function UserThreads() {
           )}
         </div>
       </div>
+      <Footer/>
     </>
   );
 }

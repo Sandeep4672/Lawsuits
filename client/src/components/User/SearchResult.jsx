@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation, Link } from "react-router-dom";
 import Navbar from "../Navbar";
-
+import Footer from "../Footer";
 export default function SearchResults() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -106,6 +106,7 @@ export default function SearchResults() {
           </div>
         )}
       </div>
+      <Footer/>
     </>
   );
 }

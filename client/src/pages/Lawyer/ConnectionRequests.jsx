@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "./LawyerNavbar";
-
+import Footer from "../../components/Footer";
+import { motion } from "framer-motion";
 export default function ConnectionRequests() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,9 +53,14 @@ export default function ConnectionRequests() {
   };
 
   return (
+    <>  <Navbar />
     <div className="min-h-screen pt-28 px-4 sm:px-8 bg-gray-900 text-white">
-      <Navbar />
-      <div className="max-w-5xl mx-auto bg-gray-800 rounded-xl shadow-2xl p-8 border border-gray-700 transition-all">
+    
+      <motion.div
+      initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+       className="max-w-5xl mx-auto bg-gray-800 rounded-xl shadow-2xl p-8 border border-gray-700 ">
         <h2 className="text-2xl font-bold text-blue-400 mb-6 text-center">
           📥 User Connection Requests
         </h2>
@@ -113,13 +119,13 @@ export default function ConnectionRequests() {
                     <td className="px-6 py-3 flex gap-2">
                       <button
                         onClick={() => handleAction(req._id, "accept")}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition-all"
+                        className="cursor-pointer bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition-all"
                       >
                         Accept
                       </button>
                       <button
                         onClick={() => handleAction(req._id, "reject")}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md transition-all"
+                        className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md transition-all"
                       >
                         Reject
                       </button>
@@ -130,7 +136,9 @@ export default function ConnectionRequests() {
             </table>
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
+    <Footer/>
+    </>
   );
 }

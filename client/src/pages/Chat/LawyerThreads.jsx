@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MessageSquare } from "lucide-react";
 import Navbar from "../Lawyer/LawyerNavbar";
-
+import Footer from "../../components/Footer";
 export default function LawyerThreads() {
   const [threads, setThreads] = useState([]);
   const [message, setMessage] = useState("");
@@ -28,8 +28,10 @@ export default function LawyerThreads() {
   }, []);
 
   return (
+    <>
+    <Navbar />
     <div className="min-h-screen pt-28 px-4 sm:px-8 bg-gray-900 text-white transition-all duration-300">
-      <Navbar />
+      
 
       <div className="max-w-2xl mx-auto bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 border border-gray-700">
         <h2 className="text-3xl font-bold text-green-400 mb-6 text-center flex items-center justify-center gap-2">
@@ -90,5 +92,7 @@ export default function LawyerThreads() {
         )}
       </div>
     </div>
+    <Footer/>
+    </>
   );
 }

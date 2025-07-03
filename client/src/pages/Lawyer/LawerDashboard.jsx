@@ -6,7 +6,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { dashboardCards } from "./dashboardCards";
 import { usePreventBackFromLawyerDashboard } from "../../components/usePreventBackFromDashboard";
 import LawyerNavbar from "./LawyerNavbar";
-
+import Footer from "../../components/Footer";
 export default function LawyerDashboard() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,8 +37,11 @@ export default function LawyerDashboard() {
   }, []);
 
   return (
+    <>
+     <LawyerNavbar />
+    
     <div className="min-h-screen bg-gray-900 text-gray-100 pt-28 px-6 py-10">
-      <LawyerNavbar />
+     
 
       <motion.div
         className="max-w-6xl mx-auto mb-8"
@@ -133,5 +136,7 @@ export default function LawyerDashboard() {
         )}
       </motion.div>
     </div>
+    <Footer/>
+    </>
   );
 }

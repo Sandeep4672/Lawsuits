@@ -3,7 +3,7 @@ import { FaFileUpload } from "react-icons/fa";
 import axios from "axios";
 import { motion } from "framer-motion";
 import Navbar from "../../components/Navbar";
-
+import Footer from "../../components/Footer";
 export default function DocumentSummarization() {
   const [file, setFile] = useState(null);
   const [summary, setSummary] = useState("");
@@ -152,6 +152,7 @@ export default function DocumentSummarization() {
           )}
         </motion.div>
       </div>
+      <Footer/>
     </>
   );
 }

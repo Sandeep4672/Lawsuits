@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import InputField from "../../components/InputFIeld";
 import Navbar from "../../components/Navbar";
 import { AuthContext } from "../../context/AuthContext";
-
+import Footer from "../../components/Footer";
+import { motion } from "framer-motion";
 export default function LawyerLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,7 +37,11 @@ export default function LawyerLogin() {
     <>
       <Navbar />
       <div className="pt-24 min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center px-4 text-white">
-        <div className="max-w-md w-full bg-gray-900 p-8 shadow-2xl rounded-2xl border border-blue-700 transition-all duration-300">
+        <motion.div
+        initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+         className="max-w-md w-full bg-gray-900 p-8 shadow-2xl shadow-blue-400 rounded-2xl border border-blue-700 ">
           <h2 className="text-3xl font-bold text-center text-blue-400 mb-6">
             🧑‍⚖️ Lawyer Login
           </h2>
@@ -87,8 +92,9 @@ export default function LawyerLogin() {
               </a>
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
+      <Footer/>
     </>
   );
 }

@@ -3,7 +3,8 @@ import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 import Navbar from "../Navbar";
 import { useLocation } from "react-router-dom";
-
+import Footer from "../Footer";
+import { motion } from "framer-motion";
 export default function ProfilePage() {
   const { user } = useContext(AuthContext);
   const location = useLocation();
@@ -55,7 +56,11 @@ export default function ProfilePage() {
     <>
       <Navbar />
       <div className="min-h-screen pt-32 pb-20 px-4 bg-[#0f172a] text-white">
-        <div className="max-w-2xl mx-auto bg-[#1e293b] rounded-2xl shadow-lg p-8 border border-gray-700">
+        <motion.div
+        initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+         className="max-w-2xl mx-auto bg-[#1e293b] rounded-2xl shadow-lg p-8 border border-gray-700">
           <h2 className="text-3xl font-bold mb-6 text-center text-green-400">
             👤 Profile Details
           </h2>
@@ -115,8 +120,9 @@ export default function ProfilePage() {
               {message}
             </p>
           )}
-        </div>
+        </motion.div>
       </div>
+      <Footer/>
     </>
   );
 }

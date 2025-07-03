@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
 import { useNavigate } from "react-router-dom";
-
+import Footer from "../../components/Footer";
+import {motion} from "framer-motion";
 export default function FindLawyer() {
   const [lawyers, setLawyers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,8 +39,12 @@ export default function FindLawyer() {
     <>
       <Navbar />
 
-      <div className="min-h-screen pt-28 px-4 sm:px-8 bg-[#1e1e2f] text-white">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen pt-30 px-4 sm:px-8 bg-[#1e1e2f] text-white">
+        <motion.div
+        initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+         className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold mb-8 text-center text-green-400 drop-shadow-md">
             👩‍⚖️ Verified Lawyers Directory
           </h2>
@@ -96,8 +101,9 @@ export default function FindLawyer() {
               </table>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
+      <Footer/>
     </>
   );
 }

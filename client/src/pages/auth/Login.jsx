@@ -44,7 +44,7 @@ export default function Login() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-[#2a2a3d] p-8 rounded-2xl shadow-xl w-full max-w-md border border-[#3a3a4d] flex flex-col items-center"
+          className="bg-[#2a2a3d] p-8 rounded-2xl shadow-xl shadow-green-400 w-full max-w-md border border-[#3a3a4d] flex flex-col items-center"
         >
           <h2 className="text-3xl font-bold mb-6 text-center text-green-400">
             Welcome Back
@@ -96,7 +96,7 @@ export default function Login() {
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
-              className="w-full bg-green-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-green-700 transition mt-2"
+              className="cursor-pointer w-full bg-green-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-green-700 transition mt-2"
             >
               Login
             </motion.button>
@@ -113,40 +113,8 @@ export default function Login() {
         </motion.div>
       </div>
 
-      {/* Footer aligned and themed */}
-      <footer className="bg-[#2a2a3d] text-white py-6 border-t border-[#3a3a4d]">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="text-center sm:text-left">
-            <h4 className="text-lg font-semibold text-green-400">LawSuits</h4>
-            <p className="text-sm text-gray-400">© {new Date().getFullYear()} All rights reserved.</p>
-          </div>
-
-          <div className="flex items-center gap-4 text-gray-400">
-            <a
-              href="mailto:contact@legalsuite.ai"
-              className="hover:text-green-400 transition"
-            >
-              📧
-            </a>
-            <a
-              href="https://github.com/your-repo"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-green-400 transition"
-            >
-              GitHub
-            </a>
-            <a
-              href="https://linkedin.com/in/yourprofile"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-green-400 transition"
-            >
-              LinkedIn
-            </a>
-          </div>
-        </div>
-      </footer>
+      <Footer/>
+      
     </>
   );
 }
