@@ -74,7 +74,7 @@ export default function CaseDetails() {
             {caseData.tags.map((tag, idx) => (
               <a
                 key={idx}
-                href={`https://www.google.com/search?q=${encodeURIComponent(tag)}`}
+                href={`https://indiankanoon.org/search/?formInput=${encodeURIComponent(tag)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-cyan-800 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-cyan-600 transition"
