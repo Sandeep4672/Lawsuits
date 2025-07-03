@@ -9,6 +9,7 @@ import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { uploadFileToCloudinary } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
+import mongoose from "mongoose";
 
 
 export const summarizePdfFile = async (filePath) => {
@@ -147,4 +148,55 @@ export const getUserHistory = asyncHandler(async (req, res) => {
       .json(new ApiResponse(500, null, "Failed to fetch user history"));
   }
 });
+
+
+export const deleteUserHistoryById = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const caseId = req.params.caseId;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        $pull: {
+          recentCases: { caseId: new mongoose.Types.ObjectId(caseId) },
+        },
+      },
+      { new: true }
+    );
+
+    res.status(200).json(
+      new ApiResponse(200, user.recentCases, "Case removed from history")
+    );
+  } catch (error) {
+    console.error("Error deleting history", error);
+    res
+      .status(500)
+      .json(new ApiResponse(500, null, "Error deleting user history"));
+  }
+});
+
+export const clearUserHistory = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: { recentCases: [] } }, 
+      { new: true }
+    );
+
+    res.status(200).json(
+      new ApiResponse(200, user.recentCases, "All case history cleared")
+    );
+  } catch (error) {
+    console.error("Error clearing history", error);
+    res
+      .status(500)
+      .json(new ApiResponse(500, null, "Failed to clear user history"));
+  }
+});
+
+
+
 
