@@ -16,7 +16,7 @@ export const getUserThreads = asyncHandler(async (req, res) => {
     .populate("client", "fullName email")
     .populate("lawyer", "fullName email")
     .sort({ updatedAt: -1 });
-
+  console.log(threads);
   res.status(200).json(new ApiResponse(200, threads));
 });
 
