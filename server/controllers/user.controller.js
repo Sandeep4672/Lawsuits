@@ -153,7 +153,6 @@ export const getUserHistory = asyncHandler(async (req, res) => {
 export const deleteUserHistoryById = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const caseId = req.params.caseId;
-
   try {
     const user = await User.findByIdAndUpdate(
       userId,
