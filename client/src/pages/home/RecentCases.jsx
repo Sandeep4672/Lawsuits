@@ -43,7 +43,7 @@ const RecentCases = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setCases((prev) => prev.filter((caseItem) => caseItem._id !== caseId));
+      setCases((prev) => prev.filter((caseItem) => caseItem.caseId._id !== caseId));
     } catch (error) {
       console.error("Error deleting case history:", error);
     }
@@ -98,7 +98,7 @@ const RecentCases = () => {
                   </Link>
                   <button
                     className="ml-4 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    onClick={(e) => handleDelete(caseItem._id, e)}
+                    onClick={(e) => handleDelete(caseItem.caseId._id, e)}
                   >
                     Delete
                   </button>
