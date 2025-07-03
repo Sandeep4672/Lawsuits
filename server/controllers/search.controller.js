@@ -1,7 +1,7 @@
 import { PdfDocument } from "../models/pdf.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/apiResponse.js";
-
+import { User } from "../models/user.model.js";
 export const searchCases = asyncHandler(async (req, res) => {
   console.log("Search request received with query:", req.query);
 
@@ -64,15 +64,35 @@ export const searchCases = asyncHandler(async (req, res) => {
   );
 });
 
+const updateUserRecentCases = async (userId, caseId) => {
+  console.log("Reached Here");
+  const user = await User.findById(userId);
+
+  user.recentCases = user.recentCases.filter(
+    (entry) => entry.caseId.toString() !== caseId.toString()
+  );
+
+  user.recentCases.unshift({ caseId });
+
+  if (user.recentCases.length > 10) {
+    user.recentCases = user.recentCases.slice(0, 10);
+  }
+
+  await user.save();
+};
+
+
 export const getCaseById=asyncHandler(async (req, res) => {
   const { id } = req.params;
-
   if (!id) {
     return res.status(400).json(new ApiResponse(400, null, "Case ID is required"));
   }
 
   const caseData = await PdfDocument.findById({_id:id});
-  console.log("Case data retrieved:", caseData);
+  if(req.user){
+    updateUserRecentCases(req.user._id,id);
+  }
+  //console.log("Case data retrieved:", caseData);
   if (!caseData) {
     return res.status(404).json(new ApiResponse(404, null, "Case not found"));
   }

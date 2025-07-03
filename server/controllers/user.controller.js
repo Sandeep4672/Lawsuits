@@ -8,6 +8,7 @@ import { Lawyer } from "../models/lawyer.model.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { uploadFileToCloudinary } from "../utils/cloudinary.js";
+import { User } from "../models/user.model.js";
 
 
 export const summarizePdfFile = async (filePath) => {
@@ -125,5 +126,25 @@ export const getAllConnectedLawyers = asyncHandler(async (req, res) => {
   });
 
   res.status(200).json(connections);
+});
+
+
+export const getUserHistory = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const history = await User.findById(userId)
+      .select("recentCases")
+      .populate("recentCases.caseId", "title"); 
+
+    res.status(200).json(
+      new ApiResponse(200, history?.recentCases || [], "Recent case history fetched")
+    );
+  } catch (error) {
+    console.error("Error fetching history:", error);
+    res
+      .status(500)
+      .json(new ApiResponse(500, null, "Failed to fetch user history"));
+  }
 });
 

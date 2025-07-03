@@ -39,7 +39,7 @@ app.use(cors({
 }));
 
 // Routes
-import homeRouter from "./routes/home.routes.js";
+import homeRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import adminRouter from "./routes/admin.routes.js";
 import searchRouter from "./routes/search.routes.js";

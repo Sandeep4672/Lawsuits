@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
-import { summarizePDF,sendConnectionRequest,getAllConnectedLawyers } from "../controllers/home.controller.js";
+import { summarizePDF,sendConnectionRequest,getUserHistory } from "../controllers/user.controller.js";
 import { getAllLawyersList } from "../controllers/lawyer.controller.js";
 import { getLawyerById} from "../controllers/lawyer.controller.js";
 import { validateObjectId } from "../middlewares/validateObjectId.middleware.js";
@@ -12,6 +12,7 @@ router.route("/summarize").post(verifyUserJWT,upload.single("pdf"),summarizePDF)
 router.route("/find-lawyers").get(verifyUserJWT,getAllLawyersList);
 router.route("/lawyer-profile/:id").get(verifyUserJWT,validateObjectId,getLawyerById);
 router.post("/connect/:id",validateObjectId,verifyUserJWT,upload.array("documents", 5),sendConnectionRequest);
+router.get("/history",verifyUserJWT,getUserHistory);
 //router.get("connections",verifyUserJWT,getAllConnectedLawyers);
 //router.get("connection/:id",verifyUserJWT,getConnectionChatPage);
 export default router;

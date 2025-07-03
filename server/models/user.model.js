@@ -21,6 +21,13 @@ const userSchema = new Schema(
             type: String,
             required: [true, "Password is required"],
         },
+        recentCases: [
+            {
+                caseId: { type: mongoose.Schema.Types.ObjectId, ref: "PdfDocument" },
+                visitedAt: { type: Date, default: Date.now }
+            }
+        ]
+        ,
         refreshToken: {
             type: String,
         },
@@ -50,7 +57,7 @@ userSchema.methods.generateAccessToken = function () {
             _id: this._id,
             email: this.email,
             fullName: this.fullName,
-            role:"user"
+            role: "user"
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
