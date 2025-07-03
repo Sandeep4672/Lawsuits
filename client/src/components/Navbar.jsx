@@ -81,8 +81,12 @@ export default function Navbar() {
       <div className="hidden md:flex items-center gap-6 relative">
         {isLoggedIn && user ? (
           <>
-            <button className="hover:text-green-400 transition">Saved</button>
-            <button className="hover:text-green-400 transition">History</button>
+            <button className="hover:text-green-400 transition"
+            onClick={()=>{ navigate("/saved-items");setMenuOpen(false);}}
+            >Saved</button>
+            <button className="hover:text-green-400 transition"
+            onClick={()=>{ navigate("/history");setMenuOpen(false);}}            
+            >History</button>
             <div className="flex items-center gap-2">
               <FaUserCircle className="text-3xl text-green-400" />
               <span
@@ -150,10 +154,12 @@ export default function Navbar() {
 
           {isLoggedIn && user ? (
             <>
-              <button className="w-full text-left hover:text-green-400 transition">
+              <button className="w-full text-left hover:text-green-400 transition"
+               onClick={()=>{navigate("/saved-items"); setMenuOpen(false);}}>
                 Saved Items
               </button>
-              <button className="w-full text-left hover:text-green-400 transition">
+              <button className="w-full text-left hover:text-green-400 transition"
+               onClick={()=>{navigate("/history"); setMenuOpen(false);}}>
                 History
               </button>
               <div className="flex items-center gap-2">

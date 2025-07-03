@@ -34,6 +34,7 @@ import ConnectionRequests from "./pages/Lawyer/ConnectionRequests";
 import AcceptedConnection from "./pages/Lawyer/AcceptedConnection";
 import LawyerProtectedRoute from "./pages/Lawyer/LawyerProtectedRoutes";
 import MyProfile from "./pages/Lawyer/MyProfile";
+import RecentCases from "./pages/home/RecentCases";
 //chat
 import UserThreads from "./pages/Chat/UserThread";
 import ChatPage from "./pages/Chat/ChatPage";
@@ -88,6 +89,13 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+           path="/history"
+           element={
+             <ProtectedRoute>
+               <RecentCases />
+             </ProtectedRoute>
+           }/>
           <Route
             path="/lawyer-profile/:id"
             element={

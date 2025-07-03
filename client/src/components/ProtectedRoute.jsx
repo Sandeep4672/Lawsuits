@@ -1,19 +1,18 @@
-
-import React from "react";
+import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { useContext } from "react";
+
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("token"); // or useContext/Auth state
-  const user= JSON.parse(localStorage.getItem("user"));
-  const {logout}=useContext(AuthContext);
-  // Check if the user is logged in and has the role of 'lawyer'
-  const lawyerId=localStorage.getItem("lawyerId");
-  if(lawyerId){
+  const { isLoggedIn, user, loading } = useContext(AuthContext);
+  const lawyerId = localStorage.getItem("lawyerId");
+
+  if (loading) return null; // or a spinner
+
+  if (lawyerId) {
     return <Navigate to="/lawyer-dashboard" replace />;
   }
-  if (!token || !user ) {
-    return <Navigate to="/error" />;
+  if (!isLoggedIn || !user) {
+    return <Navigate to="/login" replace />;
   }
   return children;
 };
