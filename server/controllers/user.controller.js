@@ -248,7 +248,7 @@ export const getUserSavedCases = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(userId)
       .select("savedCases")
-      .populate("savedCases.caseId", "title");
+      .populate("savedCases.caseId", "title caseType dateOfJudgment court");
 
     res.status(200).json(
       new ApiResponse(200, user?.savedCases || [], "Saved cases fetched successfully")

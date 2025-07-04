@@ -3,14 +3,17 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { User } from "../models/user.model.js";
 export const searchCases = asyncHandler(async (req, res) => {
-  console.log("Search request received with query:", req.query);
-
   const {
-    query = "",         
+    query = "",
     page = 1,
     limit = 10,
     sortBy = "createdAt",
-    order = "desc"
+    order = "desc",
+    court,          
+    caseType,    
+    fromDate,     
+    toDate,         
+    tags            
   } = req.query;
 
   const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -19,10 +22,28 @@ export const searchCases = asyncHandler(async (req, res) => {
   let searchQuery = {};
 
   if (query.trim()) {
-    searchQuery = { $text: { $search: query } };
+    searchQuery.$text = { $search: query };
   }
 
-  // Perform search
+  if (court) {
+    searchQuery.court = court;
+  }
+
+  if (caseType) {
+    searchQuery.caseType = caseType;
+  }
+
+  if (fromDate || toDate) {
+    searchQuery.dateOfJudgment = {};
+    if (fromDate) searchQuery.dateOfJudgment.$gte = new Date(fromDate);
+    if (toDate) searchQuery.dateOfJudgment.$lte = new Date(toDate);
+  }
+
+  if (tags) {
+    const tagArray = tags.split(",").map((tag) => tag.trim());
+    searchQuery.tags = { $in: tagArray };
+  }
+
   let results = await PdfDocument.find(searchQuery)
     .sort({ [sortBy]: sortOrder })
     .skip(skip)
@@ -32,23 +53,24 @@ export const searchCases = asyncHandler(async (req, res) => {
 
   if (results.length === 0 && query.trim()) {
     const regex = new RegExp(query, "i");
-    searchQuery = {
+    const fallbackQuery = {
       $or: [
         { title: regex },
         { description: regex },
         { tags: regex },
         { contentText: regex }
-      ]
+      ],
+      ...searchQuery 
     };
 
-    results = await PdfDocument.find(searchQuery)
+    results = await PdfDocument.find(fallbackQuery)
       .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(parseInt(limit));
 
-    totalResults = await PdfDocument.countDocuments(searchQuery);
+    totalResults = await PdfDocument.countDocuments(fallbackQuery);
   }
-  console.log(totalResults);
+
   res.status(200).json(
     new ApiResponse(
       200,
@@ -63,6 +85,7 @@ export const searchCases = asyncHandler(async (req, res) => {
     )
   );
 });
+
 
 const updateUserRecentCases = async (userId, caseId) => {
   console.log("Reached Here");
