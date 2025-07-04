@@ -6,8 +6,9 @@ import Footer from "../../components/Footer";
 export default function LawyerProfile() {
   const { state } = useLocation();
   const lawyer = state?.lawyer;
+  const Connected=state?.Connected;
   const navigate = useNavigate();
-
+  
   const defaultProfileImage =
     "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
@@ -55,7 +56,9 @@ export default function LawyerProfile() {
                   <span>{lawyer.phone}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-semibold text-gray-400">Practice Areas:</span>
+                  <span className="font-semibold text-gray-400">
+                    Practice Areas:
+                  </span>
                   <span>
                     {Array.isArray(lawyer.practiceAreas)
                       ? lawyer.practiceAreas.join(", ")
@@ -63,29 +66,37 @@ export default function LawyerProfile() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-semibold text-gray-400">Experience:</span>
+                  <span className="font-semibold text-gray-400">
+                    Experience:
+                  </span>
                   <span>{lawyer.experience} yrs</span>
                 </div>
               </div>
 
               <div className="mt-10 flex justify-center">
                 <button
-                  onClick={() =>
-                    navigate("/lawyer/request-connection", {
-                      state: { lawyer },
-                    })
-                  }
+                  onClick={() => {
+                    if (Connected) {
+                      navigate("/chat/threads", {
+                        // state: { lawyer },
+                      });
+                    } else {
+                      navigate("/lawyer/request-connection", {
+                        state: { lawyer },
+                      });
+                    }
+                  }}
                   className="cursor-pointer flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md shadow-lg font-medium transition"
                 >
                   <MessageCircle className="w-5 h-5" />
-                  Request to Chat
+                  {Connected ? "Go to Chat" : "Request to Chat"}
                 </button>
               </div>
             </>
           )}
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }

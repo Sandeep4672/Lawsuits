@@ -3,6 +3,8 @@ import axios from "axios";
 import { useLocation, Link } from "react-router-dom";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
+import {saveCase} from "../../utils/handleSaveCase";
+import { Bookmark } from "lucide-react";
 export default function SearchResults() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -42,6 +44,11 @@ export default function SearchResults() {
     document.title = `Search: ${query}`;
   }, [query]);
 
+  const handleSaveCase = (id)=>{
+       saveCase(id);
+  };
+
+
   return (
     <>
       <Navbar />
@@ -62,8 +69,21 @@ export default function SearchResults() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {results.map((item) => (
-              <Link to={`/case/${item._id}`} key={item._id}>
-                <div className="bg-[#1e293b] hover:bg-[#2e3b50] rounded-xl shadow-lg transition-all duration-300 p-5 border border-gray-700 hover:border-green-400">
+              <div
+                key={item._id}
+                className="relative bg-[#1e293b] hover:bg-[#2e3b50] rounded-xl shadow-lg transition-all duration-300 p-5 border border-gray-700 hover:border-green-400"
+              >
+                {/* Save Button */}
+                <button
+                  onClick={() => handleSaveCase(item._id)}
+                  className="absolute top-3 right-3 text-gray-400 hover:text-green-400 transition"
+                  title="Save to bookmarks"
+                >
+                  <Bookmark className="w-5 h-5" />
+                </button>
+
+                {/* Clickable Link */}
+                <Link to={`/case/${item._id}`}>
                   <h3 className="text-lg font-semibold text-green-300 truncate">
                     {item.title || "Untitled Case"}
                   </h3>
@@ -81,8 +101,8 @@ export default function SearchResults() {
                       ? item.summary.slice(0, 100) + "..."
                       : "No summary available."}
                   </p>
-                </div>
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
         )}
@@ -106,7 +126,7 @@ export default function SearchResults() {
           </div>
         )}
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }

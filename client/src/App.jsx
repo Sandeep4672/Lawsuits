@@ -35,6 +35,7 @@ import AcceptedConnection from "./pages/Lawyer/AcceptedConnection";
 import LawyerProtectedRoute from "./pages/Lawyer/LawyerProtectedRoutes";
 import MyProfile from "./pages/Lawyer/MyProfile";
 import RecentCases from "./pages/home/RecentCases";
+import SavedCases from "./pages/home/SavedCases";
 //chat
 import UserThreads from "./pages/Chat/UserThread";
 import ChatPage from "./pages/Chat/ChatPage";
@@ -94,6 +95,13 @@ export default function App() {
            element={
              <ProtectedRoute>
                <RecentCases />
+             </ProtectedRoute>
+           }/>
+           <Route
+           path="/saved-cases"
+           element={
+             <ProtectedRoute>
+               <SavedCases />
              </ProtectedRoute>
            }/>
           <Route

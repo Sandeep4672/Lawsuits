@@ -82,7 +82,7 @@ export default function Navbar() {
         {isLoggedIn && user ? (
           <>
             <button className="hover:text-green-400 transition"
-            onClick={()=>{ navigate("/saved-items");setMenuOpen(false);}}
+            onClick={()=>{ navigate("/saved-cases");setMenuOpen(false);}}
             >Saved</button>
             <button className="hover:text-green-400 transition"
             onClick={()=>{ navigate("/history");setMenuOpen(false);}}            
@@ -155,7 +155,7 @@ export default function Navbar() {
           {isLoggedIn && user ? (
             <>
               <button className="w-full text-left hover:text-green-400 transition"
-               onClick={()=>{navigate("/saved-items"); setMenuOpen(false);}}>
+               onClick={()=>{navigate("/saved-cases"); setMenuOpen(false);}}>
                 Saved Items
               </button>
               <button className="w-full text-left hover:text-green-400 transition"
