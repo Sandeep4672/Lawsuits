@@ -1,6 +1,15 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
-import { summarizePDF,sendConnectionRequest,getUserHistory,deleteUserHistoryById,clearUserHistory } from "../controllers/user.controller.js";
+import { summarizePDF,
+    sendConnectionRequest,
+    getUserHistory,
+    deleteUserHistoryById,
+    clearUserHistory,
+    getUserSavedCases,
+    deleteUserSavedCaseById,
+    clearUserSavedCases,
+    saveCase
+} from "../controllers/user.controller.js";
 import { getAllLawyersList } from "../controllers/lawyer.controller.js";
 import { getLawyerById} from "../controllers/lawyer.controller.js";
 import { validateObjectId } from "../middlewares/validateObjectId.middleware.js";
@@ -15,6 +24,12 @@ router.post("/connect/:id",validateObjectId,verifyUserJWT,upload.array("document
 router.get("/history",verifyUserJWT,getUserHistory);
 router.delete("/history/:caseId",verifyUserJWT,deleteUserHistoryById);
 router.delete("/clear-history",verifyUserJWT,clearUserHistory);
+
+router.post("/save-case",verifyUserJWT,saveCase)
+router.get("/saved-cases",verifyUserJWT,getUserSavedCases);
+router.delete("/saved-cases/:caseId",verifyUserJWT,deleteUserSavedCaseById);
+router.delete("/clear-saved-cases",verifyUserJWT,clearUserSavedCases);
+
 //router.get("connections",verifyUserJWT,getAllConnectedLawyers);
 //router.get("connection/:id",verifyUserJWT,getConnectionChatPage);
 export default router;

@@ -196,6 +196,109 @@ export const clearUserHistory = asyncHandler(async (req, res) => {
   }
 });
 
+export const saveCase = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { caseId } = req.body;
+
+  if (!caseId) {
+    return res.status(400).json(new ApiResponse(400, null, "caseId is required"));
+  }
+
+  try {
+    const user = await User.findById(userId);
+
+    const alreadySaved = user.savedCases.some(
+      (entry) => entry.caseId.toString() === caseId
+    );
+
+    if (alreadySaved) {
+      return res.status(200).json(
+        new ApiResponse(200, user.savedCases, "Case already saved")
+      );
+    }
+
+    if (user.savedCases.length >= 10) {
+      return res.status(400).json(
+        new ApiResponse(400, null, "You can only save up to 10 cases. Please remove one to save a new case.")
+      );
+    }
+
+    user.savedCases.unshift({
+      caseId,
+      savedAt: new Date(),
+    });
+
+    await user.save();
+
+    res.status(200).json(
+      new ApiResponse(200, user.savedCases, "Case saved successfully")
+    );
+  } catch (error) {
+    console.error("Error saving case:", error);
+    res.status(500).json(
+      new ApiResponse(500, null, "Failed to save case")
+    );
+  }
+});
 
 
+export const getUserSavedCases = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId)
+      .select("savedCases")
+      .populate("savedCases.caseId", "title");
+
+    res.status(200).json(
+      new ApiResponse(200, user?.savedCases || [], "Saved cases fetched successfully")
+    );
+  } catch (error) {
+    console.error("Error fetching saved cases:", error);
+    res.status(500).json(new ApiResponse(500, null, "Failed to fetch saved cases"));
+  }
+});
+
+export const deleteUserSavedCaseById = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const caseId = req.params.caseId;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        $pull: {
+          savedCases: { caseId: new mongoose.Types.ObjectId(caseId) },
+        },
+      },
+      { new: true }
+    );
+
+    res.status(200).json(
+      new ApiResponse(200, user.savedCases, "Case removed from saved list")
+    );
+  } catch (error) {
+    console.error("Error deleting saved case:", error);
+    res.status(500).json(new ApiResponse(500, null, "Failed to delete saved case"));
+  }
+});
+
+export const clearUserSavedCases = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: { savedCases: [] } },
+      { new: true }
+    );
+
+    res.status(200).json(
+      new ApiResponse(200, user.savedCases, "All saved cases cleared")
+    );
+  } catch (error) {
+    console.error("Error clearing saved cases:", error);
+    res.status(500).json(new ApiResponse(500, null, "Failed to clear saved cases"));
+  }
+});
 

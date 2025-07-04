@@ -28,6 +28,13 @@ const userSchema = new Schema(
             }
         ]
         ,
+        savedCases: [
+            {
+                caseId: { type: mongoose.Schema.Types.ObjectId, ref: "PdfDocument" },
+                savedAt: { type: Date, default: Date.now }
+            }
+        ]
+        ,
         refreshToken: {
             type: String,
         },
