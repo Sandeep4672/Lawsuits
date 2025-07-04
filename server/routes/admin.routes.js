@@ -1,11 +1,9 @@
 
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
-import { uploadPdfToDatabase } from "../controllers/admin.controller.js";
+import { uploadPdfToDatabase,acceptLawyerRequest,declineLawyerRequest,getAllLawyersRequest ,getLawyerRequestById} from "../controllers/admin.controller.js";
 import { verifyUserJWT, isAdmin } from "../middlewares/authUser.middleware.js";
-import { getAllLawyersList, getAllLawyersRequest, getLawyerById } from "../controllers/lawyer.controller.js";
-import { getLawyerRequestById } from "../controllers/lawyer.controller.js";
-import { acceptLawyerRequest, declineLawyerRequest } from "../controllers/lawyer.controller.js";
+import { getAllLawyersList,  getLawyerById } from "../controllers/lawyer.controller.js";
 import { validateObjectId } from "../middlewares/validateObjectId.middleware.js";
 const router = Router();
 router.use(verifyUserJWT, isAdmin);

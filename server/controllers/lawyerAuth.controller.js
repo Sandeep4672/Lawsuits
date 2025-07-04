@@ -9,6 +9,8 @@ import fs from "fs";
 
 
 export const signupLawyer = async (req, res, next) => {
+      const uploadedPublicIds = [];
+
   try {
     const {
       fullName,
@@ -32,7 +34,6 @@ export const signupLawyer = async (req, res, next) => {
     }
 
     const proofUrls = [];
-    const uploadedPublicIds = [];
 
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
