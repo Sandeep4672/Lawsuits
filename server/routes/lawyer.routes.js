@@ -5,17 +5,11 @@ import { upload } from "../middlewares/multer.middleware.js";
 import { loginLawyer, signupLawyer, logoutLawyer, changeCurrentPassword } from "../controllers/lawyerAuth.controller.js";
 const router = Router();
 import { verifyLawyerJWT } from "../middlewares/authLawyer.middleware.js";
-import { getLawyerById, getAllConnectionRequests,acceptConnectionRequest,rejectConnectionRequest,getAllConnections } from "../controllers/lawyer.controller.js";
-import { canAccessDashboard } from "../middlewares/dashboardAccess.middleware.js";
-import { validateObjectId } from "../middlewares/validateObjectId.middleware.js";
+import {  getAllConnectionRequests,acceptConnectionRequest,rejectConnectionRequest,getAllConnections } from "../controllers/lawyer.controller.js";
+import { getLawyerProfileById, updateLawyerProfile } from "../controllers/lawyerProfile.controller.js";
 router.post("/signup", upload.array("proofFile", 5), signupLawyer);
 
-router.get("/dashboard", verifyLawyerJWT, (req, res) => {
-    res.status(200).
-        json({
-            success: true
-        })
-})
+
 
 router.route("/login").post(loginLawyer);
 
@@ -24,7 +18,6 @@ router.route("/logout").post(verifyLawyerJWT, logoutLawyer);
 router.route("/change-password").patch(verifyLawyerJWT, changeCurrentPassword);
 
 
-router.get("/dashboard", verifyLawyerJWT, canAccessDashboard, validateObjectId, getLawyerById);
 
 router.get("/connections/requests", verifyLawyerJWT, getAllConnectionRequests);
 
@@ -35,5 +28,7 @@ router.delete("/connections/requests/:id/reject",verifyLawyerJWT,rejectConnectio
 
 //router.get("/connections",verifyLawyerJWT,getAllConnections);
 router.get("/connections/accepted",verifyLawyerJWT,getAllConnections);
+router.get("/my-profile",verifyLawyerJWT,getLawyerProfileById);
+router.patch("/update-profile", verifyLawyerJWT, upload.single("profilePicture"), updateLawyerProfile);
 
 export default router;

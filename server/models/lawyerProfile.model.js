@@ -16,7 +16,6 @@ const lawyerProfileSchema = new mongoose.Schema({
       degree: String,            
       university: String,         
       graduationYear: Number,
-      certificateUrl: String,
     }
   ],
 
@@ -48,4 +47,4 @@ const lawyerProfileSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-export default mongoose.model("LawyerProfile", lawyerProfileSchema);
+export const LawyerProfile=  mongoose.model("LawyerProfile", lawyerProfileSchema);

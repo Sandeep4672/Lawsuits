@@ -128,29 +128,3 @@ export const getAllConnections = asyncHandler(async (req, res) => {
   );
 });
 
-export const getLawyerById = asyncHandler(async (req, res) => {
-  const lawyerId = req.user._id;
-
-  try {
-    const lawyer = await Lawyer.findById(lawyerId);
-
-    if (!lawyer) {
-      return res.status(404).json({
-        success: false,
-        message: "Lawyer not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: lawyer,
-    });
-  } catch (error) {
-    console.error("Error fetching lawyer profile:", error.message);
-    res.status(500).json({
-      success: false,
-      message: "Server Error: Unable to fetch lawyer profile",
-      error: error.message,
-    });
-  }
-});
