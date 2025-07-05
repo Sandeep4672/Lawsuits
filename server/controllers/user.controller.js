@@ -12,6 +12,8 @@ import { User } from "../models/user.model.js";
 import mongoose from "mongoose";
 
 
+
+
 export const summarizePdfFile = async (filePath) => {
   const dataBuffer = fs.readFileSync(filePath);
   const pdfData = await pdf(dataBuffer);

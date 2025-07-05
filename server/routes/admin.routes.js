@@ -17,6 +17,6 @@ router.route("/lawyer/:id").get(validateObjectId,getLawyerById)
 
 router.route("/lawyer-request/:id/accept").patch(validateObjectId,acceptLawyerRequest);
 
-router.route("/lawyer-request/:id/decline").delete(validateObjectId,declineLawyerRequest);
+router.route("/lawyer-request/:id/decline").patch(validateObjectId,declineLawyerRequest);
 
 export default router;

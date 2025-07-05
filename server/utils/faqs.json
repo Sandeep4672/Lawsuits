@@ -1,0 +1,127 @@
+[
+  {
+    "question": "is consultation free",
+    "answer": "Consultation fees may vary by lawyer. Please check their profile.",
+    "keywords": ["consultation", "fee", "free"]
+  },
+  {
+    "question": "what is this website about",
+    "answer": "LawSuits is a platform to connect users with verified lawyers for consultations and legal help.",
+    "keywords": ["website", "about", "platform", "service"]
+  },
+  {
+    "question": "how do I contact a lawyer",
+    "answer": "You can visit a lawyer's profile and click on 'Request Consultation' or use the chat feature if available.",
+    "keywords": ["contact", "talk", "message", "reach", "connect"]
+  },
+  {
+    "question": "how do I create an account",
+    "answer": "Click on 'Sign Up' from the home page and choose whether you are a user or a lawyer.",
+    "keywords": ["create", "account", "register", "sign up"]
+  },
+  {
+    "question": "how do I login",
+    "answer": "Click the 'Login' button from the homepage and enter your email and password.",
+    "keywords": ["login", "sign in", "log in"]
+  },
+  {
+    "question": "what documents do I need to upload",
+    "answer": "Users may upload case-related documents; lawyers should upload proof of legal qualification during registration.",
+    "keywords": ["documents", "upload", "proof", "files"]
+  },
+  {
+    "question": "how do I reset my password",
+    "answer": "Use the 'Forgot Password' link on the login page to reset your password.",
+    "keywords": ["reset", "forgot", "password", "recover"]
+  },
+  {
+    "question": "how are lawyers verified",
+    "answer": "All lawyers are manually verified by our admin team using their bar registration and certifications.",
+    "keywords": ["verified", "bar", "certified", "authentic"]
+  },
+  {
+    "question": "can I chat with a lawyer",
+    "answer": "Yes, once a lawyer accepts your consultation request, a chat window will be available.",
+    "keywords": ["chat", "message", "talk", "speak"]
+  },
+  {
+    "question": "how long does it take to get a reply",
+    "answer": "Lawyers usually respond within 24 hours. You will be notified when they reply.",
+    "keywords": ["reply", "response", "time", "wait"]
+  },
+  {
+    "question": "how can I delete my account",
+    "answer": "You can request account deletion from your profile settings or contact support.",
+    "keywords": ["delete", "remove", "close", "account"]
+  },
+  {
+    "question": "can I change my lawyer",
+    "answer": "Yes, you can end the current consultation and send a new request to another lawyer.",
+    "keywords": ["change", "switch", "another", "lawyer"]
+  },
+  {
+    "question": "how do I view my legal cases",
+    "answer": "You can view your active and past cases from your dashboard under 'My Cases'.",
+    "keywords": ["view", "my cases", "dashboard", "legal"]
+  },
+  {
+    "question": "do you offer legal aid for free",
+    "answer": "Some lawyers may offer pro bono services. Check their profile or ask them directly.",
+    "keywords": ["free", "legal aid", "help", "pro bono"]
+  },
+  {
+    "question": "is my data safe",
+    "answer": "Yes, we use encrypted storage and strict access controls to protect your data.",
+    "keywords": ["safe", "data", "privacy", "secure"]
+  },
+  {
+    "question": "how do lawyers register",
+    "answer": "Lawyers can register using the 'Lawyer Sign Up' option on the homepage.",
+    "keywords": ["lawyer", "register", "sign up", "create"]
+  },
+  {
+    "question": "can I upload images or PDFs",
+    "answer": "Yes, our platform supports secure uploads of PDFs, images, and documents.",
+    "keywords": ["upload", "pdf", "image", "file"]
+  },
+  {
+    "question": "do you have mobile support",
+    "answer": "Yes, our platform is fully responsive and works on all mobile devices.",
+    "keywords": ["mobile", "phone", "support", "app"]
+  },
+  {
+    "question": "can I review a lawyer",
+    "answer": "Yes, after your consultation ends, you'll be asked to rate and review your lawyer.",
+    "keywords": ["review", "rate", "feedback", "lawyer"]
+  },
+  {
+    "question": "do you have customer support",
+    "answer": "Yes, you can reach out to our support team at support@lawsuits.com.",
+    "keywords": ["support", "help", "contact", "admin"]
+  },
+  {
+    "question": "what happens after I request consultation",
+    "answer": "The lawyer will review your request and either accept or decline. You’ll be notified accordingly.",
+    "keywords": ["consultation", "request", "what next", "process"]
+  },
+  {
+    "question": "can I see lawyer availability",
+    "answer": "Yes, availability is shown on the lawyer's profile if they’ve updated it.",
+    "keywords": ["availability", "schedule", "slots", "free time"]
+  },
+  {
+    "question": "how do I upload case documents",
+    "answer": "During a consultation request, you can attach documents related to your case.",
+    "keywords": ["upload", "case", "documents", "files"]
+  },
+  {
+    "question": "are calls supported",
+    "answer": "Currently, we support text chat. Audio/video call support may be added soon.",
+    "keywords": ["call", "voice", "video", "talk"]
+  },
+  {
+    "question": "what types of lawyers are available",
+    "answer": "We have lawyers specializing in criminal, civil, family, property, and more.",
+    "keywords": ["types", "category", "specialist", "lawyer"]
+  }
+]

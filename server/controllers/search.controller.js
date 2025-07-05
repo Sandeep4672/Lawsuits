@@ -2,6 +2,8 @@ import { PdfDocument } from "../models/pdf.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { User } from "../models/user.model.js";
+import path from "path";
+import fs from "fs";
 export const searchCases = asyncHandler(async (req, res) => {
   const {
     query = "",
@@ -123,3 +125,31 @@ export const getCaseById=asyncHandler(async (req, res) => {
   caseObj.pdfUrl =caseData.cloudinary?.secure_url || null;
   res.status(200).json(new ApiResponse(200, caseObj, "Case retrieved successfully"));
 });
+
+
+
+const loadFaqs = () => {
+  const filePath = path.resolve("./utils/faqs.json");
+  const data = fs.readFileSync(filePath, "utf-8");
+  return JSON.parse(data);
+};
+
+export const getAnswerChatBotFaq=asyncHandler(async(req,res)=>{
+   const userQuestion = req.body.question?.toLowerCase().trim();
+  if (!userQuestion) {
+    return res.status(400).json({ reply: "Please enter a valid question." });
+  }
+
+  const faqs = loadFaqs();
+
+  for (let faq of faqs) {
+    if (faq.keywords.some((kw) => userQuestion.includes(kw.toLowerCase()))) {
+      return res.json({ reply: faq.answer });
+    }
+  }
+
+  res.json({
+    reply:
+      "Sorry, I couldn't find an answer to that. Please contact support@lawsuits.com for help."
+  });
+})

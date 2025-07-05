@@ -4,6 +4,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { AuthContext } from "../../context/AuthContext";
 import { motion } from "framer-motion";
+import Chatbot from "../../components/User/chatBot";
 
 export default function Home() {
   const { isLoggedIn } = useContext(AuthContext);
@@ -104,6 +105,7 @@ export default function Home() {
 
      
     </div>
+    <Chatbot />
      <Footer />
     </>
   );

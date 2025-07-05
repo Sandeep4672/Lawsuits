@@ -8,14 +8,13 @@ import { summarizePDF,
     getUserSavedCases,
     deleteUserSavedCaseById,
     clearUserSavedCases,
-    saveCase
+    saveCase,
 } from "../controllers/user.controller.js";
 import { getAllLawyersList } from "../controllers/lawyer.controller.js";
 import { getLawyerById} from "../controllers/lawyer.controller.js";
 import { validateObjectId } from "../middlewares/validateObjectId.middleware.js";
 import { verifyUserJWT } from "../middlewares/authUser.middleware.js";
 const router = Router();
-
 
 router.route("/summarize").post(verifyUserJWT,upload.single("pdf"),summarizePDF);
 router.route("/find-lawyers").get(verifyUserJWT,getAllLawyersList);
