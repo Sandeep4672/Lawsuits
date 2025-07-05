@@ -17,7 +17,9 @@ export default function UserThreads() {
         const res = await axios.get("http://localhost:8000/threads", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setThreads(res.data.data || []);
+        
+        const threadData=(res.data.data||[]).filter(thread=>thread.lawyer!==null);
+        setThreads(threadData);
       } catch (err) {
         setMessage(
           err.response?.data?.message || "Failed to fetch conversations."
@@ -58,7 +60,7 @@ export default function UserThreads() {
           ) : (
             <ul className="space-y-3">
               {threads.map((thread) => {
-                const partner = thread.lawyer;
+                const partner = thread?.lawyer;
 
                 return (
                   <li
