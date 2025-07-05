@@ -23,23 +23,77 @@ export const getLawyerProfileById = asyncHandler(async (req, res) => {
 import { uploadFileToCloudinary } from "../utils/cloudinary.js";
 import fs from "fs";
 
+// export const updateLawyerProfile = asyncHandler(async (req, res) => {
+//   const lawyerId = req.user._id; 
+
+//   const updateData = { ...req.body, updatedAt: new Date() };
+
+//   if (req.file) {
+//     const localPath = req.file.path;
+//     console.log(localPath);
+//     try {
+//       const result = await uploadFileToCloudinary(localPath, "Lawsuits/LawyerProfilePictures");
+//       updateData.profilePicture = result.secure_url;
+
+//       fs.existsSync(localPath) && fs.unlinkSync(localPath);
+//     } catch (error) {
+//       console.error("Error uploading profile picture:", error);
+//       fs.existsSync(localPath) && fs.unlinkSync(localPath);
+//       return res.status(500).json(new ApiResponse(500, null, "Failed to upload profile picture"));
+//     }
+//   }
+
+//   const updatedProfile = await LawyerProfile.findOneAndUpdate(
+//     { lawyer: lawyerId },
+//     { $set: updateData },
+//     { new: true, upsert: true, runValidators: true }
+//   );
+
+//   res.status(200).json(
+//     new ApiResponse(200, updatedProfile, "Lawyer profile updated successfully")
+//   );
+// });
+
 export const updateLawyerProfile = asyncHandler(async (req, res) => {
-  const lawyerId = req.user._id; 
+  const lawyerId = req.user._id;
 
   const updateData = { ...req.body, updatedAt: new Date() };
+  const parseJSONField = (field) => {
+    if (typeof updateData[field] === "string") {
+      try {
+        updateData[field] = JSON.parse(updateData[field]);
+      } catch (err) {
+        console.warn(`Failed to parse field ${field}:`, err.message);
+      }
+    }
+  };
+
+  // Arrays of objects
+  parseJSONField("education");
+  parseJSONField("awards");
+  parseJSONField("publications");
+  parseJSONField("practiceAreas");
+  parseJSONField("languagesSpoken");
+  parseJSONField("courtAssociations");
+  parseJSONField("digitalPresence");
+  parseJSONField("availability");
 
   if (req.file) {
     const localPath = req.file.path;
-    console.log(localPath);
     try {
-      const result = await uploadFileToCloudinary(localPath, "Lawsuits/LawyerProfilePictures");
+      const result = await uploadFileToCloudinary(
+        localPath,
+        "Lawsuits/LawyerProfilePictures"
+      );
       updateData.profilePicture = result.secure_url;
 
       fs.existsSync(localPath) && fs.unlinkSync(localPath);
     } catch (error) {
       console.error("Error uploading profile picture:", error);
       fs.existsSync(localPath) && fs.unlinkSync(localPath);
-      return res.status(500).json(new ApiResponse(500, null, "Failed to upload profile picture"));
+      return res
+        .status(500)
+        .json(new ApiResponse(500, null, "Failed to upload profile picture"));
     }
   }
 
@@ -49,8 +103,10 @@ export const updateLawyerProfile = asyncHandler(async (req, res) => {
     { new: true, upsert: true, runValidators: true }
   );
 
-  res.status(200).json(
-    new ApiResponse(200, updatedProfile, "Lawyer profile updated successfully")
-  );
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedProfile, "Lawyer profile updated successfully")
+    );
 });
 

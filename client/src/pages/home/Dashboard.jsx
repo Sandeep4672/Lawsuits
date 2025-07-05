@@ -3,7 +3,10 @@ import Navbar from "../../components/Navbar";
 import DashboardTools from "../../components/User/DashboardTools";
 import Footer from "../../components/Footer";
 import { usePreventBackFromUserDashboard } from "../../components/usePreventBackFromDashboard";
-
+import { useState } from "react";
+import axios from "axios";
+import FrequentlyAskedQn from "./faq";
+import Chatbot from "../../components/User/chatBot";
 export default function Dashboard() {
   usePreventBackFromUserDashboard();
 
@@ -22,7 +25,8 @@ export default function Dashboard() {
 
         <DashboardTools />
       </div>
-
+        <FrequentlyAskedQn/>
+        <Chatbot/>
       <Footer />
     </div>
   );

@@ -2,7 +2,7 @@ import React from "react";
 
 export default function LanguagesCard({ languages, editMode, onChange }) {
   return (
-    <div className="bg-white/10 backdrop-blur-md hover:scale-[1.02] p-6 rounded-xl border border-blue-500 shadow-xl hover:shadow-blue-300">
+    <div className="bg-white/10 backdrop-blur-md hover:scale-[1.02] p-6 rounded-xl transition-all duration-400 border border-blue-500 shadow-xl hover:shadow-blue-300">
       <h2 className="text-lg font-semibold text-orange-400 mb-2">Languages</h2>
       {editMode ? (
         <input

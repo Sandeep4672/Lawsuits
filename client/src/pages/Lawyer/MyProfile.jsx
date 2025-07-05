@@ -14,6 +14,7 @@ import PublicationsCard from "./profileCards/Publication";
 import AvailabilityCard from "./profileCards/Avalability";
 import CourtAssociationsCard from "./profileCards/CourtAssociation.";
 import FirmDetailsCard from "./profileCards/Firmdetails";
+import ConsultationFeeCard from "./profileCards/Fee";
 export default function MyProfile() {
   const [lawyer, setLawyer] = useState({});
   const [loading, setLoading] = useState(true);
@@ -22,82 +23,53 @@ export default function MyProfile() {
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [profileData, setProfileData] = useState([]);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    try {
-      const res = axios.get(`http://localhost:8000/lawyer/profile-data`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setProfileData(res.data.data || []);
-    } catch (err) {}
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/lawyer/my-profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = res.data.data;
+
+        if (data) {
+          setLawyer({
+            fullName: data.lawyer?.fullName || "",
+            email: data.lawyer?.email || "",
+            practiceAreas: data.practiceAreas || [],
+            experienceYears: data.experienceYears || "",
+            barId: data.barId || "",
+            motto: data.motto || "",
+            aboutMe: data.aboutMe || "",
+            education: data.education || [],
+            currentFirm: data.currentFirm || "",
+            officeAddress: data.officeAddress || "",
+            courtAssociations: data.courtAssociations || [],
+            languagesSpoken: data.languagesSpoken || [],
+            consultationFee: data.consultationFee || "",
+            availability: data.availability || {},
+            digitalPresence: data.digitalPresence || {},
+            awards: data.awards || [],
+            publications: data.publications || [],
+            profilePicture: data?.profilePicture || "",
+          });
+
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+        setMessage("Error loading profile.");
+        setLoading(false);
+      }
+    };
 
     if (token) {
-      const decoded = jwtDecode(token);
-      setLawyer({
-        fullName: decoded.fullName || "",
-        email: decoded.email || "",
-        specialization: decoded.practiceAreas || [
-          "murder",
-          "education",
-          "Civil Law",
-          "Corporate Law",
-        ],
-        experience: decoded.experience || "9",
-        barId: decoded.barId || "12345",
-        motto: decoded.motto || "Passionate Advocate for Justice",
-        aboutMe:
-          decoded.aboutMe ||
-          "Dedicated to delivering ethical and effective legal counsel.",
-        education: decoded.education || [
-          {
-            degree: "graduate",
-            university: "GMU",
-            graduationYear: 2024,
-            certificateUrl: "huh ddidididj",
-          },
-          {
-            degree: "PG",
-            university: "DU",
-            graduationYear: 2024,
-            certificateUrl: "13554545",
-          },
-        ],
-        currentFirm: decoded.currentFirm || "",
-        officeAddress: decoded.officeAddress || "",
-        courtAssociations: decoded.courtAssociations || [],
-        languagesSpoken: decoded.languagesSpoken || ["english", "hindi"],
-        consultationFee: decoded.consultationFee || "12000",
-        availability: decoded.availability || {
-          days: ["Monday", "Wednesday", "Friday"],
-          timeSlots: [
-            { start: "10:00", end: "13:00" },
-            { start: "16:00", end: "18:00" },
-          ],
-        },
-        digitalPresence: decoded.digitalPresence || {
-          linkedin: "https://linkedin.com/in/johndoe",
-          website: "https://johndoelaw.com",
-          barAssociationProfile: "https://barassociation.com/johndoe",
-        },
-        awards: decoded.awards || [
-          { title: "Best Corporate Litigator", year: 2020 },
-          { title: "Human Rights Defender Award", year: 2022 },
-        ],
-        publications: decoded.publications || [
-          {
-            title: "Corporate Ethics in Indian Law",
-            link: "https://legaljournals.com/corporate-ethics",
-          },
-          {
-            title: "Protecting Civil Liberties",
-            link: "https://lawreview.org/civil-liberties",
-          },
-        ],
-      });
-      setLoading(false);
+      fetchProfile();
     } else {
       setMessage("You are not logged in.");
       setLoading(false);
@@ -110,8 +82,46 @@ export default function MyProfile() {
   };
 
   const handleSave = async () => {
+    const token = localStorage.getItem("token");
+
+    const formData = new FormData();
+    formData.append("fullName", lawyer.fullName);
+    formData.append("email", lawyer.email);
+    formData.append("barId", lawyer.barId);
+    formData.append("motto", lawyer.motto);
+    formData.append("aboutMe", lawyer.aboutMe);
+    formData.append("experienceYears", lawyer.experienceYears);
+    formData.append("practiceAreas", JSON.stringify(lawyer.practiceAreas));
+    formData.append("education", JSON.stringify(lawyer.education));
+    formData.append("currentFirm", lawyer.currentFirm);
+    formData.append("officeAddress", lawyer.officeAddress);
+    formData.append(
+      "courtAssociations",
+      JSON.stringify(lawyer.courtAssociations)
+    );
+    formData.append("languagesSpoken", JSON.stringify(lawyer.languagesSpoken));
+    formData.append("consultationFee", lawyer.consultationFee);
+    formData.append("availability", JSON.stringify(lawyer.availability));
+    formData.append("digitalPresence", JSON.stringify(lawyer.digitalPresence));
+    formData.append("awards", JSON.stringify(lawyer.awards));
+    formData.append("publications", JSON.stringify(lawyer.publications));
+
+    if (profileImage) {
+      formData.append("profilePicture", profileImage);
+    }
+
     try {
-      await axios.put("http://localhost:8000/lawyers/updateProfile", lawyer);
+      await axios.patch(
+        "http://localhost:8000/lawyer/update-profile",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
       setEditMode(false);
       alert("Profile updated successfully");
     } catch (err) {
@@ -126,17 +136,10 @@ export default function MyProfile() {
     setImagePreview(URL.createObjectURL(file));
   };
 
-  const renderCard = (title, content) => (
-    <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl border border-blue-400">
-      <h2 className="text-lg font-semibold text-blue-400 mb-2">{title}</h2>
-      {content}
-    </div>
-  );
-
   return (
     <>
       <Navbar />
-      <div className="min-h-screen pt-28 pb-20 px-4 sm:px-8 bg-black text-white">
+      <div className="min-h-screen pt-28 pb-20 px-4 sm:px-8 bg-gray-900 text-white">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -155,6 +158,7 @@ export default function MyProfile() {
               <img
                 src={
                   imagePreview ||
+                  lawyer?.profilePicture ||
                   "https://www.w3schools.com/howto/img_avatar.png"
                 }
                 alt="Profile"
@@ -256,12 +260,12 @@ export default function MyProfile() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-10 text-left">
                 <ExperienceCard
-                  experience={lawyer.experience}
+                  experienceYears={lawyer.experienceYears}
                   editMode={editMode}
                   onChange={(e) =>
                     setLawyer((prev) => ({
                       ...prev,
-                      experience: e.target.value,
+                      experienceYears: e.target.value,
                     }))
                   }
                 />
@@ -277,20 +281,21 @@ export default function MyProfile() {
                 />
 
                 <SpecializationsCard
-                  specialization={lawyer.specialization}
+                  practiceAreas={lawyer.practiceAreas}
                   editMode={editMode}
-                  onChange={(e) =>
+                  onChange={(updatedPracticeAreas) =>
                     setLawyer((prev) => ({
                       ...prev,
-                      specialization: e.target.value,
+                      practiceAreas: updatedPracticeAreas,
                     }))
                   }
                 />
+
                 <AwardsCard
                   awards={lawyer.awards}
                   editMode={editMode}
-                  onChange={(e) =>
-                    setLawyer((prev) => ({ ...prev, awards: e.target.value }))
+                  onChange={(updatedAwards) =>
+                    setLawyer((prev) => ({ ...prev, awards: updatedAwards }))
                   }
                 />
 
@@ -340,6 +345,26 @@ export default function MyProfile() {
                   editMode={editMode}
                   onChange={(key, value) =>
                     setLawyer((prev) => ({ ...prev, [key]: value }))
+                  }
+                />
+                <DigitalLinksCard
+                  digitalPresence={lawyer.digitalPresence}
+                  editMode={editMode}
+                  onChange={(field, value) =>
+                    setLawyer((prev) => ({
+                      ...prev,
+                      digitalPresence: {
+                        ...prev.digitalPresence,
+                        [field]: value,
+                      },
+                    }))
+                  }
+                />
+                <ConsultationFeeCard
+                  consultationFee={lawyer.consultationFee}
+                  editMode={editMode}
+                  onChange={(value) =>
+                    setLawyer((prev) => ({ ...prev, consultationFee: value }))
                   }
                 />
               </div>
