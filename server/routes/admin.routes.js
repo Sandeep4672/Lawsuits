@@ -11,12 +11,12 @@ router.use(verifyUserJWT, isAdmin);
 
 router.route("/upload-pdf").post(upload.single("pdf"), uploadPdfToDatabase);
 router.route("/lawyer-requests").get(getAllLawyersRequest);
-router.route("/lawyer-request/:id").get(validateObjectId,getLawyerRequestById);
+router.route("/lawyer-request/:id").get(validateObjectId(),getLawyerRequestById);
 router.route("/lawyers").get(getAllLawyersList);
-router.route("/lawyer/:id").get(validateObjectId,getLawyerById)
+router.route("/lawyer/:id").get(validateObjectId(),getLawyerById)
 
-router.route("/lawyer-request/:id/accept").patch(validateObjectId,acceptLawyerRequest);
+router.route("/lawyer-request/:id/accept").patch(validateObjectId(),acceptLawyerRequest);
 
-router.route("/lawyer-request/:id/decline").patch(validateObjectId,declineLawyerRequest);
+router.route("/lawyer-request/:id/decline").patch(validateObjectId(),declineLawyerRequest);
 
 export default router;

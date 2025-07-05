@@ -19,7 +19,7 @@ const router = Router();
 router.route("/summarize").post(verifyUserJWT,upload.single("pdf"),summarizePDF);
 router.route("/find-lawyers").get(verifyUserJWT,getAllLawyersList);
 router.route("/lawyer-profile/:lawyerId").get(verifyUserJWT,validateObjectId("lawyerId"),getLawyerProfileById);
-router.post("/connect/:id",validateObjectId,verifyUserJWT,upload.array("documents", 5),sendConnectionRequest);
+router.post("/connect/:id",validateObjectId(),verifyUserJWT,upload.array("documents", 5),sendConnectionRequest);
 router.get("/history",verifyUserJWT,getUserHistory);
 router.delete("/history/:caseId",verifyUserJWT,deleteUserHistoryById);
 router.delete("/clear-history",verifyUserJWT,clearUserHistory);
