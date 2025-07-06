@@ -10,7 +10,7 @@ export const getLawyerProfileById = asyncHandler(async (req, res) => {
   }
 
   const profile = await LawyerProfile.findOne({ lawyer: lawyerId })
-    .populate("lawyer", "fullName email");
+    .populate("lawyer", "fullName email barId");
 
   if (!profile) {
     return res.status(404).json(new ApiResponse(404, null, "Lawyer profile not found"));

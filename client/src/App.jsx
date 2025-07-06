@@ -36,6 +36,7 @@ import LawyerProtectedRoute from "./pages/Lawyer/LawyerProtectedRoutes";
 import MyProfile from "./pages/Lawyer/MyProfile";
 import RecentCases from "./pages/home/RecentCases";
 import SavedCases from "./pages/home/SavedCases";
+import LawyerProfileDetails from "./pages/home/LawyerProfileDetail";
 //chat
 import UserThreads from "./pages/Chat/UserThread";
 import ChatPage from "./pages/Chat/ChatPage";
@@ -112,6 +113,12 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+          path="/lawyer-profile-data/:id"
+          element={<ProtectedRoute>
+                <LawyerProfileDetails />
+              </ProtectedRoute>}
+              />
           {/* Protected Routes for Lawyers */}
           <Route
             path="/lawyer/profile"

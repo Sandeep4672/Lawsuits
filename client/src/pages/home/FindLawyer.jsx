@@ -54,8 +54,8 @@ export default function FindLawyer() {
 
   const handleConnect = (lawyer) => {
     const Connected=isConnected(lawyer._id);
-    navigate(`/lawyer-profile/${lawyer._id}`, {
-      state: { lawyer,Connected },
+    navigate(`/lawyer-profile-data/${lawyer._id}`, {
+      state: { lawyerId:lawyer._id,Connected },
     });
   };
 

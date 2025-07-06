@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import Navbar from "./LawyerNavbar";
 import Footer from "../../components/Footer";
@@ -22,7 +21,6 @@ export default function MyProfile() {
   const [editMode, setEditMode] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [profileData, setProfileData] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -41,9 +39,9 @@ export default function MyProfile() {
           setLawyer({
             fullName: data.lawyer?.fullName || "",
             email: data.lawyer?.email || "",
+            barId: data.lawyer?.barId || "",
             practiceAreas: data.practiceAreas || [],
             experienceYears: data.experienceYears || "",
-            barId: data.barId || "",
             motto: data.motto || "",
             aboutMe: data.aboutMe || "",
             education: data.education || [],
