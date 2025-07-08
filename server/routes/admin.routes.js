@@ -10,7 +10,7 @@ import {
     getLawyerById,
     getCaseFiles,
     updateCaseFileById,
-    getCaseFileById
+    getCaseFileById,deleteCase
 } from "../controllers/admin.controller.js";
 import { verifyUserJWT, isAdmin } from "../middlewares/authUser.middleware.js";
 import { getAllLawyersList } from "../controllers/lawyer.controller.js";
@@ -25,7 +25,8 @@ router.get("/get-casefiles",getCaseFiles);
 router.get("/get-case/:caseId",getCaseFileById)
 
 router.patch("/update-casefile/:caseId",upload.single("pdf"),updateCaseFileById);
-
+//dellete caseby id
+router.patch("/delete-case/:id",deleteCase);
 router.route("/lawyer-requests").get(getAllLawyersRequest);
 router.route("/lawyer-request/:id").get(validateObjectId(),getLawyerRequestById);
 router.route("/lawyers").get(getAllLawyersList);

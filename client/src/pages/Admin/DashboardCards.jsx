@@ -25,7 +25,7 @@ export const adminCards = [
   {
     title: "Show Cases",
     description: "View all uploaded legal cases",
-    path: "/admin/cases", // fixed: remove dot before "/admin"
+    path: "/admin/all-cases", // fixed: remove dot before "/admin"
     bg: "bg-blue-600",
     icon: <FolderSearch className="w-6 h-6 text-white" />,
   },

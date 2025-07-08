@@ -41,6 +41,7 @@ import LawyerProfileDetails from "./pages/home/LawyerProfileDetail";
 import UserThreads from "./pages/Chat/UserThread";
 import ChatPage from "./pages/Chat/ChatPage";
 import LawyerThreads from "./pages/Chat/LawyerThreads";
+import AdminAllCases from "./pages/Admin/AllCases";
 export default function App() {
   return (
     <AuthProvider>
@@ -223,6 +224,14 @@ export default function App() {
             element={
               <AdminProtectedRoute>
                 <LawyerDetail />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/all-cases"
+            element={
+              <AdminProtectedRoute>
+                <AdminAllCases />
               </AdminProtectedRoute>
             }
           />

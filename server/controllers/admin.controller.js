@@ -309,3 +309,17 @@ export const updateCaseFileById = asyncHandler(async (req, res) => {
   }
 });
 
+export const deleteCase=asyncHandler(async(req,res)=>{
+
+  try{
+    const caseId=req.params.id;
+    const delCase=await PdfDocument.findByIdAndDelete(caseId);
+    if(!delCase) return res.status(404).json(new ApiResponse(404,null,"cant find the case"));
+
+    return res.status(200).json(new ApiResponse(200,delCase,"Case deleted"));
+  }
+  catch(err)
+  {
+    return res.status(500).json(new ApiResponse(500,err,"internal server error in deleteing case"));
+  }
+});
