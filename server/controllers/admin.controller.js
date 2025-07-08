@@ -216,3 +216,96 @@ export const getLawyerById = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
+export const getCaseFiles=asyncHandler(async(req,res)=>{
+    try{
+      const casefiles=await PdfDocument.find();
+      res.status(200).json(new ApiResponse(200,casefiles,"Successfully Retrieved Case Files"));
+    }catch(error){
+        res.status(500).json(new ApiResponse(500,error,"Failed to retrieve documents"));
+    }
+})
+
+
+export const getCaseFileById=asyncHandler(async(req,res)=>{
+    try {
+      const caseId=req.params.caseId;
+      const existingCase= await PdfDocument.findById(caseId);
+      if(!existingCase){
+        return res.status(404).json(new ApiResponse(404,null,"No exisiting Case "));
+      }
+
+      return res.status(200).json(new ApiResponse(200,existingCase,"Successfully fetched"));
+      
+    } catch (error) {
+        return res.status(500).json(new ApiResponse(500,error,"Internal server error"));
+
+    }
+})
+
+
+export const updateCaseFileById = asyncHandler(async (req, res) => {
+  try {
+    const caseId = req.params.caseId;
+
+    const existingCase = await PdfDocument.findById(caseId);
+    if (!existingCase) {
+      return res.status(404).json({ message: "Case not found." });
+    }
+
+    const {
+      title,
+      description,
+      summary,
+      partiesInvolved,
+      caseNumber,
+      caseType,
+      court,
+      dateOfJudgment,
+      tags,
+      contentText,
+    } = req.body;
+    console.log(req.body);
+    if (title) existingCase.title = title;
+    if (description) existingCase.description = description;
+    if (summary) existingCase.summary = summary;
+    if (partiesInvolved) existingCase.partiesInvolved = partiesInvolved;
+    if (caseNumber) existingCase.caseNumber = caseNumber;
+    if (caseType) existingCase.caseType = caseType;
+    if (court) existingCase.court = court;
+    if (dateOfJudgment) existingCase.dateOfJudgment = new Date(dateOfJudgment);
+    if (tags) existingCase.tags = tags;
+    if (contentText) existingCase.contentText = contentText;
+
+    if (req.file) {
+      if (existingCase.cloudinary?.public_id) {
+        await deleteFileFromCloudinary(existingCase.cloudinary.public_id);
+      }
+
+      const cloudinaryResult = await uploadFileToCloudinary(req.file.path, "Lawsuits/CaseFiles");
+
+      existingCase.cloudinary = {
+        public_id: cloudinaryResult.public_id,
+        secure_url: cloudinaryResult.secure_url,
+        original_filename: cloudinaryResult.original_filename,
+        format: cloudinaryResult.format,
+        bytes: cloudinaryResult.bytes,
+      };
+    }
+
+    await existingCase.save();
+
+    res.status(200).json({
+      message: "Case file updated successfully",
+      data: existingCase,
+    });
+  } catch (error) {
+    console.error("Update Case File Error:", error);
+    res.status(500).json({
+      message: "Failed to update case file",
+      error: error.message,
+    });
+  }
+});
+
