@@ -21,6 +21,8 @@ const userSchema = new Schema(
             type: String,
             required: [true, "Password is required"],
         },
+        rsaPublicKey: { type: String },
+
         recentCases: [
             {
                 caseId: { type: mongoose.Schema.Types.ObjectId, ref: "PdfDocument" },

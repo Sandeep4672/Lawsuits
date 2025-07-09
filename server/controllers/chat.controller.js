@@ -29,12 +29,39 @@ export const getThreadMessages = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, messages));
 });
 
+export const getSingleThread = asyncHandler(async (req, res) => {
+  const threadId = req.params.id;
+  const userId = req.user._id;
+
+  const thread = await ChatThread.findById(threadId)
+    .populate("client", "fullName email _id")
+    .populate("lawyer", "fullName email _id");
+
+  console.log("Thread fetched:", thread);
+  console.log("User ID trying to access:", userId);
+
+  if (!thread) {
+    throw new ApiError(404, "Chat thread not found");
+  }
+
+  if (
+    thread.client._id.toString() !== userId.toString() &&
+    thread.lawyer._id.toString() !== userId.toString()
+  ) {
+    throw new ApiError(403, "You are not authorized to access this thread");
+  }
+
+  res.status(200).json(new ApiResponse(200, thread));
+});
+
+
+
 
 
 export const sendMessage = asyncHandler(async (req, res) => {
   const threadId = req.params.id;
   const userId = req.user._id;
-
+  console.log("In send Message");
   const thread = await ChatThread.findById(threadId);
   if (!thread) throw new ApiError(404, "Chat thread not found");
 

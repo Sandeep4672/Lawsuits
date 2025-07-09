@@ -3,6 +3,16 @@ import axios from "axios";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeftCircle, Trash2, Trash2Icon } from "lucide-react";
 import { io } from "socket.io-client";
+import {
+  generateRSAKeyPair,
+  importPublicKey,
+  importPrivateKey,
+  generateAESKey,
+  encryptWithAESKey,
+  encryptAESKeyWithRSA,
+  decryptAESKeyWithRSA,
+  decryptWithAESKey
+} from "../../utils/cryptoUtils.js";
 
 const socket = io("ws://localhost:7000"); // Change if needed
 
@@ -17,6 +27,7 @@ export default function ChatPage() {
   const [chatWith, setChatWith] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const messagesEndRef = useRef(null);
+  const [privateKey, setPrivateKey] = useState(null);
 
   useEffect(() => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -78,12 +89,24 @@ export default function ChatPage() {
 useEffect(() => {
   if (!userId) return;
 
-  const handleReceive = (msg) => {
-
-    if (msg.threadId === id && msg.senderId !== userId) {
+  const handleReceive = async (msg) => {
+  if (msg.threadId === id && msg.senderId !== userId) {
+    try {
+      if (msg.encryptedMessage && msg.encryptedAESKey && msg.iv) {
+        const aesKey = await decryptAESKeyWithRSA(privateKey, msg.encryptedAESKey);
+        const decryptedText = await decryptWithAESKey(aesKey, {
+          ciphertext: msg.encryptedMessage,
+          iv: msg.iv
+        });
+        msg.message = decryptedText; // fallback for rendering
+      }
       setMessages((prev) => [...prev, msg]);
+    } catch (err) {
+      console.error("Decryption failed", err);
     }
-  };
+  }
+};
+
 
   socket.on("receiveMessage", handleReceive);
 
@@ -105,58 +128,101 @@ useEffect(() => {
   };
 }, []);
 
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!text.trim() && !selectedFile) return;
-    const token = localStorage.getItem("token");
-    const headers = { Authorization: `Bearer ${token}` };
+  useEffect(() => {
+  const loadOrGenerateKeys = async () => {
+    const localPriv = localStorage.getItem("rsaPrivateKey");
+    if (localPriv) {
+      const privKey = await importPrivateKey(localPriv);
+      setPrivateKey(privKey);
+    } else {
+      const { publicKey, privateKey } = await generateRSAKeyPair();
+      localStorage.setItem("rsaPrivateKey", privateKey);
 
-    try {
-      let res;
+      // Upload public key to backend
+      const token = localStorage.getItem("token");
+      await axios.post(
+        "http://localhost:8000/encryption/upload",
+        { publicKey },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      if (selectedFile) {
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-        formData.append("message", text || selectedFile.name);
-        try{
-        res = await axios.post(
-          `http://localhost:8000/threads/${id}/upload`,
-          formData,
-          { headers }
-        );
-      }
-      catch{
-        res = await axios.post(
-          `http://localhost:8000/lawyer/threads/${id}/upload`,
-          formData,
-          { headers }
-        );
-      }
-      } else {
-        try {
-          res = await axios.post(
-            `http://localhost:8000/threads/${id}/send`,
-            { content: text },
-            { headers }
-          );
-        } catch {
-          res = await axios.post(
-            `http://localhost:8000/lawyer/threads/${id}/send`,
-            { content: text },
-            { headers }
-          );
-        }
-      }
-
-      const sentMessage = res.data.data;
-      socket.emit("sendMessage", { ...sentMessage, threadId: id });
-      setMessages((prev) => [...prev, sentMessage]);
-      setText("");
-      setSelectedFile(null);
-    } catch (error) {
-      console.error("Sending failed", error);
+      const privKey = await importPrivateKey(privateKey);
+      setPrivateKey(privKey);
     }
   };
+
+  loadOrGenerateKeys();
+}, []);
+
+
+ const handleSend = async (e) => {
+  e.preventDefault();
+  console.log("handleSend triggered");
+
+  if (!text.trim()) return;
+
+  const token = localStorage.getItem("token");
+  const headers = { Authorization: `Bearer ${token}` };
+
+  let resThread;
+  try {
+    resThread = await axios.get(`http://localhost:8000/threads/${id}`, { headers });
+    console.log("Thread response", resThread.data);
+  } catch (err) {
+    console.error("Failed to get thread info", err);
+    return;
+  }
+
+const threadData = resThread.data.data;
+const recipientId = threadData.lawyer._id === userId
+  ? threadData.client._id
+  : threadData.lawyer._id;
+
+    console.log("RecipientId", recipientId, typeof recipientId);
+
+  let pubRes;
+    pubRes = await axios.get(`http://localhost:8000/encryption/user/${recipientId}`);
+    console.log(pubRes);
+    console.log("Public key response", pubRes.data);
+  
+
+  let publicKey;
+  try {
+    publicKey = await importPublicKey(pubRes.data.data);
+  } catch (err) {
+    console.error("Failed to import public key", err);
+    return;
+  }
+
+  let aesKey, ciphertext, iv, encryptedAESKey;
+  try {
+    aesKey = await generateAESKey();
+    ({ ciphertext, iv } = await encryptWithAESKey(aesKey, text));
+    encryptedAESKey = await encryptAESKeyWithRSA(publicKey, aesKey);
+  } catch (err) {
+    console.error("Encryption failed", err);
+    return;
+  }
+
+  let messageRes;
+  try {
+    messageRes = await axios.post(
+      `http://localhost:8000/threads/${id}/send`,
+      { encryptedMessage: ciphertext, encryptedAESKey, iv },
+      { headers }
+    );
+    console.log("Message sent", messageRes.data);
+  } catch (err) {
+    console.error("Failed to send message", err);
+    return;
+  }
+
+  const sentMessage = messageRes.data.data;
+  socket.emit("sendMessage", { ...sentMessage, threadId: id });
+  setMessages((prev) => [...prev, sentMessage]);
+  setText("");
+};
+
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -180,6 +246,9 @@ useEffect(() => {
       console.error("Failed to delete message:", err);
     }
   };
+
+  
+
 
   return (
     <div className="min-h-screen flex flex-col bg-[#1e1e2f] text-white">
