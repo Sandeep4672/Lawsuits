@@ -1,6 +1,6 @@
 import fs from "fs";
 import pdf from "pdf-parse";
-import { uploadFileToCloudinary,deleteFileFromCloudinary } from "../utils/cloudinary.js";
+import { uploadFileToCloudinary, deleteFileFromCloudinary } from "../utils/cloudinary.js";
 import { PdfDocument } from "../models/pdf.model.js";
 import { summarizePdfFile } from "./user.controller.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -75,7 +75,7 @@ export const uploadPdfToDatabase = asyncHandler(async (req, res) => {
       }
     }
 
-    throw error; 
+    throw error;
   } finally {
     fs.existsSync(filePath) && fs.unlinkSync(filePath);
   }
@@ -124,7 +124,7 @@ export const getLawyerRequestById = async (req, res, next) => {
 export const acceptLawyerRequest = asyncHandler(async (req, res) => {
   const requestId = req.params.id;
 
-  const lawyerRequest = await LawyerRequest.findById(requestId).select("-refreshToken"); 
+  const lawyerRequest = await LawyerRequest.findById(requestId).select("-refreshToken");
   if (!lawyerRequest) throw new ApiError(404, "Lawyer request not found");
 
   const lawyer = new Lawyer({
@@ -163,7 +163,7 @@ export const acceptLawyerRequest = asyncHandler(async (req, res) => {
 
 export const declineLawyerRequest = asyncHandler(async (req, res) => {
   const requestId = req.params.id;
-  const { message } = req.body; 
+  const { message } = req.body;
 
   const request = await LawyerRequest.findById(requestId);
   if (!request) throw new ApiError(404, "Lawyer request not found");
@@ -218,30 +218,30 @@ export const getLawyerById = asyncHandler(async (req, res) => {
 });
 
 
-export const getCaseFiles=asyncHandler(async(req,res)=>{
-    try{
-      const casefiles=await PdfDocument.find();
-      res.status(200).json(new ApiResponse(200,casefiles,"Successfully Retrieved Case Files"));
-    }catch(error){
-        res.status(500).json(new ApiResponse(500,error,"Failed to retrieve documents"));
-    }
+export const getCaseFiles = asyncHandler(async (req, res) => {
+  try {
+    const casefiles = await PdfDocument.find();
+    res.status(200).json(new ApiResponse(200, casefiles, "Successfully Retrieved Case Files"));
+  } catch (error) {
+    res.status(500).json(new ApiResponse(500, error, "Failed to retrieve documents"));
+  }
 })
 
 
-export const getCaseFileById=asyncHandler(async(req,res)=>{
-    try {
-      const caseId=req.params.caseId;
-      const existingCase= await PdfDocument.findById(caseId);
-      if(!existingCase){
-        return res.status(404).json(new ApiResponse(404,null,"No exisiting Case "));
-      }
-
-      return res.status(200).json(new ApiResponse(200,existingCase,"Successfully fetched"));
-      
-    } catch (error) {
-        return res.status(500).json(new ApiResponse(500,error,"Internal server error"));
-
+export const getCaseFileById = asyncHandler(async (req, res) => {
+  try {
+    const caseId = req.params.caseId;
+    const existingCase = await PdfDocument.findById(caseId);
+    if (!existingCase) {
+      return res.status(404).json(new ApiResponse(404, null, "No exisiting Case "));
     }
+
+    return res.status(200).json(new ApiResponse(200, existingCase, "Successfully fetched"));
+
+  } catch (error) {
+    return res.status(500).json(new ApiResponse(500, error, "Internal server error"));
+
+  }
 })
 
 
@@ -309,17 +309,17 @@ export const updateCaseFileById = asyncHandler(async (req, res) => {
   }
 });
 
-export const deleteCase=asyncHandler(async(req,res)=>{
+export const deleteCase = asyncHandler(async (req, res) => {
 
-  try{
-    const caseId=req.params.id;
-    const delCase=await PdfDocument.findByIdAndDelete(caseId);
-    if(!delCase) return res.status(404).json(new ApiResponse(404,null,"cant find the case"));
-
-    return res.status(200).json(new ApiResponse(200,delCase,"Case deleted"));
+  try {
+    const caseId = req.params.id;
+    const delCase = await PdfDocument.findByIdAndDelete(caseId);
+    if (!delCase) return res.status(404).json(new ApiResponse(404, null, "cant find the case"));
+    if (delCase.cloudinary?.public_id) {
+      await deleteFileFromCloudinary(delCase.cloudinary.public_id);
+    } return res.status(200).json(new ApiResponse(200, delCase, "Case deleted"));
   }
-  catch(err)
-  {
-    return res.status(500).json(new ApiResponse(500,err,"internal server error in deleteing case"));
+  catch (err) {
+    return res.status(500).json(new ApiResponse(500, err, "internal server error in deleteing case"));
   }
 });
