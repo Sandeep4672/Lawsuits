@@ -121,6 +121,8 @@ export const getLawyerRequestById = async (req, res, next) => {
   }
 };
 
+import { LawyerProfile } from "../models/lawyerProfile.model.js"; // 👈 import model
+
 export const acceptLawyerRequest = asyncHandler(async (req, res) => {
   const requestId = req.params.id;
 
@@ -137,10 +139,20 @@ export const acceptLawyerRequest = asyncHandler(async (req, res) => {
     experience: lawyerRequest.experience,
     sop: lawyerRequest.sop,
     proofFile: lawyerRequest.proofFile,
+
+    // 🔐 Copy encrypted RSA key material
+    rsaPublicKey: lawyerRequest.rsaPublicKey,
+    rsaEncryptedPrivateKey: lawyerRequest.rsaEncryptedPrivateKey,
+    rsaSalt: lawyerRequest.rsaSalt,
+    rsaIV: lawyerRequest.rsaIV,
   });
 
   await lawyer.save();
   await lawyerRequest.deleteOne();
+
+  // ✅ Create empty LawyerProfile
+  const profile = new LawyerProfile({ lawyer: lawyer._id });
+  await profile.save();
 
   await sendEmail({
     to: lawyer.email,
@@ -156,10 +168,15 @@ export const acceptLawyerRequest = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     success: true,
-    message: "Lawyer request accepted and email sent",
-    data: lawyer,
+    message: "Lawyer request accepted and profile initialized",
+    data: {
+      lawyer,
+      profileId: profile._id,
+    },
   });
 });
+
+
 
 export const declineLawyerRequest = asyncHandler(async (req, res) => {
   const requestId = req.params.id;

@@ -9,7 +9,7 @@ import fs from "fs";
 
 
 export const signupLawyer = async (req, res, next) => {
-      const uploadedPublicIds = [];
+  const uploadedPublicIds = [];
 
   try {
     const {
@@ -21,7 +21,17 @@ export const signupLawyer = async (req, res, next) => {
       experience,
       sop,
       password,
+
+      rsaPublicKey,
+      rsaEncryptedPrivateKey,
+      rsaSalt,
+      rsaIV
     } = req.body;
+
+    // ✅ Validate RSA fields
+    if (!rsaPublicKey || !rsaEncryptedPrivateKey || !rsaSalt || !rsaIV) {
+      return res.status(400).json({ message: "Missing RSA key fields" });
+    }
 
     const existingLawyer = await Lawyer.findOne({ email });
     if (existingLawyer) {
@@ -38,13 +48,12 @@ export const signupLawyer = async (req, res, next) => {
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         const path = file.path;
-
         try {
           const result = await uploadFileToCloudinary(path, "Lawsuits/LawyerProofs");
           proofUrls.push(result.secure_url);
-          uploadedPublicIds.push(result.public_id); 
+          uploadedPublicIds.push(result.public_id);
         } finally {
-          fs.existsSync(path) && fs.unlinkSync(path); 
+          fs.existsSync(path) && fs.unlinkSync(path);
         }
       }
     } else {
@@ -72,6 +81,12 @@ export const signupLawyer = async (req, res, next) => {
       experience,
       sop,
       proofFile: proofUrls,
+
+      // 🔐 Include RSA Key Fields
+      rsaPublicKey,
+      rsaEncryptedPrivateKey,
+      rsaSalt,
+      rsaIV,
     });
 
     await lawyerRequest.save();
@@ -95,6 +110,7 @@ export const signupLawyer = async (req, res, next) => {
     next(error);
   }
 };
+
 
 export const loginLawyer = asyncHandler(async (req, res) => {
   const { email, password } = req.body;

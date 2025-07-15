@@ -53,7 +53,7 @@ app.use("/user", homeRouter);
 app.use("/search", searchRouter);
 app.use("/lawyer", lawyerRouter);
 app.use("",chatRouter);
-app.use("/encryption",rsaRouter);
+app.use("/encrypt",rsaRouter);
 
 // 404 route
 app.use("*", (req, res) => {

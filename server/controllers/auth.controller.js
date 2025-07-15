@@ -25,25 +25,54 @@ const sendOtp = asyncHandler(async (req, res) => {
 });
 
 const signupUser = asyncHandler(async (req, res) => {
-    const { fullName, email, password } = req.body;
+  const {
+    fullName,
+    email,
+    password,
 
-    if ([fullName, email, password].some(field => !field?.trim())) {
-        throw new ApiError(400, "All fields are required");
-    }
+    rsaPublicKey,
+    rsaEncryptedPrivateKey,
+    rsaSalt,
+    rsaIV,
+  } = req.body;
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-        throw new ApiError(409, "User already exists");
-    }
+  // 1. Basic field checks
+  if ([fullName, email, password].some(f => !f?.trim())) {
+    throw new ApiError(400, "fullName, email, password are required");
+  }
 
-    const user = await User.create({ fullName, email, password });
+  // 2. Key‑bundle checks
+  if ([rsaPublicKey, rsaEncryptedPrivateKey, rsaSalt, rsaIV].some(k => !k?.trim())) {
+    throw new ApiError(400, "Missing encryption‐key fields");
+  }
 
-    const createdUser = await User.findById(user._id).select("-password -refreshToken");
+  // 3. Uniqueness check
+  if (await User.findOne({ email })) {
+    throw new ApiError(409, "User already exists");
+  }
 
-    return res.status(201).json(
-        new ApiResponse(201, createdUser, "User registered successfully")
-    );
+  // 4. Create user with keys
+  const user = await User.create({
+    fullName,
+    email,
+    password,
+
+    rsaPublicKey,
+    rsaEncryptedPrivateKey,
+    rsaSalt,
+    rsaIV,
+  });
+
+  // 5. Return clean user object (omit secrets)
+  const createdUser = await User.findById(user._id).select(
+    "-password -refreshToken -rsaEncryptedPrivateKey -rsaSalt -rsaIV"
+  );
+
+  res
+    .status(201)
+    .json(new ApiResponse(201, createdUser, "User registered successfully"));
 });
+
 
 
 const loginUser = asyncHandler(async (req, res) => {

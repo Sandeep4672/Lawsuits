@@ -14,7 +14,7 @@ import {
   decryptWithAESKey
 } from "../../utils/cryptoUtils.js";
 
-const socket = io("ws://localhost:7000"); // Change if needed
+const socket = io("ws://localhost:7000"); 
 
 export default function ChatPage() {
   const { id } = useParams(); // thread ID
@@ -49,34 +49,61 @@ export default function ChatPage() {
 
 
   const fetchMessages = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      let res;
-      try {
-        res = await axios.get(`http://localhost:8000/threads/${id}/messages`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      } catch {
-        res = await axios.get(
-          `http://localhost:8000/lawyer/threads/${id}/messages`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
+  setLoading(true);
+  try {
+    const token = localStorage.getItem("token");
+    const isLawyer = localStorage.getItem("lawyerId");
+
+    const url = isLawyer
+      ? `http://localhost:8000/lawyer/threads/${id}/messages`
+      : `http://localhost:8000/threads/${id}/messages`;
+
+    const res = await axios.get(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const rawMessages = res.data.data || [];
+
+    // Load private RSA key from localStorage
+    const rsaPrivatePem = localStorage.getItem("rsaPrivateKey");
+    const privateKey = await importPrivateKey(rsaPrivatePem);
+
+    // Decrypt each message
+    const decryptedMessages = await Promise.all(
+      rawMessages.map(async (msg) => {
+        try {
+          if (msg.encryptedAESKey && msg.encryptedMessage && msg.iv) {
+            const aesKey = await decryptAESKeyWithRSA(privateKey, msg.encryptedAESKey);
+            const decryptedText = await decryptWithAESKey(aesKey, {
+              ciphertext: msg.encryptedMessage,
+              iv: msg.iv,
+            });
+            return { ...msg, decryptedText };
+          } else {
+            return { ...msg, decryptedText: "[Unsupported message format]" };
           }
-        );
-      }
-      setMessages(res.data.data || []);
-      const otherPerson =
-        location.state?.fullName ||
-        location.state?.chatWith?.fullLawyerName ||
-        "Chat Partner";
-      setChatWith(otherPerson);
-    } catch {
-      setMessages([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+        } catch (err) {
+          console.error("Failed to decrypt message", err);
+          return { ...msg, decryptedText: "[Decryption failed]" };
+        }
+      })
+    );
+    setMessages(decryptedMessages);
+
+    const otherPerson =
+      location.state?.fullName ||
+      location.state?.chatWith?.fullLawyerName ||
+      "Chat Partner";
+    setChatWith(otherPerson);
+  } catch (err) {
+    console.error("Error fetching messages:", err);
+    setMessages([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   useEffect(() => {
     fetchMessages();
@@ -147,6 +174,7 @@ useEffect(() => {
       );
 
       const privKey = await importPrivateKey(privateKey);
+      console.log("PrivateKey=",privKey);
       setPrivateKey(privKey);
     }
   };
@@ -155,36 +183,43 @@ useEffect(() => {
 }, []);
 
 
- const handleSend = async (e) => {
+const handleSend = async (e) => {
   e.preventDefault();
-  console.log("handleSend triggered");
-
   if (!text.trim()) return;
 
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}` };
+  const isLawyer = localStorage.getItem("lawyerId"); // or use role if stored
 
   let resThread;
   try {
-    resThread = await axios.get(`http://localhost:8000/threads/${id}`, { headers });
+    const threadUrl = isLawyer
+      ? `http://localhost:8000/lawyer/threads/${id}`
+      : `http://localhost:8000/threads/${id}`;
+      
+    resThread = await axios.get(threadUrl, { headers });
     console.log("Thread response", resThread.data);
   } catch (err) {
     console.error("Failed to get thread info", err);
     return;
   }
 
-const threadData = resThread.data.data;
-const recipientId = threadData.lawyer._id === userId
-  ? threadData.client._id
-  : threadData.lawyer._id;
+  const threadData = resThread.data.data;
+  const recipientId =
+    threadData.lawyer._id === userId
+      ? threadData.client._id
+      : threadData.lawyer._id;
 
-    console.log("RecipientId", recipientId, typeof recipientId);
+  console.log("RecipientId", recipientId);
 
   let pubRes;
-    pubRes = await axios.get(`http://localhost:8000/encryption/user/${recipientId}`);
-    console.log(pubRes);
-    console.log("Public key response", pubRes.data);
-  
+  try {
+    pubRes = await axios.get(`http://localhost:8000/encrypt/user/${recipientId}`);
+    console.log("Public key received from server:", pubRes);
+  } catch (err) {
+    console.error("Failed to fetch recipient public key", err);
+    return;
+  }
 
   let publicKey;
   try {
@@ -206,8 +241,12 @@ const recipientId = threadData.lawyer._id === userId
 
   let messageRes;
   try {
+    const sendUrl = isLawyer
+      ? `http://localhost:8000/lawyer/threads/${id}/send`
+      : `http://localhost:8000/threads/${id}/send`;
+
     messageRes = await axios.post(
-      `http://localhost:8000/threads/${id}/send`,
+      sendUrl,
       { encryptedMessage: ciphertext, encryptedAESKey, iv },
       { headers }
     );
@@ -300,7 +339,7 @@ const recipientId = threadData.lawyer._id === userId
                     <Trash2Icon size={16} />
                   </button>
                 )}
-              {msg.message && <div>{msg.message}</div>}
+              {msg.decryptedText && <div>{msg.decryptedText}</div>}
 
               {/* Attachments */}
               {msg.attachment?.secure_url && (

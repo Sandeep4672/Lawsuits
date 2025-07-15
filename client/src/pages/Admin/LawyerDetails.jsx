@@ -30,7 +30,7 @@ export default function LawyerDetail() {
     setActionLoading(true);
     try {
       const token = localStorage.getItem("token");
-
+      console.log(token);
       if (newStatus === "reject") {
         const res = await axios.patch(
           `http://localhost:8000/admin/lawyer-request/${id}/decline`,
@@ -43,7 +43,8 @@ export default function LawyerDetail() {
         );
       } else {
         const res = await axios.patch(
-          `http://localhost:8000/admin/lawyer-request/${id}/accept`,
+         ` http://localhost:8000/admin/lawyer-request/${id}/accept`,
+          {},
           {
             headers: {
               Authorization: `Bearer ${token}`,

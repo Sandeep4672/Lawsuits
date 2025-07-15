@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { motion } from "framer-motion";
+import { generateRSAKeyPair, encryptWithPassword } from "../../utils/cryptoUtils"; 
+
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -24,38 +26,48 @@ export default function Signup() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+  if (formData.password !== formData.confirmPassword) {
+    setError("Passwords do not match");
+    return;
+  }
 
-    try {
-      const res = await axios.post("http://localhost:8000/auth/signup", {
-        fullName: formData.fullName,
-        email: formData.email,
-        password: formData.password,
+  try {
+    // 1. Generate RSA key pair
+    const { publicKey, privateKey } = await generateRSAKeyPair();
+
+    // 2. Encrypt private key using password
+    const encrypted = await encryptWithPassword(privateKey, formData.password);
+
+    // 3. Signup with everything
+    const res = await axios.post("http://localhost:8000/auth/signup", {
+      fullName: formData.fullName,
+      email: formData.email,
+      password: formData.password,
+
+      // 👇 encryption fields
+      rsaPublicKey: publicKey,
+      rsaEncryptedPrivateKey: encrypted.ciphertext,
+      rsaSalt: encrypted.salt,
+      rsaIV: encrypted.iv,
+    });
+
+    if (res.status === 201) {
+      setSuccess("Account created!");
+      setFormData({
+        fullName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
       });
-
-      if (res.status === 201) {
-        setSuccess("Account created successfully!");
-        setFormData({
-          fullName: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-        });
-        navigate("/login");
-      }
-    } catch (err) {
-      console.error(err);
-      if (err.response?.statusCode === 500) {
-        navigate("/500");
-      }
-      setError(err.response?.data?.message || "Registration failed");
+      navigate("/login");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setError(err.response?.data?.message || "Registration failed");
+  }
+};
 
   return (
     <>

@@ -32,7 +32,7 @@ export default function LawyerProfileDetails() {
         );
 
         const data = res.data.data;
-
+        console.log(data);
         if (data) {
           setLawyer({
             fullName: data.lawyer?.fullName || "",

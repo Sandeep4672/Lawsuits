@@ -37,7 +37,7 @@ export default function ConnectionRequestForm() {
       formData.append("subject", subject);
       formData.append("message", message);
       if (file) formData.append("documents", file);
-
+      console.log(lawyer);
       await axios.post(
         `http://localhost:8000/user/connect/${lawyer._id}`,
         formData,

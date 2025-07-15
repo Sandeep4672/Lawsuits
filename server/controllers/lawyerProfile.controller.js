@@ -15,7 +15,7 @@ export const getLawyerProfileById = asyncHandler(async (req, res) => {
   if (!profile) {
     return res.status(404).json(new ApiResponse(404, null, "Lawyer profile not found"));
   }
-
+  console.log(profile);
   res.status(200).json(new ApiResponse(200, profile, "Lawyer profile fetched successfully"));
 });
 

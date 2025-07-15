@@ -1,11 +1,30 @@
 import { Router } from "express";
-import { uploadRSAPublicKey, getPublicKeyForUser } from "../controllers/rsaKey.controller.js";
+import {
+  uploadRSAPublicKey,
+  getPublicKeyForUser
+} from "../controllers/rsaKey.controller.js";
 import { verifyUserJWT } from "../middlewares/authUser.middleware.js";
-import { validateObjectId } from "../middlewares/validateObjectId.middleware.js";
+import { verifyLawyerJWT } from "../middlewares/authLawyer.middleware.js";
 
 const router = Router();
 
-router.post("/upload", verifyUserJWT, uploadRSAPublicKey);
-router.get("/user/:id",validateObjectId, getPublicKeyForUser);
+// Upload route for both users and lawyers
+router.post(
+  "/upload",
+  (req, res, next) => {
+    // Either user or lawyer should be able to authenticate
+    verifyUserJWT(req, res, (err) => {
+      if (err) {
+        verifyLawyerJWT(req, res, next); // Try lawyer auth
+      } else {
+        next(); // User auth succeeded
+      }
+    });
+  },
+  uploadRSAPublicKey
+);
+
+// Get public key for a given user or lawyer
+router.get("/user/:id", getPublicKeyForUser);
 
 export default router;
