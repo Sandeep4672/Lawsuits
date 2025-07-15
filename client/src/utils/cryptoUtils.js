@@ -158,6 +158,8 @@ export async function generateAESKey() {
 }
 
 export async function encryptWithAESKey(key, data) {
+  console.log(key);
+  console.log(data);
   const iv = window.crypto.getRandomValues(new Uint8Array(12));
   const encoded = new TextEncoder().encode(data);
   const ciphertext = await window.crypto.subtle.encrypt(
@@ -172,6 +174,7 @@ export async function encryptWithAESKey(key, data) {
 }
 
 export async function decryptWithAESKey(key, { ciphertext, iv }) {
+  console.log(key,ciphertext,iv);
   const ctBuffer = base64ToArrayBuffer(ciphertext);
   const ivBuffer = base64ToArrayBuffer(iv);
   const decrypted = await window.crypto.subtle.decrypt(
@@ -184,6 +187,7 @@ export async function decryptWithAESKey(key, { ciphertext, iv }) {
 
 
 export async function encryptAESKeyWithRSA(publicKey, aesKey) {
+  console.log("In encryptAesKeyWithRsa",publicKey,aesKey);
   const raw = await window.crypto.subtle.exportKey("raw", aesKey);
   const encrypted = await window.crypto.subtle.encrypt(
     { name: "RSA-OAEP" },
@@ -194,16 +198,33 @@ export async function encryptAESKeyWithRSA(publicKey, aesKey) {
 }
 
 export async function decryptAESKeyWithRSA(privateKey, encryptedKeyBase64) {
-  const decryptedRaw = await window.crypto.subtle.decrypt(
-    { name: "RSA-OAEP" },
-    privateKey,
-    base64ToArrayBuffer(encryptedKeyBase64)
-  );
-  return await window.crypto.subtle.importKey(
-    "raw",
-    decryptedRaw,
-    "AES-GCM",
-    true,
-    ["encrypt", "decrypt"]
-  );
+  try {
+    console.log("Encrypted AES key (base64):", encryptedKeyBase64);
+    console.log("Encrypted AES key length:", encryptedKeyBase64.length);
+    
+    const encryptedBuffer = base64ToArrayBuffer(encryptedKeyBase64);
+    console.log("Decrypted buffer length:", encryptedBuffer.byteLength);
+    
+    const decryptedRaw = await window.crypto.subtle.decrypt(
+      { name: "RSA-OAEP" },
+      privateKey,
+      encryptedBuffer
+    );
+    console.log("Decrypted raw key length:", decryptedRaw.byteLength);
+    
+    return await window.crypto.subtle.importKey(
+      "raw",
+      decryptedRaw,
+      { name: "AES-GCM", length: 256 },
+      true,
+      ["encrypt", "decrypt"]
+    );
+  } catch (err) {
+    console.error("Detailed decryption error:", {
+      error: err,
+      privateKey,
+      encryptedKeyBase64
+    });
+    throw new Error("AES key decryption failed");
+  }
 }

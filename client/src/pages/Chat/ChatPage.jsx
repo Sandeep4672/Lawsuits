@@ -31,20 +31,31 @@ export default function ChatPage() {
   const [privateKey, setPrivateKey] = useState(null);
   
   useEffect(() => {
-  const loadDecryptedKey = async () => {
-    const rsaPrivateKey= localStorage.getItem("rsaPrivateKey");
-    if (!rsaPrivateKey) return;
+  const fetchPrivateKeyFromServer = async () => {
+    const token = localStorage.getItem("token");
+    const isLawyer = localStorage.getItem("lawyerId");
+    if (!token) return;
+
+    const endpoint = isLawyer
+      ? "http://localhost:8000/encrypt/lawyer/private-key"
+      : "http://localhost:8000/encrypt/user/private-key";
 
     try {
-      const key = await importPrivateKey(rsaPrivateKey);
-      console.log("Key=",key);
+      const res = await axios.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const rsaPem = res.data.data?.rsaPrivateKey;
+      if (!rsaPem) throw new Error("Private key not found in response");
+
+      const key = await importPrivateKey(rsaPem);
       setPrivateKey(key);
     } catch (err) {
-      console.error("Failed to import decrypted private key from PEM:", err);
+      console.error("🔐 Failed to fetch/import RSA private key:", err);
     }
   };
 
-  loadDecryptedKey();
+  fetchPrivateKeyFromServer();
 }, []);
 
 
@@ -89,28 +100,34 @@ export default function ChatPage() {
     const rawMessages = res.data.data || [];
     console.log(rawMessages);
     const decryptedMessages = await Promise.all(
-      rawMessages.map(async (msg) => {
-        try {
-          const encryptedKey =
-            msg.senderId === user._id
-              ? msg.encryptedAESKeyForSender
-              : msg.encryptedAESKeyForRecipient;
-console.log("🔐 Using RSA PrivateKey:", privateKey);
-console.log("🔐 Encrypted AES Key:", encryptedKey);
-          const aesKey = await decryptAESKeyWithRSA(privateKey, encryptedKey);
+  rawMessages.map(async (msg) => {
+    try {
+      console.log("Decrypting message:", msg._id);
+      const encryptedKey = msg.senderId === user._id
+  ? msg.encryptedAESKeyForSender
+  : msg.encryptedAESKeyForRecipient;
 
-          const decryptedText = await decryptWithAESKey(aesKey, {
-            ciphertext: msg.encryptedMessage,
-            iv: msg.iv,
-          });
-
-          return { ...msg, decryptedText };
-        } catch (err) {
-          console.error("🔐 Failed to decrypt message:", err);
-          return { ...msg, decryptedText: "[Decryption failed]" };
-        }
-      })
-    );
+console.log("Using encrypted key for:", 
+  msg.senderId === user._id ? "sender" : "recipient");
+      
+      console.log("Encrypted AES key length:", encryptedKey.length);
+      
+      const aesKey = await decryptAESKeyWithRSA(privateKey, encryptedKey);
+      console.log("AES key successfully decrypted");
+      
+      const decryptedText = await decryptWithAESKey(aesKey, {
+        ciphertext: msg.encryptedMessage,
+        iv: msg.iv,
+      });
+      
+      console.log("Message successfully decrypted");
+      return { ...msg, decryptedText };
+    } catch (err) {
+      console.error("Full decryption error:", err);
+      return { ...msg, decryptedText: "[Decryption failed]" };
+    }
+  })
+);
 
     setMessages(decryptedMessages);
 
