@@ -20,7 +20,7 @@ router.post("/upload", verifyUserJWT, uploadRSAPublicKey); // You can duplicate 
 // ✅ Authenticated: Get encrypted private key (USER)
 router.get("/user/private-key", verifyUserJWT, async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id).select("rsaEncryptedPrivateKey rsaSalt rsaIV");
+    const user = await User.findById(req.user._id).select("rsaPrivateKey");
     if (!user || !user.rsaPrivateKey) {
       return res.status(404).json({ message: "RSA key not found" });
     }
@@ -38,7 +38,8 @@ router.get("/user/private-key", verifyUserJWT, async (req, res, next) => {
 // ✅ Authenticated: Get encrypted private key (LAWYER)
 router.get("/lawyer/private-key", verifyLawyerJWT, async (req, res, next) => {
   try {
-    const lawyer = await Lawyer.findById(req.user._id).select("rsaEncryptedPrivateKey rsaSalt rsaIV");
+    console.log("Private key fetching");
+    const lawyer = await Lawyer.findById(req.user._id).select("rsaPrivateKey");
     if (!lawyer || !lawyer.rsaPrivateKey) {
       return res.status(404).json({ message: "RSA key not found" });
     }
