@@ -32,62 +32,53 @@ export default function LawyerSignup() {
     });
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setSuccessMsg("");
-  setErrorMsg("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSuccessMsg("");
+    setErrorMsg("");
 
-  try {
-    // Step 1: Generate RSA keypair
-    const { publicKey, privateKey } = await generateRSAKeyPair();
+    try {
+      // Step 1: Generate RSA keypair
+      const { publicKey, privateKey } = await generateRSAKeyPair();
 
-// Encrypt private key with password
-const { encrypted, salt, iv } = await encryptWithPassword(
-  privateKey,
-  formData.password
-);
+      // Step 2: Prepare FormData
+      const data = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === "proofFile" && Array.isArray(value)) {
+          value.forEach((file) => data.append("proofFile", file));
+        } else {
+          data.append(key, value);
+        }
+      });
 
+      // Step 3: Add RSA key fields (no encryption)
+      data.append("rsaPublicKey", publicKey);
+      data.append("rsaPrivateKey", privateKey); // store raw private key
 
-    // Step 3: Prepare FormData
-    const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key === "proofFile" && Array.isArray(value)) {
-        value.forEach((file) => data.append("proofFile", file));
-      } else {
-        data.append(key, value);
-      }
-    });
+      // Step 4: Submit
+      await axios.post("http://localhost:8000/lawyer/signup", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-    // Step 4: Add RSA key fields
-    data.append("rsaPublicKey", publicKey);
-    data.append("rsaEncryptedPrivateKey", encrypted);
-    data.append("rsaSalt", salt);
-    data.append("rsaIV", iv);
-    console.log(encrypted);
-    // Step 5: Submit
-    await axios.post("http://localhost:8000/lawyer/signup", data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    setSuccessMsg("✅ Signup successful! Your status is pending.");
-    setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      barId: "",
-      practiceAreas: "",
-      experience: "",
-      password: "",
-      proofFile: [],
-      sop: "",
-    });
-  } catch (err) {
-    console.error(err);
-    setErrorMsg("❌ Signup failed. Please try again.");
-  }
-};
+      setSuccessMsg("✅ Signup successful! Your status is pending.");
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        barId: "",
+        practiceAreas: "",
+        experience: "",
+        password: "",
+        proofFile: [],
+        sop: "",
+      });
+    } catch (err) {
+      console.error(err);
+      setErrorMsg("❌ Signup failed. Please try again.");
+    }
+  };
 
   return (
     <>

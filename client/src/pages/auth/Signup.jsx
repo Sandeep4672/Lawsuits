@@ -9,6 +9,7 @@ import { generateRSAKeyPair, encryptWithPassword } from "../../utils/cryptoUtils
 
 export default function Signup() {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -26,49 +27,41 @@ export default function Signup() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (formData.password !== formData.confirmPassword) {
-    setError("Passwords do not match");
-    return;
-  }
-
-  try {
-    // 1. Generate RSA key pair
-    const { publicKey, privateKey } = await generateRSAKeyPair();
-
-    // 2. Encrypt private key using password
-    const encrypted = await encryptWithPassword(privateKey, formData.password);
-
-    // 3. Signup with everything
-    const res = await axios.post("http://localhost:8000/auth/signup", {
-      fullName: formData.fullName,
-      email: formData.email,
-      password: formData.password,
-
-      // 👇 encryption fields
-      rsaPublicKey: publicKey,
-      rsaEncryptedPrivateKey: encrypted.ciphertext,
-      rsaSalt: encrypted.salt,
-      rsaIV: encrypted.iv,
-    });
-
-    if (res.status === 201) {
-      setSuccess("Account created!");
-      setFormData({
-        fullName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-      navigate("/login");
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
     }
-  } catch (err) {
-    console.error(err);
-    setError(err.response?.data?.message || "Registration failed");
-  }
-};
 
+    try {
+      // 1. Generate RSA key pair
+      const { publicKey, privateKey } = await generateRSAKeyPair();
+
+      // 2. Send signup request with raw private key (⚠️ not recommended for prod)
+      const res = await axios.post("http://localhost:8000/auth/signup", {
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        rsaPublicKey: publicKey,
+        rsaPrivateKey: privateKey,
+      });
+
+      if (res.status === 201) {
+        setSuccess("Account created!");
+        setFormData({
+          fullName: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+        navigate("/login");
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "Registration failed");
+    }
+  };
   return (
     <>
       <Navbar />

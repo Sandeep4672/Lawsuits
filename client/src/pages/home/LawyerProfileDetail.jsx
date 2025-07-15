@@ -35,6 +35,7 @@ export default function LawyerProfileDetails() {
         console.log(data);
         if (data) {
           setLawyer({
+            _id:data.lawyer._id,
             fullName: data.lawyer?.fullName || "",
             email: data.lawyer?.email || "",
             barId: data.lawyer?.barId || "",

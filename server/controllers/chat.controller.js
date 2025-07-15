@@ -49,11 +49,10 @@ export const getSingleThread = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, thread));
 });
-
 export const sendMessage = asyncHandler(async (req, res) => {
   const threadId = req.params.id;
   const userId = req.user._id;
-  const { encryptedMessage, encryptedAESKey, iv } = req.body;
+  const { encryptedMessage, encryptedAESKeyForRecipient, encryptedAESKeyForSender, iv } = req.body;
 
   const thread = await ChatThread.findById(threadId);
   if (!thread) throw new ApiError(404, "Chat thread not found");
@@ -72,12 +71,14 @@ export const sendMessage = asyncHandler(async (req, res) => {
     senderType,
     senderId: userId,
     encryptedMessage,
-    encryptedAESKey,
+    encryptedAESKeyForRecipient,
+    encryptedAESKeyForSender,
     iv,
   });
 
   res.status(201).json(new ApiResponse(201, message, "Message sent"));
 });
+
 
 export const sendFileMessage = asyncHandler(async (req, res) => {
   const { threadId } = req.params;

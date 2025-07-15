@@ -3,28 +3,58 @@ import {
   uploadRSAPublicKey,
   getPublicKeyForUser
 } from "../controllers/rsaKey.controller.js";
+
 import { verifyUserJWT } from "../middlewares/authUser.middleware.js";
 import { verifyLawyerJWT } from "../middlewares/authLawyer.middleware.js";
+import { User } from "../models/user.model.js";
+import { Lawyer } from "../models/lawyer.model.js";
 
 const router = Router();
 
-// Upload route for both users and lawyers
-router.post(
-  "/upload",
-  (req, res, next) => {
-    // Either user or lawyer should be able to authenticate
-    verifyUserJWT(req, res, (err) => {
-      if (err) {
-        verifyLawyerJWT(req, res, next); // Try lawyer auth
-      } else {
-        next(); // User auth succeeded
-      }
-    });
-  },
-  uploadRSAPublicKey
-);
+// ✅ Public: Get public key of any user/lawyer
+router.get("/user-public/:id", getPublicKeyForUser);
 
-// Get public key for a given user or lawyer
-router.get("/user/:id", getPublicKeyForUser);
+// ✅ Authenticated: Upload your public key
+router.post("/upload", verifyUserJWT, uploadRSAPublicKey); // You can duplicate for lawyers if needed
+
+// ✅ Authenticated: Get encrypted private key (USER)
+router.get("/user/private-key", verifyUserJWT, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select("rsaEncryptedPrivateKey rsaSalt rsaIV");
+    if (!user || !user.rsaEncryptedPrivateKey) {
+      return res.status(404).json({ message: "RSA key not found" });
+    }
+
+    res.status(200).json({
+      data: {
+        rsaEncryptedPrivateKey: user.rsaEncryptedPrivateKey,
+        rsaSalt: user.rsaSalt,
+        rsaIV: user.rsaIV,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ✅ Authenticated: Get encrypted private key (LAWYER)
+router.get("/lawyer/private-key", verifyLawyerJWT, async (req, res, next) => {
+  try {
+    const lawyer = await Lawyer.findById(req.user._id).select("rsaEncryptedPrivateKey rsaSalt rsaIV");
+    if (!lawyer || !lawyer.rsaEncryptedPrivateKey) {
+      return res.status(404).json({ message: "RSA key not found" });
+    }
+
+    res.status(200).json({
+      data: {
+        rsaEncryptedPrivateKey: lawyer.rsaEncryptedPrivateKey,
+        rsaSalt: lawyer.rsaSalt,
+        rsaIV: lawyer.rsaIV,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 export default router;

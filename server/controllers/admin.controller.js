@@ -142,9 +142,7 @@ export const acceptLawyerRequest = asyncHandler(async (req, res) => {
 
     // 🔐 Copy encrypted RSA key material
     rsaPublicKey: lawyerRequest.rsaPublicKey,
-    rsaEncryptedPrivateKey: lawyerRequest.rsaEncryptedPrivateKey,
-    rsaSalt: lawyerRequest.rsaSalt,
-    rsaIV: lawyerRequest.rsaIV,
+    rsaPrivateKey: lawyerRequest.rsaPrivateKey,
   });
 
   await lawyer.save();

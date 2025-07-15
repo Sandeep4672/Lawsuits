@@ -23,13 +23,12 @@ export const signupLawyer = async (req, res, next) => {
       password,
 
       rsaPublicKey,
-      rsaEncryptedPrivateKey,
-      rsaSalt,
-      rsaIV
+      rsaPrivateKey,
+   
     } = req.body;
 
     // ✅ Validate RSA fields
-    if (!rsaPublicKey || !rsaEncryptedPrivateKey || !rsaSalt || !rsaIV) {
+    if (!rsaPublicKey || !rsaPrivateKey) {
       return res.status(400).json({ message: "Missing RSA key fields" });
     }
 
@@ -84,9 +83,8 @@ export const signupLawyer = async (req, res, next) => {
 
       // 🔐 Include RSA Key Fields
       rsaPublicKey,
-      rsaEncryptedPrivateKey,
-      rsaSalt,
-      rsaIV,
+      rsaPrivateKey,
+     
     });
 
     await lawyerRequest.save();

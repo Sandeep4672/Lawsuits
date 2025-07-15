@@ -25,7 +25,7 @@ export default function Login() {
       const res = await axios.post("http://localhost:8000/auth/login", formData);
       if (res.data.success) {
         setSuccess("Login successful");
-        login(res.data.data.accessToken, res.data.data.user);
+login(res.data.data.accessToken, res.data.data.user, formData.password);
         res.data.data.user.isAdmin ? navigate("/admin/dashboard") : navigate("/dashboard");
       }
     } catch (err) {

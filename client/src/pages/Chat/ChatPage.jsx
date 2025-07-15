@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import axios from "axios";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeftCircle, Trash2, Trash2Icon } from "lucide-react";
+import { AuthContext } from "../../context/AuthContext.jsx";
 import { io } from "socket.io-client";
 import {
   generateRSAKeyPair,
@@ -28,6 +29,25 @@ export default function ChatPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const messagesEndRef = useRef(null);
   const [privateKey, setPrivateKey] = useState(null);
+  
+  useEffect(() => {
+  const loadDecryptedKey = async () => {
+    const rsaPrivateKey= localStorage.getItem("rsaPrivateKey");
+    if (!rsaPrivateKey) return;
+
+    try {
+      const key = await importPrivateKey(rsaPrivateKey);
+      console.log("Key=",key);
+      setPrivateKey(key);
+    } catch (err) {
+      console.error("Failed to import decrypted private key from PEM:", err);
+    }
+  };
+
+  loadDecryptedKey();
+}, []);
+
+
 
   useEffect(() => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -53,6 +73,10 @@ export default function ChatPage() {
   try {
     const token = localStorage.getItem("token");
     const isLawyer = localStorage.getItem("lawyerId");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    // Ensure privateKey is ready
+    
 
     const url = isLawyer
       ? `http://localhost:8000/lawyer/threads/${id}/messages`
@@ -63,31 +87,31 @@ export default function ChatPage() {
     });
 
     const rawMessages = res.data.data || [];
-
-    // Load private RSA key from localStorage
-    const rsaPrivatePem = localStorage.getItem("rsaPrivateKey");
-    const privateKey = await importPrivateKey(rsaPrivatePem);
-
-    // Decrypt each message
+    console.log(rawMessages);
     const decryptedMessages = await Promise.all(
       rawMessages.map(async (msg) => {
         try {
-          if (msg.encryptedAESKey && msg.encryptedMessage && msg.iv) {
-            const aesKey = await decryptAESKeyWithRSA(privateKey, msg.encryptedAESKey);
-            const decryptedText = await decryptWithAESKey(aesKey, {
-              ciphertext: msg.encryptedMessage,
-              iv: msg.iv,
-            });
-            return { ...msg, decryptedText };
-          } else {
-            return { ...msg, decryptedText: "[Unsupported message format]" };
-          }
+          const encryptedKey =
+            msg.senderId === user._id
+              ? msg.encryptedAESKeyForSender
+              : msg.encryptedAESKeyForRecipient;
+console.log("🔐 Using RSA PrivateKey:", privateKey);
+console.log("🔐 Encrypted AES Key:", encryptedKey);
+          const aesKey = await decryptAESKeyWithRSA(privateKey, encryptedKey);
+
+          const decryptedText = await decryptWithAESKey(aesKey, {
+            ciphertext: msg.encryptedMessage,
+            iv: msg.iv,
+          });
+
+          return { ...msg, decryptedText };
         } catch (err) {
-          console.error("Failed to decrypt message", err);
+          console.error("🔐 Failed to decrypt message:", err);
           return { ...msg, decryptedText: "[Decryption failed]" };
         }
       })
     );
+
     setMessages(decryptedMessages);
 
     const otherPerson =
@@ -96,52 +120,52 @@ export default function ChatPage() {
       "Chat Partner";
     setChatWith(otherPerson);
   } catch (err) {
-    console.error("Error fetching messages:", err);
+    console.error("❌ Error fetching messages:", err);
     setMessages([]);
   } finally {
     setLoading(false);
   }
 };
-
-
-
-  useEffect(() => {
+useEffect(() => {
+  if (privateKey) {
     fetchMessages();
-  }, [id, location.state]);
+  }
+}, [id, location.state, privateKey]);
+
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-useEffect(() => {
+  useEffect(() => {
   if (!userId) return;
 
   const handleReceive = async (msg) => {
-  if (msg.threadId === id && msg.senderId !== userId) {
-    try {
-      if (msg.encryptedMessage && msg.encryptedAESKey && msg.iv) {
-        const aesKey = await decryptAESKeyWithRSA(privateKey, msg.encryptedAESKey);
+    if (msg.threadId === id && msg.senderId !== userId) {
+      try {
+        const encryptedKey =
+          msg.senderId === userId
+            ? msg.encryptedAESKeyForSender
+            : msg.encryptedAESKeyForRecipient;
+
+        const aesKey = await decryptAESKeyWithRSA(privateKey, encryptedKey);
         const decryptedText = await decryptWithAESKey(aesKey, {
           ciphertext: msg.encryptedMessage,
-          iv: msg.iv
+          iv: msg.iv,
         });
-        msg.message = decryptedText; // fallback for rendering
-      }
-      setMessages((prev) => [...prev, msg]);
-    } catch (err) {
-      console.error("Decryption failed", err);
-    }
-  }
-};
 
+        msg.message = decryptedText;
+        setMessages((prev) => [...prev, msg]);
+      } catch (err) {
+        console.error("Decryption failed", err);
+      }
+    }
+  };
 
   socket.on("receiveMessage", handleReceive);
+  return () => socket.off("receiveMessage", handleReceive);
+}, [id, userId, privateKey]);
 
-  return () => {
-    socket.off("receiveMessage", handleReceive);
-    socket.emit("leaveRoom", id);
-  };
-}, [id, userId]);
 
 useEffect(() => {
   const handleDeleted = ({ messageId }) => {
@@ -155,111 +179,77 @@ useEffect(() => {
   };
 }, []);
 
-  useEffect(() => {
-  const loadOrGenerateKeys = async () => {
-    const localPriv = localStorage.getItem("rsaPrivateKey");
-    if (localPriv) {
-      const privKey = await importPrivateKey(localPriv);
-      setPrivateKey(privKey);
-    } else {
-      const { publicKey, privateKey } = await generateRSAKeyPair();
-      localStorage.setItem("rsaPrivateKey", privateKey);
-
-      // Upload public key to backend
-      const token = localStorage.getItem("token");
-      await axios.post(
-        "http://localhost:8000/encryption/upload",
-        { publicKey },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      const privKey = await importPrivateKey(privateKey);
-      console.log("PrivateKey=",privKey);
-      setPrivateKey(privKey);
-    }
-  };
-
-  loadOrGenerateKeys();
-}, []);
-
+  
 
 const handleSend = async (e) => {
   e.preventDefault();
-  if (!text.trim()) return;
+  if (!text.trim() || !privateKey) return;
 
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}` };
-  const isLawyer = localStorage.getItem("lawyerId"); // or use role if stored
+  const isLawyer = localStorage.getItem("lawyerId");
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  let resThread;
+  let threadData;
   try {
     const threadUrl = isLawyer
       ? `http://localhost:8000/lawyer/threads/${id}`
       : `http://localhost:8000/threads/${id}`;
-      
-    resThread = await axios.get(threadUrl, { headers });
-    console.log("Thread response", resThread.data);
+
+    const res = await axios.get(threadUrl, { headers });
+    threadData = res.data.data;
   } catch (err) {
-    console.error("Failed to get thread info", err);
+    console.error("❌ Failed to get thread info:", err);
     return;
   }
 
-  const threadData = resThread.data.data;
   const recipientId =
     threadData.lawyer._id === userId
       ? threadData.client._id
       : threadData.lawyer._id;
 
-  console.log("RecipientId", recipientId);
-
-  let pubRes;
   try {
-    pubRes = await axios.get(`http://localhost:8000/encrypt/user/${recipientId}`);
-    console.log("Public key received from server:", pubRes);
-  } catch (err) {
-    console.error("Failed to fetch recipient public key", err);
-    return;
-  }
+    // Fetch public keys
+    const [pubRecipientRes, pubSenderRes] = await Promise.all([
+      axios.get(`http://localhost:8000/encrypt/user-public/${recipientId}`, { headers }),
+      axios.get(`http://localhost:8000/encrypt/user-public/${userId}`, { headers }),
+    ]);
 
-  let publicKey;
-  try {
-    publicKey = await importPublicKey(pubRes.data.data);
-  } catch (err) {
-    console.error("Failed to import public key", err);
-    return;
-  }
+    const recipientPubKey = await importPublicKey(pubRecipientRes.data.data);
+    const senderPubKey = await importPublicKey(pubSenderRes.data.data);
+    console.log(recipientPubKey,senderPubKey);
+    // Generate AES key and encrypt message
+    const aesKey = await generateAESKey();
+    const { ciphertext, iv } = await encryptWithAESKey(aesKey, text);
 
-  let aesKey, ciphertext, iv, encryptedAESKey;
-  try {
-    aesKey = await generateAESKey();
-    ({ ciphertext, iv } = await encryptWithAESKey(aesKey, text));
-    encryptedAESKey = await encryptAESKeyWithRSA(publicKey, aesKey);
-  } catch (err) {
-    console.error("Encryption failed", err);
-    return;
-  }
+    // Encrypt AES key with RSA public keys
+    const encryptedAESKeyForRecipient = await encryptAESKeyWithRSA(recipientPubKey, aesKey);
+    const encryptedAESKeyForSender = await encryptAESKeyWithRSA(senderPubKey, aesKey);
 
-  let messageRes;
-  try {
     const sendUrl = isLawyer
       ? `http://localhost:8000/lawyer/threads/${id}/send`
       : `http://localhost:8000/threads/${id}/send`;
 
-    messageRes = await axios.post(
+    const res = await axios.post(
       sendUrl,
-      { encryptedMessage: ciphertext, encryptedAESKey, iv },
+      {
+        encryptedMessage: ciphertext,
+        encryptedAESKeyForRecipient,
+        encryptedAESKeyForSender,
+        iv,
+      },
       { headers }
     );
-    console.log("Message sent", messageRes.data);
-  } catch (err) {
-    console.error("Failed to send message", err);
-    return;
-  }
 
-  const sentMessage = messageRes.data.data;
-  socket.emit("sendMessage", { ...sentMessage, threadId: id });
-  setMessages((prev) => [...prev, sentMessage]);
-  setText("");
+    const sentMessage = res.data.data;
+
+    socket.emit("sendMessage", { ...sentMessage, threadId: id });
+
+    setMessages((prev) => [...prev, sentMessage]);
+    setText("");
+  } catch (err) {
+    console.error("❌ Failed to send encrypted message:", err);
+  }
 };
 
 

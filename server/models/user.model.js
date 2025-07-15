@@ -22,9 +22,7 @@ const userSchema = new Schema(
             required: [true, "Password is required"],
         },
          rsaPublicKey:           { type: String, required: true },
-  rsaEncryptedPrivateKey: { type: String, required: true },
-  rsaSalt:                { type: String, required: true },
-  rsaIV:                  { type: String, required: true },
+        rsaPrivateKey: { type: String, required: true },
 
 
         recentCases: [

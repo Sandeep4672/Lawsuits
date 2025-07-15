@@ -39,10 +39,17 @@ export async function encryptWithPassword(privateKeyBase64, password) {
 }
 
 
-export async function decryptWithPassword({ ciphertext, salt, iv }, password) {
-  const key = await crypto.subtle.importKey(
+export async function decryptWithPassword(base64Encrypted, password, base64Salt, base64IV) {
+  const enc = new TextEncoder();
+  const dec = new TextDecoder();
+
+  const salt = Uint8Array.from(atob(base64Salt), c => c.charCodeAt(0));
+  const iv = Uint8Array.from(atob(base64IV), c => c.charCodeAt(0));
+  const encryptedBytes = Uint8Array.from(atob(base64Encrypted), c => c.charCodeAt(0));
+
+  const keyMaterial = await crypto.subtle.importKey(
     "raw",
-    new TextEncoder().encode(password),
+    enc.encode(password),
     { name: "PBKDF2" },
     false,
     ["deriveKey"]
@@ -51,27 +58,26 @@ export async function decryptWithPassword({ ciphertext, salt, iv }, password) {
   const aesKey = await crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt: base64ToArrayBuffer(salt),
+      salt,
       iterations: 100000,
       hash: "SHA-256",
     },
-    key,
+    keyMaterial,
     { name: "AES-GCM", length: 256 },
-    true,
+    false,
     ["decrypt"]
   );
 
-  const decrypted = await crypto.subtle.decrypt(
-    {
-      name: "AES-GCM",
-      iv: base64ToArrayBuffer(iv),
-    },
+  const decryptedBuffer = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv },
     aesKey,
-    base64ToArrayBuffer(ciphertext)
+    encryptedBytes
   );
 
-  return new TextDecoder().decode(decrypted);
+  return dec.decode(decryptedBuffer);
 }
+
+
 
 
 
