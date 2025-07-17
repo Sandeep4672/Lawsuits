@@ -42,6 +42,7 @@ import UserThreads from "./pages/Chat/UserThread";
 import ChatPage from "./pages/Chat/ChatPage";
 import LawyerThreads from "./pages/Chat/LawyerThreads";
 import AdminAllCases from "./pages/Admin/AllCases";
+import LearnMore from "./pages/home/About";
 export default function App() {
   return (
     <AuthProvider>
@@ -51,6 +52,7 @@ export default function App() {
           {/* Public Routes */}
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/about" element={<LearnMore/>}/>
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/footer" element={<Footer />} />

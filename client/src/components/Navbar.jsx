@@ -63,7 +63,7 @@ export default function Navbar() {
         />
         <button
           type="submit"
-          className="ml-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          className="ml-2 px-4 py-2 cursor-pointer bg-green-600 text-white rounded hover:bg-green-700 transition"
         >
           Search
         </button>
@@ -81,10 +81,10 @@ export default function Navbar() {
       <div className="hidden md:flex items-center gap-6 relative">
         {isLoggedIn && user ? (
           <>
-            <button className="hover:text-green-400 transition"
+            <button className="cursor-pointer hover:text-green-400 transition"
             onClick={()=>{ navigate("/saved-cases");setMenuOpen(false);}}
             >Saved</button>
-            <button className="hover:text-green-400 transition"
+            <button className="cursor-pointer hover:text-green-400 transition"
             onClick={()=>{ navigate("/history");setMenuOpen(false);}}            
             >History</button>
             <div className="flex items-center gap-2">
@@ -97,7 +97,7 @@ export default function Navbar() {
               </span>
               <button
                 onClick={handleLogout}
-                className="ml-2 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-500 text-sm"
+                className="cursor-pointer ml-2 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-500 text-sm"
               >
                 Logout
               </button>
@@ -107,7 +107,7 @@ export default function Navbar() {
           <div ref={dropdownRef} className="relative">
             <button
               onClick={toggleLoginDropdown}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+              className="cursor-pointer px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
             >
               Login ▼
             </button>
@@ -122,7 +122,7 @@ export default function Navbar() {
                 </Link>
                 <Link
                   to="/lawyer-login"
-                  className="block px-4 py-2 text-white hover:bg-green-700 transition"
+                  className="block px-4 py-2 text-white hover:bg-blue-500 transition"
                   onClick={() => setLoginDropdown(false)}
                 >
                   Lawyer Login

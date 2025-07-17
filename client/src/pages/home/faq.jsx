@@ -30,7 +30,7 @@ export default function FrequentlyAskedQn() {
   }, []);
 
   return(
-  <div className="mt-12 px-4 max-w-4xl mx-auto mb-10" >
+  <div className=" px-4 max-w-4xl mx-auto mb-20" >
     <h2 className="text-2xl font-bold text-gray-400 text-center mb-6">
       Frequently Asked Questions
     </h2>
