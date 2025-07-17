@@ -29,33 +29,26 @@ export default function ChatPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const messagesEndRef = useRef(null);
   const [privateKey, setPrivateKey] = useState(null);
+  const [bufferedMessages, setBufferedMessages] = useState([]);
+
   
   useEffect(() => {
-  const fetchPrivateKeyFromServer = async () => {
-    const token = localStorage.getItem("token");
-    const isLawyer = localStorage.getItem("lawyerId");
-    if (!token) return;
-
-    const endpoint = isLawyer
-      ? "http://localhost:8000/encrypt/lawyer/private-key"
-      : "http://localhost:8000/encrypt/user/private-key";
+  const loadDecryptedPrivateKey = async () => {
+    const pem = sessionStorage.getItem("decryptedPrivateKey");
+    if (!pem) {
+      console.error("No decrypted RSA private key found in sessionStorage");
+      return;
+    }
 
     try {
-      const res = await axios.get(endpoint, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const rsaPem = res.data.data?.rsaPrivateKey;
-      if (!rsaPem) throw new Error("Private key not found in response");
-
-      const key = await importPrivateKey(rsaPem);
+      const key = await importPrivateKey(pem);
       setPrivateKey(key);
     } catch (err) {
-      console.error("🔐 Failed to fetch/import RSA private key:", err);
+      console.error("Failed to import private key from PEM:", err);
     }
   };
 
-  fetchPrivateKeyFromServer();
+  loadDecryptedPrivateKey();
 }, []);
 
 
@@ -158,30 +151,81 @@ useEffect(() => {
   if (!userId) return;
 
   const handleReceive = async (msg) => {
-    if (msg.threadId === id && msg.senderId !== userId) {
-      try {
-        const encryptedKey =
-          msg.senderId === userId
-            ? msg.encryptedAESKeyForSender
-            : msg.encryptedAESKeyForRecipient;
-
-        const aesKey = await decryptAESKeyWithRSA(privateKey, encryptedKey);
-        const decryptedText = await decryptWithAESKey(aesKey, {
-          ciphertext: msg.encryptedMessage,
-          iv: msg.iv,
-        });
-
-        msg.message = decryptedText;
-        setMessages((prev) => [...prev, msg]);
-      } catch (err) {
-        console.error("Decryption failed", err);
-      }
+    console.log("Handle recieve triggered",msg);
+  if (msg.threadId === id) {
+    if (!privateKey) {
+      setBufferedMessages(prev => [...prev, msg]); // buffer it
+      return;
     }
-  };
 
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      
+      const encryptedKey =
+        msg.senderId === user._id
+          ? msg.encryptedAESKeyForSender
+          : msg.encryptedAESKeyForRecipient;
+
+      const aesKey = await decryptAESKeyWithRSA(privateKey, encryptedKey);
+      const decryptedText = await decryptWithAESKey(aesKey, {
+        ciphertext: msg.encryptedMessage,
+        iv: msg.iv,
+      });
+
+      msg.decryptedText = decryptedText;
+setMessages((prev) => {
+  const exists = prev.some((m) => m._id === msg._id);
+  if (exists) return prev;
+  return [...prev, msg];
+});
+    } catch (err) {
+      console.error("Decryption failed", err);
+    }
+  }
+};
+
+  
   socket.on("receiveMessage", handleReceive);
   return () => socket.off("receiveMessage", handleReceive);
 }, [id, userId, privateKey]);
+
+useEffect(() => {
+  const processBuffered = async () => {
+    if (!privateKey || bufferedMessages.length === 0) return;
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const processed = await Promise.all(
+      bufferedMessages.map(async (msg) => {
+        try {
+          const encryptedKey =
+            msg.senderId === user._id
+              ? msg.encryptedAESKeyForSender
+              : msg.encryptedAESKeyForRecipient;
+
+          const aesKey = await decryptAESKeyWithRSA(privateKey, encryptedKey);
+          const decryptedText = await decryptWithAESKey(aesKey, {
+            ciphertext: msg.encryptedMessage,
+            iv: msg.iv,
+          });
+
+          msg.decryptedText = decryptedText;
+          return msg;
+        } catch (err) {
+          console.error("Buffered decryption failed:", err);
+          msg.decryptedText = "[Decryption failed]";
+          return msg;
+        }
+      })
+    );
+
+    setMessages((prev) => [...prev, ...processed]);
+    setBufferedMessages([]); // clear buffer
+  };
+
+  processBuffered();
+}, [privateKey, bufferedMessages]);
+
 
 
 useEffect(() => {
@@ -259,10 +303,26 @@ const handleSend = async (e) => {
     );
 
     const sentMessage = res.data.data;
-
+    console.log("Sent Message is",sentMessage);
     socket.emit("sendMessage", { ...sentMessage, threadId: id });
 
-    setMessages((prev) => [...prev, sentMessage]);
+// Decrypt it for immediate display
+try {
+  const aesKey = await decryptAESKeyWithRSA(privateKey, sentMessage.encryptedAESKeyForSender);
+  const decryptedText = await decryptWithAESKey(aesKey, {
+    ciphertext: sentMessage.encryptedMessage,
+    iv: sentMessage.iv,
+  });
+
+setMessages((prev) => {
+  const exists = prev.some((m) => m._id === sentMessage._id);
+  if (exists) return prev;
+  return [...prev, { ...sentMessage, decryptedText }];
+});
+} catch (err) {
+  console.error("Failed to decrypt just-sent message:", err);
+  setMessages((prev) => [...prev, { ...sentMessage, decryptedText: "[Decryption failed]" }]);
+}
     setText("");
   } catch (err) {
     console.error("❌ Failed to send encrypted message:", err);

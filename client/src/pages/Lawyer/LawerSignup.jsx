@@ -33,52 +33,57 @@ export default function LawyerSignup() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSuccessMsg("");
-    setErrorMsg("");
+  e.preventDefault();
+  setSuccessMsg("");
+  setErrorMsg("");
 
-    try {
-      // Step 1: Generate RSA keypair
-      const { publicKey, privateKey } = await generateRSAKeyPair();
+  try {
+    // Step 1: Generate RSA key pair
+    const { publicKey, privateKey } = await generateRSAKeyPair();
 
-      // Step 2: Prepare FormData
-      const data = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (key === "proofFile" && Array.isArray(value)) {
-          value.forEach((file) => data.append("proofFile", file));
-        } else {
-          data.append(key, value);
-        }
-      });
+    // Step 2: Encrypt private key with password
+    const { encrypted, salt, iv } = await encryptWithPassword(privateKey, formData.password);
 
-      // Step 3: Add RSA key fields (no encryption)
-      data.append("rsaPublicKey", publicKey);
-      data.append("rsaPrivateKey", privateKey); // store raw private key
+    // Step 3: Prepare multipart form data
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === "proofFile" && Array.isArray(value)) {
+        value.forEach((file) => data.append("proofFile", file));
+      } else {
+        data.append(key, value);
+      }
+    });
 
-      // Step 4: Submit
-      await axios.post("http://localhost:8000/lawyer/signup", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+    // Step 4: Append RSA-related fields (no plaintext private key)
+    data.append("rsaPublicKey", publicKey);
+    data.append("encryptedPrivateKey", encrypted);
+    data.append("salt", salt);
+    data.append("iv", iv);
 
-      setSuccessMsg("✅ Signup successful! Your status is pending.");
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        barId: "",
-        practiceAreas: "",
-        experience: "",
-        password: "",
-        proofFile: [],
-        sop: "",
-      });
-    } catch (err) {
-      console.error(err);
-      setErrorMsg("❌ Signup failed. Please try again.");
-    }
-  };
+    // Step 5: Submit to backend
+    await axios.post("http://localhost:8000/lawyer/signup", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    setSuccessMsg("✅ Signup successful! Your status is pending.");
+    setFormData({
+      fullName: "",
+      email: "",
+      phone: "",
+      barId: "",
+      practiceAreas: "",
+      experience: "",
+      password: "",
+      proofFile: [],
+      sop: "",
+    });
+  } catch (err) {
+    console.error(err);
+    setErrorMsg("❌ Signup failed. Please try again.");
+  }
+};
 
   return (
     <>

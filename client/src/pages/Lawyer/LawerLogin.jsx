@@ -24,7 +24,7 @@ export default function LawyerLogin() {
       });
       const { accessToken, user } = res.data.data;
       localStorage.setItem("lawyerId", user._id);
-      login(accessToken, user);
+      login(accessToken, user,password,true);
       navigate("/lawyer-dashboard");
     } catch (err) {
       setMessage(

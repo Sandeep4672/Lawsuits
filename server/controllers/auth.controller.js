@@ -30,37 +30,36 @@ const signupUser = asyncHandler(async (req, res) => {
     email,
     password,
     rsaPublicKey,
-    rsaPrivateKey,
+    encryptedPrivateKey,
+    salt,
+    iv,
   } = req.body;
 
   // 1. Basic field checks
-  if ([fullName, email, password].some(f => !f?.trim())) {
-    throw new ApiError(400, "fullName, email, and password are required");
+  if ([fullName, email, password, rsaPublicKey, encryptedPrivateKey, salt, iv].some(f => !f?.trim())) {
+    throw new ApiError(400, "All required fields must be provided");
   }
 
-  // 2. RSA key checks
-  if (!rsaPublicKey?.trim() || !rsaPrivateKey?.trim()) {
-    throw new ApiError(400, "RSA public and private keys are required");
-  }
-
-  // 3. Uniqueness check
+  // 2. Uniqueness check
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new ApiError(409, "User already exists");
   }
 
-  // 4. Create user
+  // 3. Create the user
   const user = await User.create({
     fullName,
     email,
     password,
     rsaPublicKey,
-    rsaPrivateKey,
+    encryptedPrivateKey,
+    salt,
+    iv,
   });
 
-  // 5. Return clean user object (omit password & private key)
+  // 4. Return clean user object (omit sensitive fields)
   const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken -rsaPrivateKey"
+    "-password -refreshToken -encryptedPrivateKey -salt -iv"
   );
 
   res

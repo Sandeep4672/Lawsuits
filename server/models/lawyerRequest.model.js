@@ -41,7 +41,9 @@ const lawyerRequestSchema = new Schema(
       required: true,
     },
     rsaPublicKey:           { type: String, required: true },
-  rsaPrivateKey: { type: String, required: true },
+  encryptedPrivateKey: { type: String, required: true },
+salt: { type: String, required: true },
+iv: { type: String, required: true },
  
     sop: {
       type: String,

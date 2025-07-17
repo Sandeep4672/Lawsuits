@@ -20,14 +20,16 @@ router.post("/upload", verifyUserJWT, uploadRSAPublicKey); // You can duplicate 
 // ✅ Authenticated: Get encrypted private key (USER)
 router.get("/user/private-key", verifyUserJWT, async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id).select("rsaPrivateKey");
-    if (!user || !user.rsaPrivateKey) {
+    const user = await User.findById(req.user._id).select("encryptedPrivateKey salt iv");
+    if (!user || !user.encryptedPrivateKey) {
       return res.status(404).json({ message: "RSA key not found" });
     }
 
     res.status(200).json({
       data: {
-        rsaPrivateKey: user.rsaPrivateKey,
+        encryptedPrivateKey: user.encryptedPrivateKey,
+    salt: user.salt,
+    iv: user.iv,
       },
     });
   } catch (err) {
@@ -39,14 +41,16 @@ router.get("/user/private-key", verifyUserJWT, async (req, res, next) => {
 router.get("/lawyer/private-key", verifyLawyerJWT, async (req, res, next) => {
   try {
     console.log("Private key fetching");
-    const lawyer = await Lawyer.findById(req.user._id).select("rsaPrivateKey");
-    if (!lawyer || !lawyer.rsaPrivateKey) {
+    const lawyer = await Lawyer.findById(req.user._id).select("encryptedPrivateKey salt iv");
+    if (!lawyer || !lawyer.encryptedPrivateKey) {
       return res.status(404).json({ message: "RSA key not found" });
     }
     console.log("Server is shit",lawyer.rsaPrivateKey);
     res.status(200).json({
       data: {
-        rsaPrivateKey: lawyer.rsaPrivateKey,
+        encryptedPrivateKey: lawyer.encryptedPrivateKey,
+    salt: lawyer.salt,
+    iv: lawyer.iv,
       },
     });
   } catch (err) {

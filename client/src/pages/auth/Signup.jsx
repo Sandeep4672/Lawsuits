@@ -27,41 +27,50 @@ export default function Signup() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+  if (formData.password !== formData.confirmPassword) {
+    setError("Passwords do not match");
+    return;
+  }
 
-    try {
-      // 1. Generate RSA key pair
-      const { publicKey, privateKey } = await generateRSAKeyPair();
+  try {
+    // 1. Generate RSA key pair
+    const { publicKey, privateKey } = await generateRSAKeyPair();
 
-      // 2. Send signup request with raw private key (⚠️ not recommended for prod)
-      const res = await axios.post("http://localhost:8000/auth/signup", {
-        fullName: formData.fullName,
-        email: formData.email,
-        password: formData.password,
-        rsaPublicKey: publicKey,
-        rsaPrivateKey: privateKey,
+    // 2. Encrypt the private key using user's password
+    const { encrypted, salt, iv } = await encryptWithPassword(privateKey, formData.password);
+
+    // 3. Send the signup request with encrypted key
+    const res = await axios.post("http://localhost:8000/auth/signup", {
+      fullName: formData.fullName,
+      email: formData.email,
+      password: formData.password,
+      rsaPublicKey: publicKey,
+      encryptedPrivateKey: encrypted,
+      salt,
+      iv,
+    });
+
+    if (res.status === 201) {
+      setSuccess("Account created!");
+      setFormData({
+        fullName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
       });
 
-      if (res.status === 201) {
-        setSuccess("Account created!");
-        setFormData({
-          fullName: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-        });
-        navigate("/login");
-      }
-    } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Registration failed");
+      // OPTIONAL: store password temporarily for decryption later
+      localStorage.setItem("encryptionPassword", formData.password);
+
+      navigate("/login");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setError(err.response?.data?.message || "Registration failed");
+  }
+};
   return (
     <>
       <Navbar />

@@ -21,17 +21,18 @@ export const signupLawyer = async (req, res, next) => {
       experience,
       sop,
       password,
-
       rsaPublicKey,
-      rsaPrivateKey,
-   
+      encryptedPrivateKey,
+      salt,
+      iv
     } = req.body;
 
     // ✅ Validate RSA fields
-    if (!rsaPublicKey || !rsaPrivateKey) {
-      return res.status(400).json({ message: "Missing RSA key fields" });
+    if (!rsaPublicKey || !encryptedPrivateKey || !salt || !iv) {
+      return res.status(400).json({ message: "Missing RSA key encryption fields" });
     }
 
+    // ✅ Check for duplicates
     const existingLawyer = await Lawyer.findOne({ email });
     if (existingLawyer) {
       return res.status(400).json({ message: "Already a verified lawyer" });
@@ -42,6 +43,7 @@ export const signupLawyer = async (req, res, next) => {
       return res.status(400).json({ message: "Application already pending" });
     }
 
+    // ✅ Handle file uploads
     const proofUrls = [];
 
     if (req.files && req.files.length > 0) {
@@ -59,6 +61,7 @@ export const signupLawyer = async (req, res, next) => {
       return res.status(400).json({ message: "At least one proof file is required" });
     }
 
+    // ✅ Parse practice areas
     let parsedPracticeAreas = [];
     try {
       if (typeof practiceAreas === "string") {
@@ -70,6 +73,7 @@ export const signupLawyer = async (req, res, next) => {
       parsedPracticeAreas = [practiceAreas];
     }
 
+    // ✅ Create LawyerRequest
     const lawyerRequest = new LawyerRequest({
       fullName,
       email,
@@ -81,10 +85,11 @@ export const signupLawyer = async (req, res, next) => {
       sop,
       proofFile: proofUrls,
 
-      // 🔐 Include RSA Key Fields
+      // 🔐 Store encrypted private key fields
       rsaPublicKey,
-      rsaPrivateKey,
-     
+      encryptedPrivateKey,
+      salt,
+      iv
     });
 
     await lawyerRequest.save();
@@ -95,6 +100,7 @@ export const signupLawyer = async (req, res, next) => {
     });
 
   } catch (error) {
+    // 🧹 Cloudinary cleanup
     if (Array.isArray(uploadedPublicIds) && uploadedPublicIds.length > 0) {
       for (const publicId of uploadedPublicIds) {
         try {

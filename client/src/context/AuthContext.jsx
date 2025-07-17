@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
-
+import { decryptWithPassword } from "../utils/cryptoUtils";
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
@@ -26,15 +26,47 @@ const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (token, userObj, password, isLawyerLogin = false) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(userObj));
-    if (isLawyerLogin) localStorage.setItem("lawyerId", userObj._id);
+ const login = async (token, userObj, password, isLawyerLogin = false) => {
+  localStorage.setItem("token", token);
+  localStorage.setItem("user", JSON.stringify(userObj));
+  if (isLawyerLogin) localStorage.setItem("lawyerId", userObj._id);
 
-    setIsLoggedIn(true);
-    setUser(userObj);
-    setIsLawyer(isLawyerLogin);
-  };
+  setIsLoggedIn(true);
+  setUser(userObj);
+  setIsLawyer(isLawyerLogin);
+
+  try {
+    const endpoint = isLawyerLogin
+      ? "http://localhost:8000/encrypt/lawyer/private-key"
+      : "http://localhost:8000/encrypt/user/private-key";
+
+    const res = await axios.get(endpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const { encryptedPrivateKey, salt, iv } = res.data.data;
+
+    const decryptedPem = await decryptWithPassword(
+      encryptedPrivateKey,
+      password,
+      salt,
+      iv
+    );
+    console.log(decryptedPem);
+    // Optional: store decrypted PEM string
+    sessionStorage.setItem("decryptedPrivateKey", decryptedPem);
+
+    // Or: store CryptoKey object in memory if you're using React context
+    // const privateKey = await importPrivateKey(decryptedPem);
+    // setPrivateKey(privateKey);
+
+    console.log("🔐 RSA Private Key decrypted and stored in sessionStorage");
+
+  } catch (err) {
+    console.error("🔐 Failed to decrypt and store private key at login:", err);
+  }
+};
+
 
   const logout = () => {
     return new Promise((resolve) => {

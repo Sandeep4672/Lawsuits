@@ -140,18 +140,21 @@ export const acceptLawyerRequest = asyncHandler(async (req, res) => {
     sop: lawyerRequest.sop,
     proofFile: lawyerRequest.proofFile,
 
-    // 🔐 Copy encrypted RSA key material
+    // ✅ Copy encrypted RSA key fields
     rsaPublicKey: lawyerRequest.rsaPublicKey,
-    rsaPrivateKey: lawyerRequest.rsaPrivateKey,
+    encryptedPrivateKey: lawyerRequest.encryptedPrivateKey,
+    salt: lawyerRequest.salt,
+    iv: lawyerRequest.iv,
   });
 
   await lawyer.save();
   await lawyerRequest.deleteOne();
 
-  // ✅ Create empty LawyerProfile
+  // ✅ Create empty profile
   const profile = new LawyerProfile({ lawyer: lawyer._id });
   await profile.save();
 
+  // ✅ Send approval email
   await sendEmail({
     to: lawyer.email,
     subject: "Your Lawyer Application has been Approved",
@@ -161,7 +164,7 @@ export const acceptLawyerRequest = asyncHandler(async (req, res) => {
       <p>You can now log in to your account and start offering legal services.</p>
       <br/>
       <p>Regards,<br/>Lawsuits Team</p>
-    `
+    `,
   });
 
   res.status(200).json({

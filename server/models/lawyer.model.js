@@ -22,7 +22,9 @@ const lawyerSchema = new Schema(
       required: [true, "Password is required"],
     },
     rsaPublicKey:           { type: String, required: true },
-    rsaPrivateKey: { type: String, required: true },
+    encryptedPrivateKey: { type: String, required: true },
+salt: { type: String, required: true },
+iv: { type: String, required: true },
 
 
 

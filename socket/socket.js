@@ -11,6 +11,7 @@ io.on("connection", (socket) => {
   console.log("A user connected");
 
   socket.on("joinRoom", (threadId) => {
+    console.log("Joined Room");
     socket.join(threadId);
   });
 
@@ -19,6 +20,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendMessage", (message) => {
+    console.log(message);
     io.to(message.threadId).emit("receiveMessage", message);
   });
 
