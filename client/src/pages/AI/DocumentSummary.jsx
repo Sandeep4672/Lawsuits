@@ -26,7 +26,7 @@ export default function DocumentSummarization() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post("http://localhost:8000/user/summarize", formData, {
+      const res = await axios.post("https://lawsuits.onrender.com/user/summarize", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -45,7 +45,7 @@ export default function DocumentSummarization() {
 
   const handleSave = async () => {
     try {
-      const response = await axios.post("http://localhost:8000/fn/save-summary", {
+      const response = await axios.post("https://lawsuits.onrender.com/fn/save-summary", {
         filename: file?.name || "Untitled Document",
         summary,
         terms,

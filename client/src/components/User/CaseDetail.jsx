@@ -17,7 +17,7 @@ export default function CaseDetails() {
     const token = localStorage.getItem("token");
     const fetchCase = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/search/case/${id}`, {
+        const res = await axios.get(`https://lawsuits.onrender.com/search/case/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -39,7 +39,7 @@ export default function ConnectionRequestForm() {
       if (file) formData.append("documents", file);
       console.log(lawyer);
       await axios.post(
-        `http://localhost:8000/user/connect/${lawyer._id}`,
+        `https://lawsuits.onrender.com/user/connect/${lawyer._id}`,
         formData,
         {
           headers: {

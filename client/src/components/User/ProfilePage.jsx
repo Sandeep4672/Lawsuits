@@ -25,7 +25,7 @@ export default function ProfilePage() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.patch(
-        "http://localhost:8000/auth/change-password",
+        "https://lawsuits.onrender.com/auth/change-password",
         {
           user,
           oldPassword: currentPassword,

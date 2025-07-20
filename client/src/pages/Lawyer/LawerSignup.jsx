@@ -61,7 +61,7 @@ export default function LawyerSignup() {
     data.append("iv", iv);
 
     // Step 5: Submit to backend
-    await axios.post("http://localhost:8000/lawyer/signup", data, {
+    await axios.post("https://lawsuits.onrender.com/lawyer/signup", data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

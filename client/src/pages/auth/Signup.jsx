@@ -42,7 +42,7 @@ export default function Signup() {
     const { encrypted, salt, iv } = await encryptWithPassword(privateKey, formData.password);
 
     // 3. Send the signup request with encrypted key
-    const res = await axios.post("http://localhost:8000/auth/signup", {
+    const res = await axios.post("https://lawsuits.onrender.com/auth/signup", {
       fullName: formData.fullName,
       email: formData.email,
       password: formData.password,

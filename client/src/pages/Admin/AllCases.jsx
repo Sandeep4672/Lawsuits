@@ -12,7 +12,7 @@ export default function AdminAllCases() {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          "http://localhost:8000/admin/get-caseFiles",
+          "https://lawsuits.onrender.com/admin/get-caseFiles",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -33,7 +33,7 @@ export default function AdminAllCases() {
     const token = localStorage.getItem("token");
     try {
       const res = await axios.patch(
-        `http://localhost:8000/admin/delete-case/${id}`,
+        `https://lawsuits.onrender.com/admin/delete-case/${id}`,
         {},
         {
           headers: {

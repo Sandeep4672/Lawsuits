@@ -9,7 +9,7 @@ export const saveCase = async (caseId) => {
 
   try {
     await axios.post(
-      "http://localhost:8000/user/save-case",
+      "https://lawsuits.onrender.com/user/save-case",
       { caseId },
       {
         headers: {

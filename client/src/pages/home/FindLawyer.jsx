@@ -16,7 +16,7 @@ export default function FindLawyer() {
     const fetchLawyers = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/user/find-lawyers", {
+        const res = await axios.get("https://lawsuits.onrender.com/user/find-lawyers", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -35,7 +35,7 @@ export default function FindLawyer() {
     const fetchConnectedLawyers = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/threads", {
+        const res = await axios.get("https://lawsuits.onrender.com/threads", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setConnectedLawyers(res.data.data || []);
