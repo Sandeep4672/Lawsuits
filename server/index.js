@@ -22,7 +22,7 @@ const httpServer = http.createServer(app);
 // Attach Socket.IO to HTTP server
 const io = new Server(httpServer, {
   cors: {
-    origin: ["https://lawsuits.onrender.com","https://lawsuits.vercel.app"], // ✅ Update with your client URL
+    origin: "https://lawsuits.vercel.app", // ✅ Update with your client URL
     methods: ["GET", "POST"],
     credentials: true,
   },
