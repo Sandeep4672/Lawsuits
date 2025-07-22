@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate ,useLocation} from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
 import { saveCase } from "../../utils/handleSaveCase";
 import { removeCase } from "../../utils/handleRemove";
+
 export default function CaseDetails() {
   const { id } = useParams();
   const [caseData, setCaseData] = useState(null);
   const navigate = useNavigate();
-  const [currentSaved,setCurrentsaved]=useState(false);
-  const location=useLocation();
-  const alreadySaved=currentSaved || location.state?.alreadySaved ;
+  const location = useLocation();
+
+  const token = localStorage.getItem("token");
+  const [isLoggedIn, setIsLoggedIn] = useState(!!token);
+
+  const [currentSaved, setCurrentsaved] = useState(false);
+  const alreadySaved = currentSaved || location.state?.alreadySaved;
   const [isSaved, setIsSaved] = useState(alreadySaved);
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
     const fetchCase = async () => {
       try {
         const res = await axios.get(`https://lawsuits.onrender.com/search/case/${id}`, {
@@ -28,7 +33,7 @@ export default function CaseDetails() {
       }
     };
     fetchCase();
-  }, [id]);
+  }, [id, token]);
 
   if (!caseData)
     return (
@@ -36,12 +41,22 @@ export default function CaseDetails() {
         Loading case details...
       </p>
     );
+
   const handleSaveCase = (id) => {
+    if (!isLoggedIn) {
+      alert("Please login to save cases.");
+      return;
+    }
     saveCase(id);
     setIsSaved(true);
     setCurrentsaved(true);
   };
+
   const handleRemoveCase = (id) => {
+    if (!isLoggedIn) {
+      alert("Please login to remove saved cases.");
+      return;
+    }
     removeCase(id);
     setIsSaved(false);
     setCurrentsaved(false);
@@ -82,9 +97,7 @@ export default function CaseDetails() {
           )}
           {caseData.dateOfJudgment && (
             <p>
-              <span className="font-semibold text-cyan-400">
-                Judgment Date:
-              </span>{" "}
+              <span className="font-semibold text-cyan-400">Judgment Date:</span>{" "}
               {new Date(caseData.dateOfJudgment).toLocaleDateString()}
             </p>
           )}
@@ -102,7 +115,7 @@ export default function CaseDetails() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-cyan-800 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-cyan-600 transition"
-                title={`Search "${tag}" on Google`}
+                title={`Search "${tag}" on Indian Kanoon`}
               >
                 #{tag}
               </a>
@@ -119,7 +132,7 @@ export default function CaseDetails() {
                   state: { pdfUrl: caseData.pdfUrl },
                 })
               }
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition shadow"
+              className=" cursor-pointer bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition shadow"
             >
               View PDF Document
             </button>
@@ -128,14 +141,26 @@ export default function CaseDetails() {
           {isSaved ? (
             <button
               onClick={() => handleRemoveCase(caseData._id)}
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition shadow"
+              disabled={!isLoggedIn}
+              className={`px-6 py-2 rounded-lg font-semibold transition shadow text-white ${
+                isLoggedIn
+                  ? "bg-red-600 hover:bg-red-700"
+                  : "bg-red-400 cursor-not-allowed opacity-70"
+              }`}
+              title={!isLoggedIn ? "Login to remove saved case" : ""}
             >
               Remove From Saved
             </button>
           ) : (
             <button
               onClick={() => handleSaveCase(caseData._id)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition shadow"
+              disabled={!isLoggedIn}
+              className={`px-6 py-2 rounded-lg font-semibold transition shadow text-white ${
+                isLoggedIn
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-blue-400 cursor-not-allowed opacity-70"
+              }`}
+              title={!isLoggedIn ? "Login to save this case" : ""}
             >
               Save Case
             </button>
