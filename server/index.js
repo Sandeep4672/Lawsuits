@@ -2,6 +2,9 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import connectDB from "./db/index.js";
 import { app } from "./app.js";
+import http from "http"; // ✅ Needed for socket.io
+import { Server } from "socket.io";
+import { initSocket } from "./utils/socket.js"; // ✅ Custom logic here
 
 dotenv.config();
 
@@ -13,16 +16,30 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
+// Create HTTP server for both Express & Socket.IO
+const httpServer = http.createServer(app);
+
+// Attach Socket.IO to HTTP server
+const io = new Server(httpServer, {
+  cors: {
+    origin: "https://lawsuits.vercel.app", // ✅ Update with your client URL
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+initSocket(io); 
+
 let server;
 
 connectDB()
   .then(() => {
-    server = app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+    server = httpServer.listen(PORT, () => {
+      console.log(`🚀 Server is running on http://localhost:${PORT}`);
     });
   })
   .catch((error) => {
-    console.error(" MongoDB connection error", error);
+    console.error("❌ MongoDB connection error", error);
     process.exit(1);
   });
 

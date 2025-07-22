@@ -15,7 +15,10 @@ import {
   decryptWithAESKey
 } from "../../utils/cryptoUtils.js";
 
-const socket = io("ws://localhost:7000"); 
+const socket = io("https://lawsuits.onrender.com", {
+  transports: ["websocket"],
+  secure: true
+});
 
 export default function ChatPage() {
   const { id } = useParams(); // thread ID
