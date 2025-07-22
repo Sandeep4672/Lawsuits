@@ -22,11 +22,16 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://lawsuits.onrender.com/auth/login", formData);
+      const res = await axios.post(
+        "https://lawsuits.onrender.com/auth/login",
+        formData
+      );
       if (res.data.success) {
         setSuccess("Login successful");
-login(res.data.data.accessToken, res.data.data.user, formData.password);
-        res.data.data.user.isAdmin ? navigate("/admin/dashboard") : navigate("/dashboard");
+        login(res.data.data.accessToken, res.data.data.user, formData.password);
+        res.data.data.user.isAdmin
+          ? navigate("/admin/dashboard")
+          : navigate("/dashboard");
       }
     } catch (err) {
       if (err.response?.statusCode === 500) navigate("/500");
@@ -51,12 +56,20 @@ login(res.data.data.accessToken, res.data.data.user, formData.password);
           </h2>
 
           {error && (
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-400 text-sm text-center mb-4">
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-red-400 text-sm text-center mb-4"
+            >
               {error}
             </motion.p>
           )}
           {success && (
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-green-400 text-sm text-center mb-4">
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-green-400 text-sm text-center mb-4"
+            >
               {success}
             </motion.p>
           )}
@@ -105,16 +118,18 @@ login(res.data.data.accessToken, res.data.data.user, formData.password);
           <div className="text-center mt-6 w-full">
             <p className="text-gray-400">
               Don't have an account?{" "}
-              <a href="/signup" className="text-green-300 font-medium hover:underline">
+              <Link
+                to="/signup"
+                className="text-green-300 font-medium hover:underline"
+              >
                 Signup here
-              </a>
+              </Link>
             </p>
           </div>
         </motion.div>
       </div>
 
-      <Footer/>
-      
+      <Footer />
     </>
   );
 }
