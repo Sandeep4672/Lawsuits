@@ -5,6 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import fs from "fs";
+import otpStore from "../utils/otpStore.js";
 
 
 
@@ -27,12 +28,18 @@ export const signupLawyer = async (req, res, next) => {
       iv
     } = req.body;
 
-    // ✅ Validate RSA fields
+    // ✅ Check if OTP was verified
+    const verified = await otpStore.get(`otp:verified:${email}`);
+    if (verified !== "true") {
+      return res.status(400).json({ message: "OTP not verified" });
+    }
+
+    // 🔐 Validate RSA encryption fields
     if (!rsaPublicKey || !encryptedPrivateKey || !salt || !iv) {
       return res.status(400).json({ message: "Missing RSA key encryption fields" });
     }
 
-    // ✅ Check for duplicates
+    // 🚫 Check for existing account or pending request
     const existingLawyer = await Lawyer.findOne({ email });
     if (existingLawyer) {
       return res.status(400).json({ message: "Already a verified lawyer" });
@@ -43,9 +50,8 @@ export const signupLawyer = async (req, res, next) => {
       return res.status(400).json({ message: "Application already pending" });
     }
 
-    // ✅ Handle file uploads
+    // 📂 Handle proof uploads
     const proofUrls = [];
-
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         const path = file.path;
@@ -61,7 +67,7 @@ export const signupLawyer = async (req, res, next) => {
       return res.status(400).json({ message: "At least one proof file is required" });
     }
 
-    // ✅ Parse practice areas
+    // 🏷️ Parse practice areas
     let parsedPracticeAreas = [];
     try {
       if (typeof practiceAreas === "string") {
@@ -73,7 +79,7 @@ export const signupLawyer = async (req, res, next) => {
       parsedPracticeAreas = [practiceAreas];
     }
 
-    // ✅ Create LawyerRequest
+    // 📝 Create and save lawyer request
     const lawyerRequest = new LawyerRequest({
       fullName,
       email,
@@ -84,8 +90,6 @@ export const signupLawyer = async (req, res, next) => {
       experience,
       sop,
       proofFile: proofUrls,
-
-      // 🔐 Store encrypted private key fields
       rsaPublicKey,
       encryptedPrivateKey,
       salt,
@@ -93,6 +97,9 @@ export const signupLawyer = async (req, res, next) => {
     });
 
     await lawyerRequest.save();
+
+    // ❌ Delete verified OTP key to prevent reuse
+    await redis.del(`otp:verified:${email}`);
 
     return res.status(201).json({
       message: "Lawyer request submitted successfully",
@@ -114,8 +121,6 @@ export const signupLawyer = async (req, res, next) => {
     next(error);
   }
 };
-
-
 export const loginLawyer = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 

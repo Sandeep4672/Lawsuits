@@ -9,6 +9,7 @@ import {
   loginUser,
   logoutUser,
   changeCurrentPassword,
+  verifyOtp
 } from "../controllers/auth.controller.js";
 
 
@@ -16,7 +17,7 @@ router.route("/signup").post(signupUser);
 
 router.route("/send-otp").post(sendOtp);
 
-
+router.post("/verify-otp", verifyOtp);
 router.route("/login").post(loginUser);
 
 router.route("/logout").post(verifyUserJWT, logoutUser);
