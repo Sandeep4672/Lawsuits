@@ -16,7 +16,7 @@ export default function Chatbot() {
     setMessages(prev => [...prev, userMessage]);
 
     try {
-      const res = await axios.post("https://lawsuits.onrender.com/search/chatbotfaq", { question: input });
+      const res = await axios.post("http://localhost:8000/search/chatbotfaq", { question: input });
       const botReply = res.data.reply;
       setMessages(prev => [...prev, { from: "bot", text: botReply }]);
     } catch (err) {

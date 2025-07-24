@@ -13,7 +13,7 @@ export default function AllLawyers() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     axios
-      .get("https://lawsuits.onrender.com/admin/lawyers", {
+      .get("http://localhost:8000/admin/lawyers", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

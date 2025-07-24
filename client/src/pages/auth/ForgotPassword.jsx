@@ -14,7 +14,7 @@ export default function ForgotPassword() {
     setError("");
 
     try {
-      const res = await axios.post("https://lawsuits.onrender.com/auth/send-otp", { email });
+      const res = await axios.post("http://localhost:8000/auth/send-otp", { email });
 
       if (res.status === 200) {
         setMessage("OTP sent to your email.");

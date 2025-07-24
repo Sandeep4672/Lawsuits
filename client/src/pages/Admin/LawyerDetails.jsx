@@ -15,7 +15,7 @@ export default function LawyerDetail() {
   useEffect(() => {
     if (!lawyer) {
       axios
-        .get(`https://lawsuits.onrender.com/lawyer/profile/${id}`, {
+        .get(`http://localhost:8000/lawyer/profile/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => setLawyer(res.data))
@@ -33,7 +33,7 @@ export default function LawyerDetail() {
       console.log(token);
       if (newStatus === "reject") {
         const res = await axios.patch(
-          `https://lawsuits.onrender.com/admin/lawyer-request/${id}/decline`,
+          `http://localhost:8000/admin/lawyer-request/${id}/decline`,
           { reason: rejectReason }, // send reason only on reject
           {
             headers: {
@@ -43,7 +43,7 @@ export default function LawyerDetail() {
         );
       } else {
         const res = await axios.patch(
-         ` https://lawsuits.onrender.com/admin/lawyer-request/${id}/accept`,
+         ` http://localhost:8000/admin/lawyer-request/${id}/accept`,
           {},
           {
             headers: {

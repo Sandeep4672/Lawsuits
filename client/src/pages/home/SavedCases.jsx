@@ -13,7 +13,7 @@ export default function SavedCases() {
 
   const fetchSavedCases = async () => {
     try {
-      const res = await axios.get("https://lawsuits.onrender.com/user/saved-cases", {
+      const res = await axios.get("http://localhost:8000/user/saved-cases", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSavedCases(res.data.data || []);

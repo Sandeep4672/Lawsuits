@@ -18,7 +18,7 @@ export default function LawyerLogin() {
     setMessage("");
 
     try {
-      const res = await axios.post("https://lawsuits.onrender.com/lawyer/login", {
+      const res = await axios.post("http://localhost:8000/lawyer/login", {
         email,
         password,
       });

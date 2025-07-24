@@ -4,8 +4,11 @@ import { useNavigate } from "react-router-dom";
 import InputField from "../../components/InputFIeld";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import {motion} from "framer-motion";
-import { generateRSAKeyPair, encryptWithPassword } from "../../utils/cryptoUtils"; // ⬅️ you'll create this
+import { motion } from "framer-motion";
+import {
+  generateRSAKeyPair,
+  encryptWithPassword,
+} from "../../utils/cryptoUtils"; // ⬅️ you'll create this
 
 export default function LawyerSignup() {
   const [formData, setFormData] = useState({
@@ -23,6 +26,43 @@ export default function LawyerSignup() {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const sendOtp = async () => {
+    try {
+      const res = await axios.post(
+        "https://lawsuits.onrender.com/auth/send-otp",
+        {
+          email: formData.email,
+        }
+      );
+      setOtpSent(true);
+      setSuccessMsg("✅ OTP sent to your email.");
+      setErrorMsg("");
+    } catch (err) {
+      setErrorMsg("❌ Failed to send OTP.");
+      setSuccessMsg("");
+    }
+  };
+
+  const verifyOtp = async () => {
+    try {
+      const res = await axios.post(
+        "https://lawsuits.onrender.com/auth/verify-otp",
+        {
+          email: formData.email,
+          otp,
+        }
+      );
+      setOtpVerified(true);
+      setSuccessMsg("✅ OTP verified. You can now sign up.");
+      setErrorMsg("");
+    } catch (err) {
+      setErrorMsg("❌ Invalid OTP");
+      setSuccessMsg("");
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -33,57 +73,62 @@ export default function LawyerSignup() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setSuccessMsg("");
-  setErrorMsg("");
+    e.preventDefault();
+    setSuccessMsg("");
+    setErrorMsg("");
 
-  try {
-    // Step 1: Generate RSA key pair
-    const { publicKey, privateKey } = await generateRSAKeyPair();
+    if (!otpVerified) {
+      setErrorMsg("❌ Please verify your email with OTP before signing up.");
+      return;
+    }
 
-    // Step 2: Encrypt private key with password
-    const { encrypted, salt, iv } = await encryptWithPassword(privateKey, formData.password);
+    try {
+      const { publicKey, privateKey } = await generateRSAKeyPair();
+      const { encrypted, salt, iv } = await encryptWithPassword(
+        privateKey,
+        formData.password
+      );
 
-    // Step 3: Prepare multipart form data
-    const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key === "proofFile" && Array.isArray(value)) {
-        value.forEach((file) => data.append("proofFile", file));
-      } else {
-        data.append(key, value);
-      }
-    });
+      const data = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === "proofFile" && Array.isArray(value)) {
+          value.forEach((file) => data.append("proofFile", file));
+        } else {
+          data.append(key, value);
+        }
+      });
 
-    // Step 4: Append RSA-related fields (no plaintext private key)
-    data.append("rsaPublicKey", publicKey);
-    data.append("encryptedPrivateKey", encrypted);
-    data.append("salt", salt);
-    data.append("iv", iv);
+      data.append("rsaPublicKey", publicKey);
+      data.append("encryptedPrivateKey", encrypted);
+      data.append("salt", salt);
+      data.append("iv", iv);
 
-    // Step 5: Submit to backend
-    await axios.post("https://lawsuits.onrender.com/lawyer/signup", data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+      await axios.post("https://lawsuits.onrender.com/lawyer/signup", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-    setSuccessMsg("✅ Signup successful! Your status is pending.");
-    setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      barId: "",
-      practiceAreas: "",
-      experience: "",
-      password: "",
-      proofFile: [],
-      sop: "",
-    });
-  } catch (err) {
-    console.error(err);
-    setErrorMsg("❌ Signup failed. Please try again.");
-  }
-};
+      setSuccessMsg("✅ Signup successful! Your status is pending.");
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        barId: "",
+        practiceAreas: "",
+        experience: "",
+        password: "",
+        proofFile: [],
+        sop: "",
+      });
+      setOtp("");
+      setOtpSent(false);
+      setOtpVerified(false);
+    } catch (err) {
+      console.error(err);
+      setErrorMsg("❌ Signup failed. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -91,10 +136,11 @@ export default function LawyerSignup() {
 
       <div className="pt-24 min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 px-4 py-16 text-white">
         <motion.div
-        initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-        className="max-w-3xl mx-auto shadow-2xl shadow-blue-400 bg-gray-900 border border-blue-700 rounded-2xl p-8">
+          className="max-w-3xl mx-auto shadow-2xl shadow-blue-400 bg-gray-900 border border-blue-700 rounded-2xl p-8"
+        >
           <h2 className="text-3xl font-bold text-blue-400 mb-6 text-center">
             🧑‍⚖️ Lawyer Signup
           </h2>
@@ -119,6 +165,46 @@ export default function LawyerSignup() {
               className="bg-gray-800 text-white border-gray-600"
               labelClass="text-white"
             />
+            {!otpVerified && (
+              <div className="border border-blue-600 bg-[#0f172a] p-4 rounded-xl">
+                {!otpSent ? (
+                  <button
+                    type="button"
+                    onClick={sendOtp}
+                    className=" cursor-pointer text-sm text-blue-400 hover:underline"
+                  >
+                    verify email
+                  </button>
+                ) : (
+                  <>
+                    <label className="block mb-1 text-sm text-gray-400 mt-2">
+                      Enter OTP
+                    </label>
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter the OTP"
+                      className="w-full px-4 py-2 mb-2 border border-gray-600 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <button
+                      type="button"
+                      onClick={verifyOtp}
+                      className=" cursor-pointer w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition"
+                    >
+                      Verify OTP
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+
+            {otpVerified && (
+              <p className="text-green-400 text-sm font-medium text-center">
+                ✅ Email verified successfully.
+              </p>
+            )}
+
             <InputField
               label="Phone Number"
               name="phone"
@@ -202,9 +288,7 @@ export default function LawyerSignup() {
               </p>
             )}
             {errorMsg && (
-              <p className="text-red-400 text-center font-medium">
-                {errorMsg}
-              </p>
+              <p className="text-red-400 text-center font-medium">{errorMsg}</p>
             )}
 
             <button
@@ -216,7 +300,7 @@ export default function LawyerSignup() {
           </form>
         </motion.div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }
