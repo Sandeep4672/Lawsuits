@@ -24,7 +24,7 @@ export default function SearchResults() {
       return;
     }
     try {
-      const res = await axios.get(`http://localhost:8000/search`, {
+      const res = await axios.get(`https://lawsuits.onrender.com/search`, {
         params: { query, page },
       });
       setResults(res.data.data.results);

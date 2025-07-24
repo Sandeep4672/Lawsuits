@@ -13,7 +13,7 @@ export default function ConnectionRequests() {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          "http://localhost:8000/lawyer/connections/requests",
+          "https://lawsuits.onrender.com/lawyer/connections/requests",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -35,13 +35,13 @@ export default function ConnectionRequests() {
       const token = localStorage.getItem("token");
       if (action === "accept") {
         await axios.patch(
-          `http://localhost:8000/lawyer/connections/requests/${id}/accept`,
+          `https://lawsuits.onrender.com/lawyer/connections/requests/${id}/accept`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.delete(
-          `http://localhost:8000/lawyer/connections/requests/${id}/reject`,
+          `https://lawsuits.onrender.com/lawyer/connections/requests/${id}/reject`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       }

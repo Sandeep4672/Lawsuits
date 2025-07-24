@@ -20,7 +20,7 @@ export default function LawyerDashboard() {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          "http://localhost:8000/lawyer/connections/requests",
+          "https://lawsuits.onrender.com/lawyer/connections/requests",
           {
             headers: { Authorization: `Bearer ${token}` },
           }

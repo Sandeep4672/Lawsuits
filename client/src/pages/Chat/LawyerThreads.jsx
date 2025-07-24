@@ -14,7 +14,7 @@ export default function LawyerThreads() {
     const fetchThreads = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/lawyer/threads", {
+        const res = await axios.get("https://lawsuits.onrender.com/lawyer/threads", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setThreads(res.data.data || []);

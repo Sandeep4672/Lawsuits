@@ -15,7 +15,7 @@ import {
   decryptWithAESKey
 } from "../../utils/cryptoUtils.js";
 
-const socket = io("http://localhost:8000", {
+const socket = io("https://lawsuits.onrender.com", {
   transports: ["websocket"],
   secure: true
 });
@@ -86,8 +86,8 @@ export default function ChatPage() {
     
 
     const url = isLawyer
-      ? `http://localhost:8000/lawyer/threads/${id}/messages`
-      : `http://localhost:8000/threads/${id}/messages`;
+      ? `https://lawsuits.onrender.com/lawyer/threads/${id}/messages`
+      : `https://lawsuits.onrender.com/threads/${id}/messages`;
 
     const res = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
@@ -257,8 +257,8 @@ const handleSend = async (e) => {
   let threadData;
   try {
     const threadUrl = isLawyer
-      ? `http://localhost:8000/lawyer/threads/${id}`
-      : `http://localhost:8000/threads/${id}`;
+      ? `https://lawsuits.onrender.com/lawyer/threads/${id}`
+      : `https://lawsuits.onrender.com/threads/${id}`;
 
     const res = await axios.get(threadUrl, { headers });
     threadData = res.data.data;
@@ -275,8 +275,8 @@ const handleSend = async (e) => {
   try {
     // Fetch public keys
     const [pubRecipientRes, pubSenderRes] = await Promise.all([
-      axios.get(`http://localhost:8000/encrypt/user-public/${recipientId}`, { headers }),
-      axios.get(`http://localhost:8000/encrypt/user-public/${userId}`, { headers }),
+      axios.get(`https://lawsuits.onrender.com/encrypt/user-public/${recipientId}`, { headers }),
+      axios.get(`https://lawsuits.onrender.com/encrypt/user-public/${userId}`, { headers }),
     ]);
 
     const recipientPubKey = await importPublicKey(pubRecipientRes.data.data);
@@ -291,8 +291,8 @@ const handleSend = async (e) => {
     const encryptedAESKeyForSender = await encryptAESKeyWithRSA(senderPubKey, aesKey);
 
     const sendUrl = isLawyer
-      ? `http://localhost:8000/lawyer/threads/${id}/send`
-      : `http://localhost:8000/threads/${id}/send`;
+      ? `https://lawsuits.onrender.com/lawyer/threads/${id}/send`
+      : `https://lawsuits.onrender.com/threads/${id}/send`;
 
     const res = await axios.post(
       sendUrl,
@@ -344,8 +344,8 @@ setMessages((prev) => {
     try {
       const isLawyer = localStorage.getItem("lawyerId");
       const url = isLawyer
-        ? `http://localhost:8000/lawyer/threads/${id}/messages/${messageId}`
-        : `http://localhost:8000/threads/${id}/messages/${messageId}`;
+        ? `https://lawsuits.onrender.com/lawyer/threads/${id}/messages/${messageId}`
+        : `https://lawsuits.onrender.com/threads/${id}/messages/${messageId}`;
 
       await axios.delete(url, { headers });
 

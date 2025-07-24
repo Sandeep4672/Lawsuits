@@ -40,7 +40,7 @@ export default function AddCase() {
       Object.entries(form).forEach(([key, value]) => formData.append(key, value));
       formData.append("pdf", pdfFile);
 
-      await axios.post("http://localhost:8000/admin/upload-pdf", formData, {
+      await axios.post("https://lawsuits.onrender.com/admin/upload-pdf", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
