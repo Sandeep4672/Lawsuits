@@ -18,7 +18,7 @@ const RecentCases = () => {
       const fetchRecentCases = async () => {
         try {
           const response = await axios.get(
-            "https://lawsuits.onrender.com/user/history",
+            "http://localhost:8000/user/history",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -38,7 +38,7 @@ const RecentCases = () => {
     e.preventDefault();
     e.stopPropagation(); // Prevent navigation
     try {
-      await axios.delete(`https://lawsuits.onrender.com/user/history/${caseId}`, {
+      await axios.delete(`http://localhost:8000/user/history/${caseId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -50,7 +50,7 @@ const RecentCases = () => {
   };
   const handleClearHistory = async () => {
   try {
-    await axios.delete("https://lawsuits.onrender.com/user/clear-history", {
+    await axios.delete("http://localhost:8000/user/clear-history", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

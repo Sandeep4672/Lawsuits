@@ -34,9 +34,7 @@ export default function Navbar() {
           <Link to="/lawyer-dashboard" className="text-white hover:text-gray-200 flex items-center gap-1">
             <Home size={18} /> Dashboard
           </Link>
-          <Link to="/lawyer/appointments" className="text-white hover:text-gray-200 flex items-center gap-1">
-            <CalendarDays size={18} /> Appointments
-          </Link>
+          
           <Link to="/chat/lawyer/threads" className="text-white hover:text-gray-200 flex items-center gap-1">
             <MessageCircle size={18} /> Messages
           </Link>

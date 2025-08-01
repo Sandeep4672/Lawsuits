@@ -1,11 +1,12 @@
 import { useState, useContext } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import InputField from "../../components/InputFIeld";
 import Navbar from "../../components/Navbar";
 import { AuthContext } from "../../context/AuthContext";
 import Footer from "../../components/Footer";
 import { motion } from "framer-motion";
+
 export default function LawyerLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,13 +19,13 @@ export default function LawyerLogin() {
     setMessage("");
 
     try {
-      const res = await axios.post("https://lawsuits.onrender.com/lawyer/login", {
+      const res = await axios.post("http://localhost:8000/lawyer/login", {
         email,
         password,
       });
       const { accessToken, user } = res.data.data;
       localStorage.setItem("lawyerId", user._id);
-      login(accessToken, user,password,true);
+      login(accessToken, user, password, true);
       navigate("/lawyer-dashboard");
     } catch (err) {
       setMessage(
@@ -38,10 +39,11 @@ export default function LawyerLogin() {
       <Navbar />
       <div className="pt-24 min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center px-4 text-white">
         <motion.div
-        initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-         className="max-w-md w-full bg-gray-900 p-8 shadow-2xl shadow-blue-400 rounded-2xl border border-blue-700 ">
+          className="max-w-md w-full bg-gray-900 p-8 shadow-2xl shadow-blue-400 rounded-2xl border border-blue-700"
+        >
           <h2 className="text-3xl font-bold text-center text-blue-400 mb-6">
             🧑‍⚖️ Lawyer Login
           </h2>
@@ -69,6 +71,16 @@ export default function LawyerLogin() {
               labelClass="text-white"
             />
 
+            {/* ✅ Forgot password link */}
+            <div className="text-right">
+              <Link
+                to="/lawyer-forgot-password"
+                className="text-sm text-blue-300 hover:underline"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+
             {message && (
               <p className="text-center text-red-400 text-sm">{message}</p>
             )}
@@ -94,7 +106,7 @@ export default function LawyerLogin() {
           </div>
         </motion.div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }

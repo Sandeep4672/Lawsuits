@@ -13,7 +13,7 @@ export default function AcceptedConnections() {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          "https://lawsuits.onrender.com/lawyer/connections/accepted",
+          "http://localhost:8000/lawyer/connections/accepted",
           {
             headers: {
               Authorization: `Bearer ${token}`,

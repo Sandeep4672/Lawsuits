@@ -27,7 +27,7 @@ export default function MyProfile() {
 
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("https://lawsuits.onrender.com/lawyer/my-profile", {
+        const res = await axios.get("http://localhost:8000/lawyer/my-profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -110,7 +110,7 @@ export default function MyProfile() {
 
     try {
       await axios.patch(
-        "https://lawsuits.onrender.com/lawyer/update-profile",
+        "http://localhost:8000/lawyer/update-profile",
         formData,
         {
           headers: {

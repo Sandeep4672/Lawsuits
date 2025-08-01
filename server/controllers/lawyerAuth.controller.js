@@ -97,10 +97,6 @@ export const signupLawyer = async (req, res, next) => {
     });
 
     await lawyerRequest.save();
-
-    // ❌ Delete verified OTP key to prevent reuse
-    await redis.del(`otp:verified:${email}`);
-
     return res.status(201).json({
       message: "Lawyer request submitted successfully",
       lawyerRequest,
@@ -217,5 +213,33 @@ export const changeCurrentPassword = asyncHandler(async (req, res) => {
       },
       "Password changed successfully"
     )
+  );
+});
+
+export const  verifyOtpAndUpdatePasswordOfLawyer=asyncHandler(async (req, res) => {
+  const { email, otp, password } = req.body;
+  if (!email || !otp || !password) {
+    throw new ApiError(400, "Email, OTP and password are required");
+  }
+
+  const storedOtp = await otpStore.get(`otp:${email}`);
+  if (!storedOtp || storedOtp !== otp) {
+    throw new ApiError(400, "Invalid or expired OTP");
+  }
+
+  await otpStore.del(`otp:${email}`);
+
+  
+  const lawyer = await Lawyer.findOne({ email });
+  if (!lawyer) {
+    throw new ApiError(404, "Lawyer not found");
+  }
+
+  // Update the password
+  lawyer.password = password;
+  await lawyer.save({ validateBeforeSave: false });
+
+  return res.status(200).json(
+    new ApiResponse(200, null, "Password updated successfully")
   );
 });

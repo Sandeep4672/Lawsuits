@@ -23,7 +23,7 @@ export default function ProfilePage() {
 
   const handleInitiatePasswordChange = async () => {
     try {
-      await axios.post("https://lawsuits.onrender.com/auth/send-otp", {
+      await axios.post("http://localhost:8000/auth/send-otp", {
         email: user.email,
       });
       setShowOtpSection(true);
@@ -35,7 +35,7 @@ export default function ProfilePage() {
 
   const verifyOtp = async () => {
     try {
-      const res = await axios.post("https://lawsuits.onrender.com/auth/verify-otp", {
+      const res = await axios.post("http://localhost:8000/auth/verify-otp", {
         email: user.email,
         otp,
       });
@@ -67,7 +67,7 @@ export default function ProfilePage() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.patch(
-        "https://lawsuits.onrender.com/auth/change-password",
+        "http://localhost:8000/auth/change-password",
         {
           user,
           oldPassword: currentPassword,

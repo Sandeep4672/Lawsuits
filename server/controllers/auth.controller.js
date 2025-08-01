@@ -203,4 +203,37 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 });
 
 
-export { sendOtp, signupUser, loginUser, logoutUser, changeCurrentPassword };
+ const verifyOtpAndUpdatePassword = asyncHandler(async (req, res) => {
+  const { email, otp, password } = req.body;
+
+  if (!email || !otp || !password) {
+    throw new ApiError(400, "Email, OTP and new password are required");
+  }
+
+  const storedOtp = await otpStore.get(`otp:${email}`);
+
+  if (!storedOtp) {
+    throw new ApiError(400, "OTP expired ");
+  }
+
+  if (storedOtp !== otp.toString()) {
+    throw new ApiError(400, "Invalid OTP. Please try again.");
+  }
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  user.password = password; 
+  await user.save({ validateBeforeSave: false });
+
+  await otpStore.del(`otp:${email}`); 
+
+  return res.status(200).json(
+    new ApiResponse(200, null, "Password updated successfully")
+  );
+});
+
+
+export { sendOtp, signupUser, loginUser, logoutUser, changeCurrentPassword ,verifyOtpAndUpdatePassword};

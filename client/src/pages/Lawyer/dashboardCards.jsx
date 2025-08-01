@@ -14,12 +14,7 @@ export const dashboardCards = [
     borderColor: "border-l-4 border-green-500",
     icon: <Users className="text-green-400" size={28} />,
   },
-  {
-    label: "Appointments",
-    to: "/lawyer/appointments",
-    borderColor: "border-l-4 border-blue-500",
-    icon: <CalendarCheck className="text-blue-400" size={28} />,
-  },
+
   {
     label: "Messages",
     to: "/chat/lawyer/threads",

@@ -37,7 +37,7 @@ export default function LawyerProfileDetails() {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
-          `https://lawsuits.onrender.com/user/lawyer-profile/${lawyerId}`,
+          `http://localhost:8000/user/lawyer-profile/${lawyerId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -8,7 +8,7 @@ export const removeCase = async (saveId) => {
 
   try {
     await axios.delete(
-      `https://lawsuits.onrender.com/user/saved-cases/${saveId}`,
+      `http://localhost:8000/user/saved-cases/${saveId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

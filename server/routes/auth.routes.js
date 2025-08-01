@@ -9,7 +9,8 @@ import {
   loginUser,
   logoutUser,
   changeCurrentPassword,
-  verifyOtp
+  verifyOtp,
+  verifyOtpAndUpdatePassword,
 } from "../controllers/auth.controller.js";
 
 
@@ -23,6 +24,8 @@ router.route("/login").post(loginUser);
 router.route("/logout").post(verifyUserJWT, logoutUser);
 
 router.route("/change-password").patch(verifyUserJWT, changeCurrentPassword);
+
+router.route("/verify-otp-change-password").post( verifyOtpAndUpdatePassword);
 
 
 export default router;

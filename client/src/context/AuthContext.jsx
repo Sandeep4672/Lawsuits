@@ -37,8 +37,8 @@ const AuthProvider = ({ children }) => {
 
   try {
     const endpoint = isLawyerLogin
-      ? "https://lawsuits.onrender.com/encrypt/lawyer/private-key"
-      : "https://lawsuits.onrender.com/encrypt/user/private-key";
+      ? "http://localhost:8000/encrypt/lawyer/private-key"
+      : "http://localhost:8000/encrypt/user/private-key";
 
     const res = await axios.get(endpoint, {
       headers: { Authorization: `Bearer ${token}` },

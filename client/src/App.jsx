@@ -43,6 +43,9 @@ import ChatPage from "./pages/Chat/ChatPage";
 import LawyerThreads from "./pages/Chat/LawyerThreads";
 import AdminAllCases from "./pages/Admin/AllCases";
 import LearnMore from "./pages/home/About";
+import VerifyOtpAndUpdatePassword from "./pages/auth/VerifyOtpAndUpdatePassword";
+import LawyerForgotPassword from "./pages/Lawyer/ForgotPassword";
+import LawyerVerifyOtpAndChangePassword from "./pages/Lawyer/ChangePassword";
 export default function App() {
   return (
     <AuthProvider>
@@ -54,13 +57,15 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/about" element={<LearnMore/>}/>
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/verify-otp" element={<VerifyOtp />} />
+          <Route path="/verify-otp" element={<VerifyOtpAndUpdatePassword />} />
           <Route path="/footer" element={<Footer />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/500" element={<InternalServerError />} />
           <Route path="/search-results" element={<SearchResults />} />
           <Route path="/view-pdf/:id" element={<ViewPdf />} />
           <Route path="/case/:id" element={<CaseDetails />} />
+          <Route path="/lawyer-forgot-password" element={<LawyerForgotPassword />} />
+          <Route path="/lawyer-verify-otp" element={<LawyerVerifyOtpAndChangePassword />} />
           {/* Protected Routes for Users */}
           <Route
             path="/change-password"

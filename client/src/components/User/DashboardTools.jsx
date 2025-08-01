@@ -32,18 +32,21 @@ const tools = [
     description: "High-volume text extraction with multi-language support.",
     icon: <FaLanguage size={32} />,
     path: "/dashboard",
+    comingSoon: true,
   },
   {
     title: "Document Translation",
     description: "Legally-aware translation with dialect mapping.",
     icon: <FaLanguage size={32} />,
     path: "/dashboard",
+    comingSoon: true,
   },
   {
     title: "Default Mode",
     description: "General-purpose AI chat interface.",
     icon: <FaRobot size={32} />,
     path: "/dashboard",
+    comingSoon: true,
   },
 ];
 
@@ -61,10 +64,18 @@ export default function DashboardTools() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.15 }}
-              className="group hover:scale-[1.03] bg-[#1e1e1e] p-6 rounded-2xl shadow-xl border border-gray-700 hover:border-green-500 hover:shadow-green-800 transition-all duration-300 cursor-pointer h-full"
+              className="group hover:scale-[1.03] bg-[#1e1e1e] p-6 rounded-2xl shadow-xl border border-gray-700 hover:border-green-500 hover:shadow-green-800 transition-all duration-300 cursor-pointer h-full relative"
             >
+              {tool.comingSoon && (
+                <div className="absolute top-2 right-2 bg-yellow-600 text-xs text-white font-semibold px-2 py-1 rounded-md shadow">
+                  Coming Soon
+                </div>
+              )}
+
               <div className="flex items-center justify-between mb-4">
-                <div className="text-green-400 group-hover:text-green-500 transition">{tool.icon}</div>
+                <div className="text-green-400 group-hover:text-green-500 transition">
+                  {tool.icon}
+                </div>
               </div>
               <h3 className="text-lg font-semibold text-white group-hover:text-green-400">
                 {tool.title}

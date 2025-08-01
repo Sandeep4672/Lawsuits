@@ -24,7 +24,7 @@ export default function Login() {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "https://lawsuits.onrender.com/auth/login",
+        "http://localhost:8000/auth/login",
         formData
       );
       if (res.data.success) {

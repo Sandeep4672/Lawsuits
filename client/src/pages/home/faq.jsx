@@ -9,7 +9,7 @@ export default function FrequentlyAskedQn() {
   useEffect(() => {
     const fetchFAQs = async () => {
       try {
-        const res = await axios.get("https://lawsuits.onrender.com/user/faq");
+        const res = await axios.get("http://localhost:8000/user/faq");
         setFaqs(res.data.data || []);
       } catch (err) {
         setFaqs([
