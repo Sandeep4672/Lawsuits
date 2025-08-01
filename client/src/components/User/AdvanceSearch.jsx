@@ -32,7 +32,7 @@ export default function CaseSearch() {
         page: 1,
         limit: 10,
       };
-      const res = await axios.get("http://localhost:8000/search", { params });
+      const res = await axios.get("https://lawsuits.onrender.com/search", { params });
       setResults(res.data.data.results);
     } catch (err) {
       setError("Search failed. Please try again.");

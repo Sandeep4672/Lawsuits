@@ -27,7 +27,7 @@ export default function Signup() {
   const sendOtp = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:8000/auth/send-otp",
+        "https://lawsuits.onrender.com/auth/send-otp",
         {
           email: formData.email,
         }
@@ -41,7 +41,7 @@ export default function Signup() {
   const verifyOtp = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:8000/auth/verify-otp",
+        "https://lawsuits.onrender.com/auth/verify-otp",
         {
           email: formData.email,
           otp,
@@ -82,7 +82,7 @@ export default function Signup() {
       );
 
       const res = await axios.post(
-        "http://localhost:8000/auth/signup",
+        "https://lawsuits.onrender.com/auth/signup",
         {
           fullName: formData.fullName,
           email: formData.email,

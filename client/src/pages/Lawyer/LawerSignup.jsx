@@ -32,7 +32,7 @@ export default function LawyerSignup() {
   const sendOtp = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:8000/auth/send-otp",
+        "https://lawsuits.onrender.com/auth/send-otp",
         {
           email: formData.email,
         }
@@ -49,7 +49,7 @@ export default function LawyerSignup() {
   const verifyOtp = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:8000/auth/verify-otp",
+        "https://lawsuits.onrender.com/auth/verify-otp",
         {
           email: formData.email,
           otp,
@@ -103,7 +103,7 @@ export default function LawyerSignup() {
       data.append("salt", salt);
       data.append("iv", iv);
 
-      await axios.post("http://localhost:8000/lawyer/signup", data, {
+      await axios.post("https://lawsuits.onrender.com/lawyer/signup", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

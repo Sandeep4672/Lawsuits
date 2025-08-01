@@ -26,7 +26,7 @@ export default function LawyerVerifyOtpAndChangePassword() {
     }
 
     try {
-      const res = await axios.post("http://localhost:8000/lawyer/verify-otp/change-password-lawyer", {
+      const res = await axios.post("https://lawsuits.onrender.com/lawyer/verify-otp/change-password-lawyer", {
         email: state?.email,
         otp,
         password,

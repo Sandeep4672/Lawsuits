@@ -32,7 +32,7 @@ export default function ChangePassword() {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/auth/change-password",
+        "https://lawsuits.onrender.com/auth/change-password",
         {
           email: user.email,
           password,
